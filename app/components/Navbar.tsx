@@ -27,7 +27,7 @@ export default function Navbar() {
         }}
       >
         <span style={{fontSize:"22px"}}>🌸</span>
-        🌸 lotus
+        lotus
       </Link>
 
       {/* navigation */}
