@@ -1,50 +1,27 @@
+import LotusLogo from "./components/LotusLogo";
+
 export default function Home() {
   return (
     <main
       style={{
-        background: "#000",
-        color: "#fff",
         minHeight: "100vh",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        flexDirection: "column",
-        fontFamily: "system-ui, sans-serif",
-        textAlign: "center",
         padding: "20px",
       }}
     >
+      {/* logo */}
+      <LotusLogo />
 
-      {/* animated lotus logo */}
-      <svg
-        width="90"
-        height="90"
-        viewBox="0 0 200 200"
-        style={{ marginBottom: "20px" }}
-      >
-        <g fill="white">
-          <path d="M100 40 C120 80 140 90 100 140 C60 90 80 80 100 40">
-            <animate
-              attributeName="d"
-              dur="3s"
-              repeatCount="indefinite"
-              values="
-              M100 40 C120 80 140 90 100 140 C60 90 80 80 100 40;
-              M100 45 C125 85 145 95 100 145 C55 95 75 85 100 45;
-              M100 40 C120 80 140 90 100 140 C60 90 80 80 100 40
-              "
-            />
-          </path>
-        </g>
-      </svg>
-
-      {/* brand */}
+      {/* title */}
       <h1
         style={{
           fontSize: "20px",
           letterSpacing: "2px",
-          opacity: 0.7,
-          marginBottom: "40px",
+          opacity: 0.6,
+          marginBottom: "30px",
         }}
       >
         trylotus
@@ -54,7 +31,8 @@ export default function Home() {
       <h2
         style={{
           fontSize: "48px",
-          fontWeight: "500",
+          fontWeight: 500,
+          textAlign: "center",
           maxWidth: "700px",
           lineHeight: "1.2",
         }}
@@ -62,16 +40,54 @@ export default function Home() {
         build something you actually want to use
       </h2>
 
+      {/* subtext */}
       <p
         style={{
-          marginTop: "20px",
+          marginTop: "16px",
           fontSize: "18px",
           opacity: 0.7,
+          textAlign: "center",
         }}
       >
         describe it. we’ll help you make it real.
       </p>
 
+      {/* input box */}
+      <div
+        style={{
+          marginTop: "40px",
+          display: "flex",
+          gap: "10px",
+          width: "100%",
+          maxWidth: "600px",
+        }}
+      >
+        <input
+          placeholder="a simple habit tracker for students..."
+          style={{
+            flex: 1,
+            padding: "16px",
+            borderRadius: "12px",
+            border: "1px solid #222",
+            background: "transparent",
+            fontSize: "16px",
+          }}
+        />
+
+        <button
+          style={{
+            padding: "16px 20px",
+            borderRadius: "12px",
+            border: "none",
+            background: "white",
+            color: "black",
+            fontWeight: 500,
+            cursor: "pointer",
+          }}
+        >
+          build
+        </button>
+      </div>
     </main>
   );
 }
