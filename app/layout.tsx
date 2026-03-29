@@ -1,17 +1,16 @@
-import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "../components/Navbar";
+import Navbar from "./components/Navbar";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "trylotus",
   description: "build something you actually want to use",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body>
