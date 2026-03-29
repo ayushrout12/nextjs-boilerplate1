@@ -14,21 +14,21 @@ export default function Navbar() {
     >
       
       {/* logo + brand */}
-      <Link
-        href="/"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          fontWeight: 600,
-          fontSize: "20px",
-          color: "#7c6cff",
-          textDecoration: "none"
-        }}
-      >
-        <span style={{fontSize:"22px"}}>🌸</span>
-        lotus
-      </Link>
+     <Link
+  href="/"
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontWeight: 600,
+    fontSize: "20px",
+    color: "#7c6cff",
+    textDecoration: "none"
+  }}
+>
+  <span style={{ fontSize: "22px" }}>🌸</span>
+  lotus
+</Link>
 
       {/* navigation */}
       <div style={{display:"flex", gap:"24px"}}>
