@@ -1,5 +1,5 @@
 import LotusLogo from "./components/LotusLogo"
-
+import Image from "next/image";
 export default function Home() {
   return (
     <main
