@@ -3,13 +3,22 @@
 import Link from "next/link";
 
 export default function Navbar() {
+  const navLink: React.CSSProperties = {
+    color: "#5f5863",
+    textDecoration: "none",
+    fontSize: "15px",
+    fontWeight: 500,
+  };
+
   return (
     <nav
       style={{
+        maxWidth: "1280px",
+        margin: "0 auto",
+        padding: "20px 28px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "22px 34px",
       }}
     >
       <Link
@@ -18,26 +27,21 @@ export default function Navbar() {
           display: "flex",
           alignItems: "center",
           gap: "8px",
-          fontWeight: 600,
-          fontSize: "20px",
           color: "#6d5df6",
           textDecoration: "none",
+          fontSize: "24px",
+          fontWeight: 700,
+          letterSpacing: "-0.02em",
         }}
       >
         <span style={{ fontSize: "20px" }}>🌸</span>
         lotus
       </Link>
 
-      <div style={{ display: "flex", gap: "28px" }}>
-        <Link href="/build" style={{ color: "#5e565b", textDecoration: "none" }}>
-          build
-        </Link>
-        <Link href="/articles" style={{ color: "#5e565b", textDecoration: "none" }}>
-          articles
-        </Link>
-        <Link href="/contact" style={{ color: "#5e565b", textDecoration: "none" }}>
-          contact
-        </Link>
+      <div style={{ display: "flex", gap: "28px", alignItems: "center" }}>
+        <Link href="/build" style={navLink}>build</Link>
+        <Link href="/articles" style={navLink}>articles</Link>
+        <Link href="/contact" style={navLink}>contact</Link>
       </div>
     </nav>
   );
