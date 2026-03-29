@@ -35,3 +35,8 @@ body {
 
   min-height: 100vh;
 }
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
