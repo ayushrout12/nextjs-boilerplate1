@@ -2,7 +2,7 @@ import Navbar from "./components/Navbar"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Lotus — The World's Best AI-Powered Web Developer",
+  title: "Lotus — The World's Best Developer",
   icons: {
     icon: "/lotus.png",
   },
