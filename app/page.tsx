@@ -1,4 +1,4 @@
-import LotusLogo from "./components/LotusLogo";
+import LotusLogo from "./components/LotusLogo"
 
 export default function Home() {
   return (
@@ -6,88 +6,89 @@ export default function Home() {
       style={{
         minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
         justifyContent: "center",
-        padding: "20px",
+        alignItems: "center",
+        padding: "40px"
       }}
     >
-      {/* logo */}
-      <LotusLogo />
-
-      {/* title */}
-      <h1
-        style={{
-          fontSize: "20px",
-          letterSpacing: "2px",
-          opacity: 0.6,
-          marginBottom: "30px",
-        }}
-      >
-        trylotus
-      </h1>
-
-      {/* headline */}
-      <h2
-        style={{
-          fontSize: "48px",
-          fontWeight: 500,
-          textAlign: "center",
-          maxWidth: "700px",
-          lineHeight: "1.2",
-        }}
-      >
-        build something you actually want to use
-      </h2>
-
-      {/* subtext */}
-      <p
-        style={{
-          marginTop: "16px",
-          fontSize: "18px",
-          opacity: 0.7,
-          textAlign: "center",
-        }}
-      >
-        describe it. we’ll help you make it real.
-      </p>
-
-      {/* input box */}
       <div
         style={{
-          marginTop: "40px",
-          display: "flex",
-          gap: "10px",
+          backdropFilter: "blur(20px)",
+          background: "rgba(255,255,255,0.6)",
+          borderRadius: "24px",
+          padding: "60px",
+          maxWidth: "720px",
           width: "100%",
-          maxWidth: "600px",
+          textAlign: "center",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.08)"
         }}
       >
-        <input
-          placeholder="a simple habit tracker for students..."
-          style={{
-            flex: 1,
-            padding: "16px",
-            borderRadius: "12px",
-            border: "1px solid #222",
-            background: "transparent",
-            fontSize: "16px",
-          }}
-        />
+        <LotusLogo />
 
-        <button
+        <h1
           style={{
-            padding: "16px 20px",
-            borderRadius: "12px",
-            border: "none",
-            background: "white",
-            color: "black",
-            fontWeight: 500,
-            cursor: "pointer",
+            fontSize: "18px",
+            letterSpacing: "2px",
+            marginBottom: "20px",
+            opacity: 0.6
           }}
         >
-          build
-        </button>
+          trylotus
+        </h1>
+
+        <h2
+          style={{
+            fontSize: "44px",
+            fontWeight: 500,
+            lineHeight: 1.2
+          }}
+        >
+          build something you actually want to use
+        </h2>
+
+        <p
+          style={{
+            marginTop: "14px",
+            fontSize: "18px",
+            opacity: 0.7
+          }}
+        >
+          describe your idea. lotus helps bring it to life.
+        </p>
+
+        <div
+          style={{
+            marginTop: "32px",
+            display: "flex",
+            gap: "10px"
+          }}
+        >
+          <input
+            placeholder="a habit tracker for students..."
+            style={{
+              flex: 1,
+              padding: "16px",
+              borderRadius: "12px",
+              border: "1px solid rgba(0,0,0,0.1)",
+              fontSize: "16px"
+            }}
+          />
+
+          <button
+            style={{
+              padding: "16px 24px",
+              borderRadius: "12px",
+              border: "none",
+              background: "#7c6cff",
+              color: "white",
+              fontWeight: 600,
+              cursor: "pointer"
+            }}
+          >
+            build
+          </button>
+        </div>
       </div>
     </main>
-  );
+  )
 }
