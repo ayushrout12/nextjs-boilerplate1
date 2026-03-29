@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+
+  background: radial-gradient(circle at 20% 20%, #ffd6e8, transparent 40%),
+              radial-gradient(circle at 80% 30%, #c8f7ff, transparent 40%),
+              radial-gradient(circle at 50% 80%, #e8d6ff, transparent 40%),
+              linear-gradient(135deg, #fdfcff, #f6f9ff);
+
+  min-height: 100vh;
+}
