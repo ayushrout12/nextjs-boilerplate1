@@ -2,8 +2,8 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 
 export const metadata = {
-  title: "trylotus",
-  description: "build something you actually want to use",
+  title: "Lotus - The World's Best AI-Powered App Developer",
+  description: "Build powerful apps with AI using Lotus.",
 };
 
 export default function RootLayout({
