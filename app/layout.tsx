@@ -1,7 +1,7 @@
 import Navbar from "./components/Navbar";
 
 export const metadata = {
-  title: "Lotus — The World's Best AI-Powered Web Developer",
+  title: "Lotus — The World's Developer",
   description: "Build powerful apps with AI using Lotus.",
 };
 
@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body style={{ margin: 0 }}>
         <Navbar />
         {children}
       </body>
