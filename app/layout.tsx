@@ -1,12 +1,8 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'TryLotus.dev - AI Website Builder',
-  description: 'Build beautiful websites with AI, lotus-themed website builder',
+  title: 'TryLotus.dev',
+  description: 'AI-Powered Website Builder',
 }
 
 export default function RootLayout({
@@ -16,10 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-      </head>
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   )
 }
