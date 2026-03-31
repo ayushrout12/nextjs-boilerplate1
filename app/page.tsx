@@ -1,281 +1,405 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
+import { useState } from 'react'
 
 export default function Home() {
-  const [authorized, setAuthorized] = useState(false);
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [prompt, setPrompt] = useState<string>('')
+  const [currentHTML, setCurrentHTML] = useState<string>(`<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-family: system-ui;"><div style="text-align: center;"><h1>🌸 TryLotus.dev</h1><p>Enter a prompt to generate your website</p></div></div>`)
+  const [isGenerating, setIsGenerating] = useState<boolean>(false)
 
-  useEffect(() => {
-    const saved = window.localStorage.getItem("lotus-access");
-    if (saved === "granted") {
-      setAuthorized(true);
+  const generateWebsite = async () => {
+    if (!prompt.trim()) {
+      alert('Please enter a prompt')
+      return
     }
-  }, []);
 
-  function handleUnlock(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (password === "lotuspreview") {
-      window.localStorage.setItem("lotus-access", "granted");
-      setAuthorized(true);
-      setError("");
-      setPassword("");
-    } else {
-      setError("Incorrect password");
-    }
+    setIsGenerating(true)
+    
+    // Simulate AI generation
+    setTimeout(() => {
+      const generatedHTML = generateTemplate(prompt)
+      setCurrentHTML(generatedHTML)
+      setIsGenerating(false)
+    }, 2000)
   }
 
-  if (!authorized) {
-    return (
-      <main style={pageBg}>
-        <section style={gateCard}>
-          <div style={emojiLogo}>🌸</div>
-          <p style={eyebrow}>private preview</p>
-          <h1 style={gateTitle}>enter preview access</h1>
-          <p style={gateText}>
-            this preview build is currently private.
-          </p>
-
-          <form onSubmit={handleUnlock} style={{ marginTop: 24 }}>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="password"
-              autoComplete="current-password"
-              style={passwordInput}
-            />
-
-            {error ? <p style={errorText}>{error}</p> : null}
-
-            <button type="submit" style={primaryButton}>
-              continue
-            </button>
-          </form>
-        </section>
-      </main>
-    );
+  const generateTemplate = (prompt: string): string => {
+    const promptLower = prompt.toLowerCase()
+    
+    // Portfolio template
+    if (promptLower.includes('portfolio')) {
+      return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | TryLotus</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            text-align: center;
+            padding: 60px 0;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        .project-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            transition: transform 0.3s;
+        }
+        .project-card:hover {
+            transform: translateY(-10px);
+        }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ ${prompt.split(' ').slice(0, 3).join(' ') || 'Creative Portfolio'}</h1>
+            <p>Bringing ideas to life through code and creativity</p>
+        </header>
+        <div class="projects">
+            <div class="project-card">
+                <h3>Project One</h3>
+                <p>An innovative solution that solves real-world problems.</p>
+            </div>
+            <div class="project-card">
+                <h3>Project Two</h3>
+                <p>Pushing boundaries with modern technologies.</p>
+            </div>
+            <div class="project-card">
+                <h3>Project Three</h3>
+                <p>Creating memorable experiences through design.</p>
+            </div>
+        </div>
+        <footer>
+            <p>© 2024 Built with 🌸 TryLotus.dev</p>
+        </footer>
+    </div>
+</body>
+</html>`
+    }
+    
+    // Business template
+    if (promptLower.includes('business') || promptLower.includes('company')) {
+      return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business | TryLotus</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .services {
+            padding: 80px 0;
+            background: white;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .service-card {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            transition: transform 0.3s;
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="container">
+            <h2>BusinessPro</h2>
+        </div>
+    </div>
+    <div class="hero">
+        <div class="container">
+            <h1>${prompt.split(' ').slice(0, 4).join(' ') || 'Transform Your Business'}</h1>
+            <p style="font-size: 18px; margin-top: 20px;">Innovative solutions for modern enterprises</p>
+            <button class="btn-primary">Get Started</button>
+        </div>
+    </div>
+    <div class="services">
+        <div class="container">
+            <h2 style="text-align: center;">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <h3>Strategy</h3>
+                    <p>Data-driven insights to guide your growth</p>
+                </div>
+                <div class="service-card">
+                    <h3>Innovation</h3>
+                    <p>Cutting-edge solutions for challenges</p>
+                </div>
+                <div class="service-card">
+                    <h3>Support</h3>
+                    <p>24/7 dedicated support for success</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer style="background: #333; color: white; text-align: center; padding: 40px 0;">
+        <p>© 2024 Built with 🌸 TryLotus.dev</p>
+    </footer>
+</body>
+</html>`
+    }
+    
+    // Default template
+    return `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TryLotus | Generated Website</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: fadeIn 0.6s ease;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .card { padding: 30px; }
+            h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div style="font-size: 60px; margin-bottom: 20px;">🌸</div>
+        <h1>${prompt.split(' ').slice(0, 5).join(' ') || 'Your Generated Website'}</h1>
+        <p>${prompt || 'This website was generated by TryLotus.dev AI Agent'}</p>
+        <p style="font-size: 14px; margin-top: 20px;">Built with 🌸 TryLotus.dev</p>
+    </div>
+</body>
+</html>`
   }
 
   return (
-    <main style={pageBg}>
-      <section style={heroWrap}>
-        <div style={heroCard}>
-          <div style={badge}>🌸 lotus</div>
-
-          <h1 style={heroTitle}>
-            build web products that feel thoughtful from the start
-          </h1>
-
-          <p style={heroText}>
-            shape an idea, refine the direction, and turn early concepts into
-            something clear, useful, and beautifully made.
-          </p>
-
-          <div style={heroActions}>
-            <input
-              type="text"
-              placeholder="describe what you want to build"
-              style={heroInput}
-            />
-            <button style={primaryButtonSmall}>start</button>
-          </div>
-
-          <div style={subLinks}>
-            <span>calm workflow</span>
-            <span>clean output</span>
-            <span>private preview</span>
-          </div>
+    <div style={{ display: 'flex', height: '100vh' }}>
+      {/* Sidebar */}
+      <div style={{ 
+        width: '350px', 
+        background: '#1a1a2e', 
+        color: 'white', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        padding: '20px',
+        borderRight: '1px solid #9b7bff'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <i className="fas fa-lotus" style={{ fontSize: '50px', color: '#9b7bff' }}></i>
+          <h1 style={{ marginTop: '10px', fontSize: '28px' }}>TryLotus.dev</h1>
+          <p style={{ fontSize: '12px', opacity: 0.7 }}>AI-Powered Website Builder</p>
         </div>
-      </section>
-    </main>
-  );
+
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '10px', fontSize: '14px', fontWeight: 'bold' }}>
+            What website do you want to build?
+          </label>
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="Example:&#10;&#10;'Create a modern portfolio website with a dark theme, animations, and a contact form'&#10;&#10;or&#10;&#10;'Build a business landing page for a tech startup'"
+            style={{
+              width: '100%',
+              padding: '12px',
+              borderRadius: '8px',
+              border: '1px solid #9b7bff',
+              background: '#16213e',
+              color: 'white',
+              minHeight: '150px',
+              fontFamily: 'monospace',
+              fontSize: '14px',
+              resize: 'vertical'
+            }}
+          />
+        </div>
+
+        <button
+          onClick={generateWebsite}
+          disabled={isGenerating}
+          style={{
+            background: 'linear-gradient(135deg, #9b7bff, #6b46c0)',
+            color: 'white',
+            padding: '14px',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: isGenerating ? 'not-allowed' : 'pointer',
+            fontWeight: 'bold',
+            fontSize: '16px',
+            opacity: isGenerating ? 0.5 : 1,
+            transition: 'transform 0.2s'
+          }}
+          onMouseEnter={(e) => {
+            if (!isGenerating) e.currentTarget.style.transform = 'translateY(-2px)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)'
+          }}
+        >
+          {isGenerating ? (
+            <>
+              <i className="fas fa-spinner fa-pulse"></i> Generating...
+            </>
+          ) : (
+            <>
+              <i className="fas fa-magic"></i> Generate with AI
+            </>
+          )}
+        </button>
+
+        <div style={{ marginTop: '20px', padding: '12px', background: 'rgba(155, 123, 255, 0.1)', borderRadius: '8px', fontSize: '12px' }}>
+          <i className="fas fa-info-circle"></i> Tip: Be specific about what you want!
+        </div>
+      </div>
+
+      {/* Preview Area */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ 
+          background: '#16213e', 
+          padding: '12px 20px', 
+          borderBottom: '2px solid #9b7bff',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <h3 style={{ color: 'white', margin: 0 }}>
+            <i className="fas fa-eye"></i> Live Preview
+          </h3>
+          <button
+            onClick={() => {
+              const newWindow = window.open()
+              newWindow.document.write(currentHTML)
+              newWindow.document.close()
+            }}
+            style={{
+              background: 'rgba(155, 123, 255, 0.2)',
+              border: '1px solid #9b7bff',
+              color: 'white',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '12px'
+            }}
+          >
+            <i className="fas fa-external-link-alt"></i> Open in New Tab
+          </button>
+        </div>
+        <iframe
+          srcDoc={currentHTML}
+          title="Live Preview"
+          style={{ flex: 1, border: 'none', background: 'white' }}
+          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+        />
+      </div>
+    </div>
+  )
 }
-
-const pageBg: React.CSSProperties = {
-  minHeight: "100vh",
-  padding: "40px 24px 80px",
-  background: `
-    radial-gradient(circle at 15% 20%, rgba(255, 196, 221, 0.85), transparent 28%),
-    radial-gradient(circle at 85% 18%, rgba(188, 233, 255, 0.9), transparent 30%),
-    radial-gradient(circle at 50% 90%, rgba(214, 206, 255, 0.65), transparent 30%),
-    linear-gradient(135deg, #fff7fb 0%, #f4fbff 52%, #fff9f2 100%)
-  `,
-};
-
-const heroWrap: React.CSSProperties = {
-  maxWidth: "1200px",
-  margin: "0 auto",
-  minHeight: "calc(100vh - 80px)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-const heroCard: React.CSSProperties = {
-  width: "100%",
-  maxWidth: "980px",
-  padding: "72px 56px",
-  borderRadius: "34px",
-  background: "rgba(255,255,255,0.60)",
-  backdropFilter: "blur(22px)",
-  WebkitBackdropFilter: "blur(22px)",
-  boxShadow: "0 24px 80px rgba(82, 70, 110, 0.10)",
-  border: "1px solid rgba(255,255,255,0.7)",
-  textAlign: "center",
-};
-
-const badge: React.CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "8px",
-  padding: "10px 16px",
-  borderRadius: "999px",
-  background: "rgba(255,255,255,0.72)",
-  color: "#7a5af8",
-  fontSize: "14px",
-  fontWeight: 600,
-  marginBottom: "26px",
-  border: "1px solid rgba(122,90,248,0.10)",
-};
-
-const heroTitle: React.CSSProperties = {
-  margin: "0 auto",
-  maxWidth: "820px",
-  fontSize: "64px",
-  lineHeight: 1.02,
-  fontWeight: 600,
-  letterSpacing: "-0.04em",
-  color: "#17131a",
-};
-
-const heroText: React.CSSProperties = {
-  maxWidth: "680px",
-  margin: "20px auto 0",
-  fontSize: "19px",
-  lineHeight: 1.75,
-  color: "#5f5863",
-};
-
-const heroActions: React.CSSProperties = {
-  marginTop: "34px",
-  display: "flex",
-  gap: "14px",
-  justifyContent: "center",
-  alignItems: "center",
-  flexWrap: "wrap",
-};
-
-const heroInput: React.CSSProperties = {
-  width: "min(100%, 560px)",
-  padding: "18px 20px",
-  borderRadius: "18px",
-  border: "1px solid rgba(0,0,0,0.08)",
-  background: "rgba(255,255,255,0.88)",
-  color: "#17131a",
-  fontSize: "16px",
-  outline: "none",
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)",
-};
-
-const primaryButtonSmall: React.CSSProperties = {
-  padding: "18px 24px",
-  border: "none",
-  borderRadius: "18px",
-  background: "linear-gradient(135deg, #7c6cff 0%, #6b8cff 100%)",
-  color: "#fff",
-  fontSize: "16px",
-  fontWeight: 600,
-  cursor: "pointer",
-  boxShadow: "0 14px 34px rgba(108, 99, 255, 0.22)",
-};
-
-const subLinks: React.CSSProperties = {
-  marginTop: "22px",
-  display: "flex",
-  justifyContent: "center",
-  gap: "22px",
-  flexWrap: "wrap",
-  color: "#7b737c",
-  fontSize: "14px",
-};
-
-const gateCard: React.CSSProperties = {
-  width: "100%",
-  maxWidth: "540px",
-  margin: "80px auto",
-  padding: "42px",
-  borderRadius: "30px",
-  background: "rgba(255,255,255,0.68)",
-  backdropFilter: "blur(22px)",
-  WebkitBackdropFilter: "blur(22px)",
-  boxShadow: "0 24px 80px rgba(82, 70, 110, 0.10)",
-  border: "1px solid rgba(255,255,255,0.7)",
-};
-
-const emojiLogo: React.CSSProperties = {
-  textAlign: "center",
-  fontSize: "34px",
-  marginBottom: "16px",
-};
-
-const eyebrow: React.CSSProperties = {
-  margin: 0,
-  textAlign: "center",
-  textTransform: "uppercase",
-  letterSpacing: "0.14em",
-  fontSize: "12px",
-  color: "#7c7480",
-};
-
-const gateTitle: React.CSSProperties = {
-  margin: "14px 0 10px",
-  textAlign: "center",
-  fontSize: "38px",
-  lineHeight: 1.08,
-  color: "#17131a",
-};
-
-const gateText: React.CSSProperties = {
-  margin: 0,
-  textAlign: "center",
-  color: "#5f5863",
-  fontSize: "16px",
-  lineHeight: 1.7,
-};
-
-const passwordInput: React.CSSProperties = {
-  width: "100%",
-  boxSizing: "border-box",
-  padding: "17px 18px",
-  borderRadius: "16px",
-  border: "1px solid rgba(0,0,0,0.08)",
-  background: "rgba(255,255,255,0.88)",
-  fontSize: "16px",
-  color: "#17131a",
-  outline: "none",
-};
-
-const primaryButton: React.CSSProperties = {
-  width: "100%",
-  marginTop: "16px",
-  padding: "17px 18px",
-  border: "none",
-  borderRadius: "16px",
-  background: "linear-gradient(135deg, #7c6cff 0%, #6b8cff 100%)",
-  color: "#fff",
-  fontSize: "16px",
-  fontWeight: 600,
-  cursor: "pointer",
-  boxShadow: "0 14px 34px rgba(108, 99, 255, 0.22)",
-};
-
-const errorText: React.CSSProperties = {
-  marginTop: "12px",
-  marginBottom: 0,
-  fontSize: "14px",
-  color: "#b85b68",
-};
