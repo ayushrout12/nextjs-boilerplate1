@@ -1,8 +1,12 @@
-import type { Metadata } from 'next'
+import "./globals.css"
+import Navbar from "../components/Navbar"
 
-export const metadata: Metadata = {
-  title: 'TryLotus.dev',
-  description: 'AI-Powered Website Builder',
+export const metadata = {
+  title: "Lotus — The World's Best AI-Powered Web Developer",
+  description: "Build full apps instantly with Lotus AI",
+  icons: {
+    icon: "/lotus.png",
+  },
 }
 
 export default function RootLayout({
@@ -12,7 +16,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Navbar />
+        {children}
+      </body>
     </html>
   )
 }
