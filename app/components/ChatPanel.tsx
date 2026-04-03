@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-export default function ChatPanel({ onGenerate }) {
+export default function ChatPanel({ onGenerate }: { onGenerate: (input: string) => void }) {
   const [input, setInput] = useState("")
 
   return (
