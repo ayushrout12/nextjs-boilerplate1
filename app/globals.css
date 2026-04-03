@@ -1,67 +1,55 @@
-"use client";
-import AIChat from "./components/AIChat";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-export default function Home() {
-  return (
-    <div className="relative min-h-screen bg-mesh">
-      {/* Decorative Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] -z-10" />
-      
-      <div className="container mx-auto px-6 pt-24 pb-20">
-        <div className="flex flex-col items-center text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-8 animate-fade-in">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            next-gen ai builder
-          </div>
-          
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 tracking-tighter">
-            build with <span className="text-primary italic">lotus</span>
-          </h1>
-          
-          <p className="max-w-2xl text-lg text-muted-foreground leading-relaxed lowercase">
-            transform thoughts into professional web experiences. 
-            no templates, no limits. just pure ai-driven creativity.
-          </p>
-        </div>
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --primary: 322 81% 55%;
+  --primary-foreground: 0 0% 98%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --border: 240 5.9% 90%;
+  --radius: 1rem;
+}
 
-        {/* The "Professional" Chat Interface */}
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-panel rounded-3xl shadow-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-white/5">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🌸</span>
-                <span className="text-sm font-medium lowercase opacity-70">lotus-v1.0.core</span>
-              </div>
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-border" />
-                <div className="w-3 h-3 rounded-full bg-border" />
-              </div>
-            </div>
-            <div className="p-2 md:p-8">
-              <AIChat />
-            </div>
-          </div>
-        </div>
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --primary: 322 81% 60%;
+  --primary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --border: 240 3.7% 15.9%;
+}
 
-        {/* Minimal Footer Info */}
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto border-t border-border/50 pt-12">
-          <div>
-            <h4 className="font-semibold mb-2">ultra fast</h4>
-            <p className="text-sm text-muted-foreground lowercase">optimized next.js output with zero bloat.</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">pure design</h4>
-            <p className="text-sm text-muted-foreground lowercase">focused on typography and spacing elegance.</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">ai native</h4>
-            <p className="text-sm text-muted-foreground lowercase">built from the ground up for generative workflows.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Professional lowercase styling */
+h1, h2, h3, p, button, a {
+  text-transform: lowercase;
+}
+
+/* Glass panel utility - safe syntax */
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-panel {
+  background-color: rgba(15, 15, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Background Mesh - simplified to ensure build passes */
+.bg-mesh {
+  background-color: hsl(var(--background));
+  background-image: radial-gradient(circle at 0% 0%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
 }
