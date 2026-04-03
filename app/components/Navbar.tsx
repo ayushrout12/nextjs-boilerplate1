@@ -1,21 +1,18 @@
-import "./globals.css";
-import Navbar from "./components/Navbar";
+"use client";
 
-export const metadata = {
-  title: "Lotus — The World's Best AI-Powered Web Developer",
-};
+import Link from "next/link";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Navbar() {
   return (
-    <html lang="en">
-      <body>
-        <Navbar />
-        {children}
-      </body>
-    </html>
+    <nav className="navbar">
+      <div className="nav-left">
+        🌸 lotus
+      </div>
+      <div className="nav-right">
+        <Link href="/">build</Link>
+        <Link href="/articles">articles</Link>
+        <Link href="/contact">contact</Link>
+      </div>
+    </nav>
   );
 }
