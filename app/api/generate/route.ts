@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       {
         role: "system",
         content:
-          "You are an expert web developer that generates Next.js website code.",
+          "You are an expert web developer that generates clean Next.js website code.",
       },
       {
         role: "user",
