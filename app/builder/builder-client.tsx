@@ -34,3 +34,13 @@ export default function BuilderClient() {
     </div>
   )
 }
+async function generateSite(prompt: string) {
+  const res = await fetch("/api/generate", {
+    method: "POST",
+    body: JSON.stringify({ prompt }),
+  })
+
+  const data = await res.json()
+
+  console.log(data.result)
+}
