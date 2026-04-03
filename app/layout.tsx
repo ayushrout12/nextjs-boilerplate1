@@ -1,18 +1,14 @@
-import "./globals.css"
-import Navbar from "./components/Navbar"
+import "./globals.css";
+import Navbar from "./components/Navbar";
 
 export const metadata = {
-  title: "Lotus — The World's Best AI-Powered Web Developer",
-  description: "Build full apps instantly with Lotus AI",
-  icons: {
-    icon: "/lotus.png",
-  },
-}
+  title: "Lotus — The World's Best Designer",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -21,5 +17,5 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  )
+  );
 }
