@@ -1,56 +1,49 @@
-"use client";
-import AIChat from "./components/AIChat";
+"use client"
 
-export default function Home() {
+import AIChat from "./components/AIChat"
+
+export default function Page() {
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20">
-      {/* Hero section */}
-      <section className="text-center max-w-3xl mx-auto mb-16">
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm text-primary mb-6">
-          <span>🌸</span>
-          <span className="lowercase">ai‑powered website builder</span>
-        </div>
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
-          build with <span className="text-primary">lotus</span>
+    <main className="min-h-screen lotus-bg text-white">
+
+      {/* HERO */}
+      <section className="hero">
+        <h1 className="hero-title">
+          Lotus — The World’s Best AI-Powered Web Developer
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          describe your vision, and lotus ai will craft it. no code, just creativity.
+
+        <p className="hero-sub">
+          describe your vision. lotus builds it instantly.
         </p>
       </section>
 
-      {/* AI Chat panel */}
-      <section className="max-w-2xl mx-auto">
-        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-          <div className="border-b border-border px-6 py-3 bg-muted/30">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">🌸</span>
-              <span className="font-medium lowercase">lotus ai assistant</span>
-            </div>
-          </div>
-          <div className="p-6">
-            <AIChat />
-          </div>
-        </div>
+
+      {/* CHAT BUILDER */}
+      <section className="builder">
+        <AIChat />
       </section>
 
-      {/* Features grid */}
-      <section className="grid md:grid-cols-3 gap-6 mt-20 max-w-4xl mx-auto">
-        <div className="rounded-lg border border-border p-5 text-center hover:border-primary/50 transition">
-          <div className="text-3xl mb-2">✨</div>
-          <h3 className="font-medium mb-1 lowercase">ai generation</h3>
-          <p className="text-sm text-muted-foreground lowercase">describe, and lotus builds</p>
+
+      {/* FEATURES */}
+      <section className="features">
+
+        <div className="feature">
+          <h3>AI Generation</h3>
+          <p>Describe your idea and lotus generates the entire website.</p>
         </div>
-        <div className="rounded-lg border border-border p-5 text-center hover:border-primary/50 transition">
-          <div className="text-3xl mb-2">🌸</div>
-          <h3 className="font-medium mb-1 lowercase">lotus elegance</h3>
-          <p className="text-sm text-muted-foreground lowercase">beautiful, calm design</p>
+
+        <div className="feature">
+          <h3>Instant Deploy</h3>
+          <p>Your project is generated and ready to deploy immediately.</p>
         </div>
-        <div className="rounded-lg border border-border p-5 text-center hover:border-primary/50 transition">
-          <div className="text-3xl mb-2">🌙</div>
-          <h3 className="font-medium mb-1 lowercase">light / dark</h3>
-          <p className="text-sm text-muted-foreground lowercase">your eyes, your choice</p>
+
+        <div className="feature">
+          <h3>Lotus Intelligence</h3>
+          <p>Powered by advanced AI models trained to build production-grade apps.</p>
         </div>
+
       </section>
-    </div>
-  );
+
+    </main>
+  )
 }
