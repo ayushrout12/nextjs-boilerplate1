@@ -3,8 +3,8 @@ import { Providers } from "./providers";
 import Navbar from "./components/Navbar";
 
 export const metadata = {
-  title: "trylotus.dev – ai website builder",
-  description: "build with lotus ai",
+  title: "trylotus.dev – build with lotus ai",
+  description: "ai-powered website builder with lotus elegance",
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Navbar />
-          {children}
+          <main className="min-h-screen">{children}</main>
         </Providers>
       </body>
     </html>
