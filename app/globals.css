@@ -1,74 +1,66 @@
-body{
-background:#0f0f10;
-color:white;
-font-family:Inter, sans-serif;
-margin:0;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Force lowercase everywhere except inputs/code */
+body, h1, h2, h3, p, button, a, span, div, nav, header, footer, li, label {
+  text-transform: lowercase;
+}
+input, textarea, code, pre, select {
+  text-transform: none;
 }
 
-.navbar{
-display:flex;
-justify-content:space-between;
-padding:20px 40px;
-border-bottom:1px solid #222;
+/* Smooth theme transition */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.nav-left{
-font-size:20px;
-font-weight:600;
+/* Lotus-inspired color palette */
+@layer base {
+  :root {
+    --background: 40 30% 98%;
+    --foreground: 340 10% 15%;
+    --card: 40 20% 100%;
+    --card-foreground: 340 10% 15%;
+    --primary: 320 70% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 120 30% 90%;
+    --secondary-foreground: 120 40% 20%;
+    --muted: 40 20% 92%;
+    --muted-foreground: 340 10% 40%;
+    --border: 340 20% 85%;
+    --ring: 320 70% 55%;
+  }
+  .dark {
+    --background: 340 20% 8%;
+    --foreground: 40 10% 90%;
+    --card: 340 15% 12%;
+    --card-foreground: 40 10% 90%;
+    --primary: 320 70% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 120 30% 20%;
+    --secondary-foreground: 120 30% 80%;
+    --muted: 340 15% 18%;
+    --muted-foreground: 40 10% 70%;
+    --border: 340 15% 25%;
+    --ring: 320 70% 60%;
+  }
 }
 
-.nav-right a{
-margin-left:25px;
-color:white;
-text-decoration:none;
-opacity:0.8;
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-.hero{
-text-align:center;
-margin-top:120px;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
-
-.hero h1{
-font-size:70px;
-margin-bottom:10px;
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
 }
-
-.hero p{
-font-size:22px;
-opacity:0.8;
-}
-
-.builder{
-margin-top:40px;
-}
-
-.builder input{
-width:420px;
-padding:16px;
-border-radius:10px;
-border:none;
-margin-right:10px;
-}
-
-.builder button{
-padding:16px 26px;
-background:white;
-color:black;
-border:none;
-border-radius:10px;
-font-weight:600;
-cursor:pointer;
-}
-
-.gate{
-display:flex;
-flex-direction:column;
-align-items:center;
-margin-top:200px;
-}
-
-.gate input{
-padding:12px;
-margin:10px;
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
 }
