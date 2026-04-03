@@ -1,4 +1,4 @@
-export default function PreviewPanel({ code }) {
+export default function PreviewPanel({ code }: { code: string }) {
   return (
     <div className="w-1/2 h-screen bg-white">
       <iframe
