@@ -1,29 +1,36 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
+import { useState } from "react"
 
 export default function BuilderClient() {
-  const searchParams = useSearchParams()
-  const prompt = searchParams.get("prompt")
+  const [prompt, setPrompt] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  function generate() {
+    if (!prompt) return
+    setLoading(true)
+
+    setTimeout(() => {
+      alert("AI generation coming soon 🚀")
+      setLoading(false)
+    }, 1000)
+  }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
+    <div className="w-full max-w-3xl mx-auto mt-10">
+      <textarea
+        className="w-full h-48 p-4 bg-black border border-gray-700 rounded-lg text-white"
+        placeholder="Describe the website you want to create..."
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+      />
 
-      <h1 className="text-4xl font-bold mb-6">
-        Lotus Builder
-      </h1>
-
-      {prompt ? (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 max-w-xl w-full">
-          <p className="text-zinc-400 mb-2">Prompt:</p>
-          <p className="text-lg">{prompt}</p>
-        </div>
-      ) : (
-        <p className="text-zinc-400">
-          Describe what you want to build from the homepage.
-        </p>
-      )}
-
+      <button
+        onClick={generate}
+        className="mt-4 px-6 py-2 bg-white text-black rounded-lg"
+      >
+        {loading ? "Generating..." : "Generate"}
+      </button>
     </div>
   )
 }
