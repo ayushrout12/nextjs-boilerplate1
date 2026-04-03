@@ -1,19 +1,21 @@
-"use client"
-
+import "./globals.css";
 import Navbar from "./components/Navbar";
 
-export default function Navbar() {
-  return (
-    <nav className="navbar">
-      <div className="nav-left">
-        🌸 lotus
-      </div>
+export const metadata = {
+  title: "Lotus — The World's Best AI-Powered Web Developer",
+};
 
-      <div className="nav-right">
-        <Link href="/">build</Link>
-        <Link href="/articles">articles</Link>
-        <Link href="/contact">contact</Link>
-      </div>
-    </nav>
-  )
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <Navbar />
+        {children}
+      </body>
+    </html>
+  );
 }
