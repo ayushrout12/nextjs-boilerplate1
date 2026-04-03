@@ -1,66 +1,87 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Force lowercase everywhere except inputs/code */
-body, h1, h2, h3, p, button, a, span, div, nav, header, footer, li, label {
-  text-transform: lowercase;
-}
-input, textarea, code, pre, select {
-  text-transform: none;
-}
-
-/* Smooth theme transition */
-* {
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-/* Lotus-inspired color palette */
-@layer base {
-  :root {
-    --background: 40 30% 98%;
-    --foreground: 340 10% 15%;
-    --card: 40 20% 100%;
-    --card-foreground: 340 10% 15%;
-    --primary: 320 70% 55%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 120 30% 90%;
-    --secondary-foreground: 120 40% 20%;
-    --muted: 40 20% 92%;
-    --muted-foreground: 340 10% 40%;
-    --border: 340 20% 85%;
-    --ring: 320 70% 55%;
-  }
-  .dark {
-    --background: 340 20% 8%;
-    --foreground: 40 10% 90%;
-    --card: 340 15% 12%;
-    --card-foreground: 40 10% 90%;
-    --primary: 320 70% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 120 30% 20%;
-    --secondary-foreground: 120 30% 80%;
-    --muted: 340 15% 18%;
-    --muted-foreground: 40 10% 70%;
-    --border: 340 15% 25%;
-    --ring: 320 70% 60%;
-  }
-}
-
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.lotus-bg {
+  background: radial-gradient(circle at top, #2b0a24, #050005);
 }
-::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
+
+/* HERO */
+
+.hero {
+  text-align: center;
+  padding-top: 120px;
+  padding-bottom: 60px;
 }
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary));
-  border-radius: 4px;
+
+.hero-title {
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.hero-sub {
+  margin-top: 12px;
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+/* BUILDER */
+
+.builder {
+  max-width: 900px;
+  margin: auto;
+  margin-top: 40px;
+}
+
+/* CHAT BOX */
+
+.chat-container {
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.chat-input {
+  width: 100%;
+  padding: 18px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.chat-button {
+  margin-top: 12px;
+  background: #ff4fd8;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* FEATURES */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 30px;
+  max-width: 1100px;
+  margin: auto;
+  padding-top: 120px;
+}
+
+.feature {
+  background: rgba(255,255,255,0.05);
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.feature h3 {
+  margin-bottom: 10px;
 }
