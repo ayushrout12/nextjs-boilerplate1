@@ -1,39 +1,53 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Cormorant_Garamond, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const cormorant = Cormorant_Garamond({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-sans"
+})
+
+const playfair = Playfair_Display({ 
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-serif"
+})
+
+const jetbrains = JetBrains_Mono({ 
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-mono"
+})
 
 export const metadata: Metadata = {
-  title: "Lotus — The World's Best Designer",
-  description: 'Describe your vision, and Lotus AI will craft it. No code, just creativity.',
-  generator: 'v0.app',
+  title: "lotus — the world's best designer",
+  description: 'describe your vision, and lotus will craft it. no code, just creativity.',
+  generator: 'lotus',
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
+        url: '/lotus-light.jpg',
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/icon-dark-32x32.png',
+        url: '/lotus-icon.jpg',
         media: '(prefers-color-scheme: dark)',
       },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
     ],
-    apple: '/apple-icon.png',
+    apple: '/lotus-icon.jpg',
   },
 }
 
 export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
+    { media: '(prefers-color-scheme: light)', color: '#faf8f7' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1516' },
   ],
 }
 
@@ -43,8 +57,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased">
+    <html lang="en" suppressHydrationWarning className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable} bg-background`}>
+      <body className="font-sans antialiased lowercase">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

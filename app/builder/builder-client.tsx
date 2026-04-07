@@ -18,7 +18,8 @@ import {
   Sparkles,
   Copy,
   Check,
-  Download
+  Download,
+  AlertCircle
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -61,6 +62,7 @@ export default function BuilderClient() {
   const [hasInitialized, setHasInitialized] = useState(false)
   const [copied, setCopied] = useState(false)
   const [generationComplete, setGenerationComplete] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const codeEndRef = useRef<HTMLDivElement>(null)
@@ -68,6 +70,14 @@ export default function BuilderClient() {
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
+    onError: (err) => {
+      console.log("[v0] Chat error:", err)
+      if (err.message?.includes("credit card") || err.message?.includes("billing")) {
+        setError("ai gateway requires billing setup. please add a payment method to your vercel account.")
+      } else {
+        setError(err.message || "an unexpected error occurred")
+      }
+    }
   })
 
   const isLoading = status === "streaming" || status === "submitted"
@@ -78,6 +88,7 @@ export default function BuilderClient() {
       setGenerationComplete(false)
       setStreamingCode("")
       setPreviewHtml(null)
+      setError(null)
       sendMessage({ text: initialPrompt })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,6 +129,7 @@ export default function BuilderClient() {
     setGenerationComplete(false)
     setStreamingCode("")
     setViewMode("code")
+    setError(null)
     sendMessage({ text: input.trim() })
     setInput("")
   }
@@ -158,27 +170,39 @@ export default function BuilderClient() {
   return (
     <div className="flex h-[calc(100vh-4rem)] bg-background">
       {/* chat panel */}
-      <div className="w-[400px] flex flex-col border-r border-border/30 bg-muted/20 backdrop-blur-xl">
+      <div className="w-[380px] flex flex-col border-r border-border/30 bg-muted/10 backdrop-blur-2xl">
         {/* chat header */}
         <div className="p-5 border-b border-border/30 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl overflow-hidden lotus-glow-sm">
+          <div className="w-9 h-9 rounded-2xl overflow-hidden lotus-glow-sm animate-petal">
             <Image 
               src="/lotus-icon.jpg" 
               alt="lotus" 
-              width={32} 
-              height={32}
+              width={36} 
+              height={36}
               className="w-full h-full object-cover"
             />
           </div>
-          <h2 className="font-light tracking-wide lowercase">lotus designer</h2>
+          <h2 className="font-serif font-normal tracking-wide">lotus designer</h2>
         </div>
 
         {/* messages */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {messages.length === 0 && !isLoading && (
-            <div className="text-center text-muted-foreground py-12">
-              <p className="text-sm font-light lowercase">describe what you want to build</p>
-              <p className="text-xs mt-3 font-light lowercase opacity-70">lotus will generate a complete website</p>
+          {messages.length === 0 && !isLoading && !error && (
+            <div className="text-center text-muted-foreground py-14">
+              <p className="text-sm font-light tracking-wide">whisper what you wish to create</p>
+              <p className="text-xs mt-3 font-light tracking-wide opacity-60">lotus will bloom a complete website</p>
+            </div>
+          )}
+          
+          {error && (
+            <div className="rounded-2xl p-4 bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-light tracking-wide">{error}</p>
+                  <p className="text-xs mt-2 opacity-70 font-light">please check your vercel account settings</p>
+                </div>
+              </div>
             </div>
           )}
           
@@ -190,8 +214,8 @@ export default function BuilderClient() {
             if (isAssistant) {
               if (text.includes("```html")) {
                 displayText = generationComplete 
-                  ? "website generated! check the preview." 
-                  : "generating website code..."
+                  ? "your website has bloomed. check the preview." 
+                  : "weaving your website..."
               }
             }
             
@@ -199,9 +223,9 @@ export default function BuilderClient() {
               <div
                 key={message.id}
                 className={cn(
-                  "rounded-2xl p-4 text-sm font-light lowercase",
+                  "rounded-2xl p-4 text-sm font-light tracking-wide",
                   isAssistant 
-                    ? "bg-muted/50 text-foreground backdrop-blur-sm border border-border/30" 
+                    ? "bg-card/60 text-foreground backdrop-blur-xl border border-border/30" 
                     : "bg-primary/90 text-primary-foreground ml-8"
                 )}
               >
@@ -218,9 +242,9 @@ export default function BuilderClient() {
           })}
           
           {isLoading && messages.filter(m => m.role === "assistant").length === 0 && (
-            <div className="flex items-center gap-3 text-muted-foreground text-sm font-light lowercase">
+            <div className="flex items-center gap-3 text-muted-foreground text-sm font-light tracking-wide">
               <Loader2 className="w-4 h-4 animate-spin text-primary" />
-              <span>lotus is designing your website...</span>
+              <span>lotus is crafting your vision...</span>
             </div>
           )}
           
@@ -235,7 +259,7 @@ export default function BuilderClient() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="describe your website..."
-              className="min-h-[100px] pr-14 resize-none rounded-2xl border-border/30 bg-card/50 backdrop-blur-sm font-light lowercase placeholder:lowercase"
+              className="min-h-[100px] pr-14 resize-none rounded-2xl border-border/30 bg-card/50 backdrop-blur-xl font-light tracking-wide placeholder:opacity-50"
               disabled={isLoading}
             />
             <Button
@@ -256,15 +280,15 @@ export default function BuilderClient() {
 
       {/* preview panel */}
       <div className="flex-1 flex flex-col">
-        {/* preview toolbar */}
-        <div className="h-14 border-b border-border/30 flex items-center justify-between px-5 bg-background/50 backdrop-blur-xl">
+        {/* toolbar */}
+        <div className="h-14 border-b border-border/30 flex items-center justify-between px-5 bg-background/50 backdrop-blur-2xl">
           <div className="flex items-center gap-2">
             <Button
               variant={viewMode === "preview" ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setViewMode("preview")}
               disabled={!generationComplete}
-              className="rounded-xl font-light lowercase"
+              className="rounded-xl font-light tracking-wide"
             >
               <Eye className="w-4 h-4 mr-2" />
               preview
@@ -273,7 +297,7 @@ export default function BuilderClient() {
               variant={viewMode === "code" ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setViewMode("code")}
-              className="rounded-xl font-light lowercase"
+              className="rounded-xl font-light tracking-wide"
             >
               <Code className="w-4 h-4 mr-2" />
               code
@@ -317,16 +341,16 @@ export default function BuilderClient() {
           </div>
         </div>
 
-        {/* preview content */}
+        {/* content */}
         <div className="flex-1 lotus-gradient flex items-center justify-center p-6 overflow-auto">
           {viewMode === "code" ? (
-            <div className="w-full h-full overflow-auto rounded-2xl bg-zinc-950/95 border border-border/30 backdrop-blur-xl lotus-glow-sm">
+            <div className="w-full h-full overflow-auto rounded-2xl bg-zinc-950/95 border border-border/30 backdrop-blur-2xl lotus-glow-sm">
               {streamingCode || previewHtml ? (
                 <div className="relative">
                   {isLoading && (
                     <div className="sticky top-0 z-10 bg-zinc-950/90 border-b border-zinc-800/50 px-5 py-3 flex items-center gap-3 backdrop-blur-xl">
                       <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                      <span className="text-sm text-zinc-400 font-light lowercase">generating code...</span>
+                      <span className="text-sm text-zinc-400 font-light tracking-wide">weaving code...</span>
                     </div>
                   )}
                   <pre className="text-xs text-zinc-300 p-5 overflow-auto font-mono whitespace-pre-wrap break-all leading-relaxed">
@@ -336,7 +360,7 @@ export default function BuilderClient() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center p-10">
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden mb-6 opacity-40 animate-float">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden mb-6 opacity-30 animate-float">
                     <Image 
                       src="/lotus-icon.jpg" 
                       alt="lotus" 
@@ -345,8 +369,8 @@ export default function BuilderClient() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <p className="text-zinc-500 font-light lowercase">waiting for your prompt...</p>
-                  <p className="text-zinc-600 text-sm mt-3 font-light lowercase">describe the website you want to create</p>
+                  <p className="text-zinc-500 font-light tracking-wide">awaiting your vision...</p>
+                  <p className="text-zinc-600 text-sm mt-3 font-light tracking-wide">describe the website you dream of</p>
                 </div>
               )}
             </div>
@@ -368,36 +392,36 @@ export default function BuilderClient() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center">
-                <div className="relative mb-8">
-                  <div className="w-28 h-28 rounded-3xl overflow-hidden lotus-glow animate-float">
+                <div className="relative mb-10">
+                  <div className="w-32 h-32 rounded-3xl overflow-hidden lotus-glow animate-float">
                     <Image 
                       src="/lotus-icon.jpg" 
                       alt="lotus" 
-                      width={112} 
-                      height={112}
+                      width={128} 
+                      height={128}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   {isLoading && (
-                    <div className="absolute -inset-3 rounded-[2rem] border-2 border-primary/40 animate-pulse" />
+                    <div className="absolute -inset-4 rounded-[2rem] border-2 border-primary/30 animate-pulse" />
                   )}
                 </div>
                 
                 {isLoading ? (
                   <>
-                    <div className="flex items-center gap-3 text-foreground mb-3">
+                    <div className="flex items-center gap-3 text-foreground mb-4">
                       <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                      <span className="font-light lowercase">lotus is designing...</span>
+                      <span className="font-serif font-normal tracking-wide">lotus is crafting...</span>
                     </div>
-                    <p className="text-sm text-muted-foreground max-w-md font-light lowercase leading-relaxed">
-                      watch the code being generated in real-time. preview will appear when complete.
+                    <p className="text-sm text-muted-foreground max-w-md font-light tracking-wide leading-relaxed">
+                      watch the code bloom in real-time. your preview will appear when complete.
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className="font-light text-foreground mb-3 lowercase">ready to create</p>
-                    <p className="text-sm text-muted-foreground max-w-md font-light lowercase leading-relaxed">
-                      describe the website you want in the chat panel, and lotus will bring it to life.
+                    <p className="font-serif font-normal text-foreground mb-4 tracking-wide">ready to create</p>
+                    <p className="text-sm text-muted-foreground max-w-md font-light tracking-wide leading-relaxed">
+                      whisper your vision in the chat panel, and lotus will bring it to life.
                     </p>
                   </>
                 )}

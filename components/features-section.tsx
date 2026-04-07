@@ -4,51 +4,51 @@ import { Zap, Code2, Eye, Layers } from "lucide-react"
 const features = [
   {
     icon: Zap,
-    title: "Instant Generation",
-    description: "Describe your vision in plain English and watch as Lotus AI transforms your words into a fully functional website in seconds.",
+    title: "instant creation",
+    description: "describe your vision in natural words and watch as lotus transforms them into a beautiful website in moments.",
   },
   {
     icon: Code2,
-    title: "Clean, Production-Ready Code",
-    description: "Every website is built with modern best practices — semantic HTML, responsive CSS, and optimized performance out of the box.",
+    title: "elegant, clean code",
+    description: "every website blooms with modern best practices — semantic html, responsive design, and graceful performance.",
   },
   {
     icon: Eye,
-    title: "Live Preview",
-    description: "See your website come to life in real-time. Make changes through conversation and instantly preview the results.",
+    title: "live preview",
+    description: "see your website unfold in real-time. make changes through gentle conversation and witness the transformation.",
   },
   {
     icon: Layers,
-    title: "Iterate & Refine",
-    description: "Not quite right? Simply describe what you want to change. Lotus AI remembers context and refines your design iteratively.",
+    title: "refine & evolve",
+    description: "not quite perfect? simply describe your wishes. lotus remembers and refines your creation with care.",
   },
 ]
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 md:py-32 bg-muted/30">
+    <section id="features" className="py-28 md:py-36 lotus-gradient">
       <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-            Consider yourself limitless
+        <div className="text-center mb-20">
+          <h2 className="text-3xl font-serif font-normal tracking-wide sm:text-4xl md:text-5xl mb-6">
+            boundless possibilities
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Lotus AI combines the power of advanced language models with modern web development 
-            to bring your ideas to life faster than ever before.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed tracking-wide">
+            lotus combines the wisdom of advanced ai with the art of web design
+            to bring your dreams to life, gently and beautifully.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, i) => (
-            <Card key={i} className="bg-card/50 backdrop-blur border-border/50 hover:border-border transition-colors">
+            <Card key={i} className="bg-card/50 backdrop-blur-xl border-border/30 hover:border-primary/30 transition-all duration-500 rounded-2xl group">
               <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/15 transition-colors duration-300">
                   <feature.icon className="h-6 w-6 text-primary" />
                 </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
+                <CardTitle className="text-lg font-serif font-normal tracking-wide">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base leading-relaxed">
+                <CardDescription className="text-base leading-relaxed font-light tracking-wide">
                   {feature.description}
                 </CardDescription>
               </CardContent>
