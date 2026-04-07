@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowRight, Sparkles } from "lucide-react"
@@ -90,6 +91,21 @@ export function HeroSection() {
                 {example}
               </button>
             ))}
+          </div>
+
+          {/* Lotus Hero Image */}
+          <div className="mt-16 relative mx-auto max-w-3xl">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur-2xl opacity-50" />
+            <div className="relative rounded-2xl overflow-hidden border border-border/50 shadow-2xl">
+              <Image
+                src="/lotus-hero.jpg"
+                alt="Lotus AI - Create beautiful websites with AI"
+                width={1200}
+                height={675}
+                className="w-full h-auto"
+                priority
+              />
+            </div>
           </div>
         </div>
       </div>
