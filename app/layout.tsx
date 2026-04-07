@@ -23,20 +23,12 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "lotus — the world's best designer",
+  title: "Lotus — The World's Best Designer",
   description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-  generator: 'lotus',
+  generator: 'Lotus',
   icons: {
-    icon: [
-      {
-        url: '/lotus-light.jpg',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/lotus-icon.jpg',
-        media: '(prefers-color-scheme: dark)',
-      },
-    ],
+    icon: '/lotus-icon.jpg',
+    shortcut: '/lotus-icon.jpg',
     apple: '/lotus-icon.jpg',
   },
 }
