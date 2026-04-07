@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Lotus AI - Build Websites with AI',
+  title: "Lotus — The World's Best Designer",
   description: 'Describe your vision, and Lotus AI will craft it. No code, just creativity.',
   generator: 'v0.app',
   icons: {
