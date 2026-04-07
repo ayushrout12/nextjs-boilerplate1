@@ -70,7 +70,8 @@ export default function BuilderClient() {
       setHasInitialized(true)
       sendMessage({ text: initialPrompt })
     }
-  }, [initialPrompt, hasInitialized, status, sendMessage])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPrompt, hasInitialized, status])
 
   // Extract HTML from the latest assistant message
   useEffect(() => {
