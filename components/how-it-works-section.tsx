@@ -2,52 +2,52 @@ export function HowItWorksSection() {
   const steps = [
     {
       number: "01",
-      title: "Describe Your Vision",
-      description: "Tell Lotus AI what you want to build. Be as detailed or as simple as you like — from a quick landing page to a full multi-page site.",
+      title: "whisper your vision",
+      description: "tell lotus what you dream of building. be poetic or precise — from a gentle landing page to an elaborate digital garden.",
     },
     {
       number: "02", 
-      title: "AI Generates Your Site",
-      description: "Our advanced AI analyzes your request and generates clean, modern code tailored to your specifications in real-time.",
+      title: "watch it bloom",
+      description: "lotus listens to your words and weaves them into elegant, modern code — crafted in real-time before your eyes.",
     },
     {
       number: "03",
-      title: "Preview & Refine",
-      description: "See your website instantly in the live preview. Want changes? Just describe them and watch the AI update your site.",
+      title: "nurture & refine",
+      description: "see your website unfold in the live preview. wish for changes? simply describe them and watch lotus tend to your creation.",
     },
     {
       number: "04",
-      title: "Export & Deploy",
-      description: "When you are happy with the result, export your code or deploy directly. Your website is production-ready from day one.",
+      title: "harvest & share",
+      description: "when your creation feels complete, export your code or deploy instantly. your website blooms, ready for the world.",
     },
   ]
 
   return (
-    <section id="how-it-works" className="py-24 md:py-32">
+    <section id="how-it-works" className="py-28 md:py-36">
       <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-            How it works
+        <div className="text-center mb-20">
+          <h2 className="text-3xl font-serif font-normal tracking-wide sm:text-4xl md:text-5xl mb-6">
+            how it unfolds
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            From idea to website in four simple steps. No coding, no complexity.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed tracking-wide">
+            from seed to blossom in four gentle steps. no complexity, just creation.
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, i) => (
             <div key={i} className="relative group">
-              {/* Connector line for larger screens */}
+              {/* connector line */}
               {i < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-border to-transparent" />
+                <div className="hidden lg:block absolute top-10 left-full w-full h-px bg-gradient-to-r from-border/50 to-transparent" />
               )}
               
-              <div className="space-y-4">
-                <div className="text-5xl font-bold text-muted-foreground/20 group-hover:text-primary/30 transition-colors">
+              <div className="space-y-5">
+                <div className="text-6xl font-serif font-light text-primary/20 group-hover:text-primary/40 transition-colors duration-500">
                   {step.number}
                 </div>
-                <h3 className="text-xl font-semibold">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-xl font-serif font-normal tracking-wide">{step.title}</h3>
+                <p className="text-muted-foreground leading-relaxed font-light tracking-wide">
                   {step.description}
                 </p>
               </div>
