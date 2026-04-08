@@ -34,9 +34,9 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
           {steps.map((step, i) => (
-            <div key={i} className="relative group">
+            <div key={i} className="relative group text-center">
               {/* connector line */}
               {i < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-10 left-full w-full h-px bg-gradient-to-r from-border/50 to-transparent" />

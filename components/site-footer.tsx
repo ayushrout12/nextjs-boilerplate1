@@ -5,7 +5,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border/30 bg-background/50 backdrop-blur-xl">
       <div className="container py-14 md:py-18">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="flex flex-col items-center gap-8 text-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl overflow-hidden lotus-glow-sm">
               <Image 
@@ -19,7 +19,7 @@ export function SiteFooter() {
             <span className="text-xl font-serif font-normal tracking-wide text-gradient-lotus">lotus</span>
           </div>
 
-          <nav className="flex items-center gap-8 text-sm text-muted-foreground">
+          <nav className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm text-muted-foreground">
             <Link href="#features" className="hover:text-foreground transition-colors font-light tracking-wide">
               features
             </Link>
