@@ -19,7 +19,9 @@ import {
   Copy,
   Check,
   Download,
-  AlertCircle
+  AlertCircle,
+  Save,
+  Heart
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -63,6 +65,9 @@ export default function BuilderClient() {
   const [copied, setCopied] = useState(false)
   const [generationComplete, setGenerationComplete] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [currentPrompt, setCurrentPrompt] = useState("")
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const codeEndRef = useRef<HTMLDivElement>(null)
@@ -89,6 +94,7 @@ export default function BuilderClient() {
       setStreamingCode("")
       setPreviewHtml(null)
       setError(null)
+      setCurrentPrompt(initialPrompt)
       sendMessage({ text: initialPrompt })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -130,6 +136,7 @@ export default function BuilderClient() {
     setStreamingCode("")
     setViewMode("code")
     setError(null)
+    setCurrentPrompt(input.trim())
     sendMessage({ text: input.trim() })
     setInput("")
   }
@@ -164,6 +171,41 @@ export default function BuilderClient() {
       a.download = "lotus-website.html"
       a.click()
       URL.revokeObjectURL(url)
+    }
+  }
+
+  const saveWebsite = async () => {
+    if (!previewHtml || saving) return
+    
+    setSaving(true)
+    try {
+      const response = await fetch("/api/websites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: currentPrompt ? currentPrompt.slice(0, 50) : "untitled website",
+          prompt: currentPrompt,
+          html_content: previewHtml,
+        }),
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError("please sign in to save your websites")
+        } else {
+          setError(data.error || "failed to save website")
+        }
+        return
+      }
+      
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (err) {
+      setError("failed to save website")
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -330,6 +372,22 @@ export default function BuilderClient() {
             )}
             {previewHtml && (
               <>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={saveWebsite} 
+                  disabled={saving || saved}
+                  className="rounded-xl font-light tracking-wide"
+                >
+                  {saving ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : saved ? (
+                    <Heart className="w-4 h-4 mr-2 text-primary fill-primary" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                  )}
+                  {saved ? "saved" : "save"}
+                </Button>
                 <Button variant="ghost" size="icon" onClick={copyCode} className="rounded-xl">
                   {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                 </Button>
