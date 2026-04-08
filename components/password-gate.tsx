@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Lock, ArrowRight, AlertCircle } from "lucide-react"
 
 const CORRECT_PASSWORD = "lotuswaitlist"
-const AUTH_KEY = "lotus_site_access"
 
 interface PasswordGateProps {
   children: React.ReactNode
@@ -16,18 +15,8 @@ interface PasswordGateProps {
 export function PasswordGate({ children }: PasswordGateProps) {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    // Check if user has already authenticated
-    const stored = sessionStorage.getItem(AUTH_KEY)
-    if (stored === "true") {
-      setIsAuthenticated(true)
-    } else {
-      setIsAuthenticated(false)
-    }
-  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +26,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
     // Small delay to prevent brute force
     setTimeout(() => {
       if (password === CORRECT_PASSWORD) {
-        sessionStorage.setItem(AUTH_KEY, "true")
         setIsAuthenticated(true)
       } else {
         setError("incorrect password")
@@ -45,23 +33,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
       }
       setIsLoading(false)
     }, 500)
-  }
-
-  // Show nothing while checking auth status
-  if (isAuthenticated === null) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-12 h-12 rounded-2xl overflow-hidden animate-pulse">
-          <Image
-            src="/lotus-icon.jpg"
-            alt="lotus"
-            width={48}
-            height={48}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </div>
-    )
   }
 
   // User is authenticated - show the site
