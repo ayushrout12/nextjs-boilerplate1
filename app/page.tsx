@@ -2,6 +2,8 @@ import { SiteHeader } from "@/components/site-header"
 import { HeroSection } from "@/components/hero-section"
 import { FeaturesSection } from "@/components/features-section"
 import { HowItWorksSection } from "@/components/how-it-works-section"
+import { BlogSection } from "@/components/blog-section"
+import { FounderSection } from "@/components/founder-section"
 import { CTASection } from "@/components/cta-section"
 import { SiteFooter } from "@/components/site-footer"
 
@@ -13,6 +15,8 @@ export default function HomePage() {
         <HeroSection />
         <FeaturesSection />
         <HowItWorksSection />
+        <BlogSection />
+        <FounderSection />
         <CTASection />
       </main>
       <SiteFooter />
