@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
+import { PasswordGate } from '@/components/password-gate'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({ 
@@ -57,7 +58,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <PasswordGate>
+            {children}
+          </PasswordGate>
         </ThemeProvider>
         <Analytics />
       </body>
