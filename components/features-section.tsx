@@ -39,10 +39,14 @@ export function FeaturesSection() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
           {features.map((feature, i) => (
-            <Card key={i} className="bg-card border-border/50 rounded-2xl card-hover text-center">
+            <Card 
+              key={i} 
+              className="bg-card border-border/50 rounded-2xl card-hover text-center group"
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
               <CardHeader className="items-center pb-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
+                  <feature.icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
                 </div>
                 <CardTitle className="text-lg font-semibold">{feature.title}</CardTitle>
               </CardHeader>

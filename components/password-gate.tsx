@@ -81,20 +81,22 @@ export function PasswordGate({ children }: PasswordGateProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background lotus-gradient flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background lotus-gradient flex items-center justify-center p-6 overflow-hidden">
       <div className="w-full max-w-4xl mx-auto">
         {/* Logo centered above */}
-        <div className="flex flex-col items-center justify-center mb-12">
-          <div className="w-24 h-24 rounded-3xl overflow-hidden lotus-glow mb-6 animate-petal">
-            <Image
-              src="/lotus-icon.jpg"
-              alt="lotus"
-              width={96}
-              height={96}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <h1 className="text-4xl font-serif tracking-wide text-gradient-lotus">
+        <div className="flex flex-col items-center justify-center mb-12 animate-fade-in-up">
+          <a href="/" className="block">
+            <div className="w-24 h-24 rounded-3xl overflow-hidden animate-pulse-glow mb-6 animate-petal cursor-pointer hover:scale-105 transition-transform">
+              <Image
+                src="/lotus-icon.jpg"
+                alt="lotus"
+                width={96}
+                height={96}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </a>
+          <h1 className="text-4xl font-serif tracking-wide text-gradient-lotus animate-shimmer">
             lotus
           </h1>
           <p className="text-muted-foreground mt-2 font-light">
@@ -105,7 +107,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
         {/* Split view */}
         <div className="grid md:grid-cols-2 gap-8 md:gap-12">
           {/* Left side - Waitlist */}
-          <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 border border-border/50">
+          <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 border border-border/50 animate-fade-in-up-delay-1 animate-float">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Mail className="w-5 h-5 text-primary" />
@@ -167,7 +169,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
           </div>
 
           {/* Right side - Password */}
-          <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 border border-border/50">
+          <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 border border-border/50 animate-fade-in-up-delay-2 animate-float-delay">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Lock className="w-5 h-5 text-primary" />

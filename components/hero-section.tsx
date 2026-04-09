@@ -31,26 +31,26 @@ export function HeroSection() {
       <div className="container py-24 md:py-32 lg:py-40">
         <div className="mx-auto max-w-3xl text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/80 border border-border/50 mb-8">
-            <Sparkles className="w-4 h-4 text-primary" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/80 border border-border/50 mb-8 animate-fade-in-up">
+            <Sparkles className="w-4 h-4 text-primary animate-pulse" />
             <span className="text-sm font-light tracking-wide">ai-powered web creation</span>
           </div>
 
           {/* Heading */}
-          <h1 className="text-5xl font-serif tracking-wide sm:text-6xl md:text-7xl mb-6 text-balance leading-[1.1]">
+          <h1 className="text-5xl font-serif tracking-wide sm:text-6xl md:text-7xl mb-6 text-balance leading-[1.1] animate-fade-in-up-delay-1">
             describe your vision.
             <br />
-            <span className="text-gradient-lotus">lotus will bloom it.</span>
+            <span className="text-gradient-lotus animate-shimmer">lotus will bloom it.</span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 text-pretty leading-relaxed font-light">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 text-pretty leading-relaxed font-light animate-fade-in-up-delay-2">
             transform your ideas into stunning websites in moments. no code needed — just whisper what you dream.
           </p>
 
           {/* Prompt input card */}
-          <form onSubmit={handleSubmit} className="mx-auto max-w-2xl mb-8">
-            <div className="relative bg-card/80 backdrop-blur-sm rounded-3xl border border-border/50 shadow-lg lotus-glow-sm overflow-hidden">
+          <form onSubmit={handleSubmit} className="mx-auto max-w-2xl mb-8 animate-fade-in-up-delay-3">
+            <div className="relative bg-card/80 backdrop-blur-sm rounded-3xl border border-border/50 shadow-lg lotus-glow-sm overflow-hidden hover:shadow-xl transition-shadow duration-300 animate-float">
               <Textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}

@@ -14,8 +14,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-border/30">
       <div className="container relative flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 z-10">
-          <div className="w-10 h-10 rounded-2xl overflow-hidden lotus-glow-sm animate-petal">
+        <Link href="/" className="flex items-center gap-3 z-10 group">
+          <div className="w-10 h-10 rounded-2xl overflow-hidden animate-pulse-glow animate-petal group-hover:scale-110 transition-transform duration-200">
             <Image 
               src="/lotus-icon.jpg" 
               alt="lotus" 
@@ -24,7 +24,7 @@ export function SiteHeader() {
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-xl font-serif tracking-wide text-gradient-lotus">lotus</span>
+          <span className="text-xl font-serif tracking-wide text-gradient-lotus group-hover:opacity-80 transition-opacity">lotus</span>
         </Link>
 
         {/* Center navigation */}
