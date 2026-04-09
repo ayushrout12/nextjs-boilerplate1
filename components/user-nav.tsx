@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User, LogOut, FolderOpen, Settings } from "lucide-react"
+import { User, LogOut, FolderOpen, Sparkles } from "lucide-react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 export function UserNav() {
@@ -45,73 +45,72 @@ export function UserNav() {
 
   if (loading) {
     return (
-      <div className="w-10 h-10 rounded-xl bg-card/50 animate-pulse" />
+      <div className="w-8 h-8 rounded-full bg-secondary animate-pulse" />
     )
   }
 
   if (!user) {
     return (
       <>
-        <Button variant="ghost" size="sm" asChild className="rounded-xl font-light tracking-wide">
-          <Link href="/auth/login">sign in</Link>
+        <Button variant="ghost" size="sm" asChild className="text-xs">
+          <Link href="/auth/login">Sign In</Link>
         </Button>
-        <Button size="sm" asChild className="rounded-xl bg-primary hover:bg-primary/90 font-light tracking-wide">
-          <Link href="/auth/sign-up">begin creating</Link>
+        <Button size="sm" asChild className="btn-pill text-xs px-4">
+          <Link href="/builder">Get Started</Link>
         </Button>
       </>
     )
   }
 
-  // Get user display name from metadata or email
   const displayName = user.user_metadata?.full_name || 
                       user.user_metadata?.name || 
                       user.email?.split("@")[0] || 
-                      "user"
+                      "User"
   
   const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="rounded-xl h-10 px-3 gap-2 font-light tracking-wide hover:bg-card/50">
+        <Button variant="ghost" className="h-8 px-2 gap-2">
           {avatarUrl ? (
             <Image
               src={avatarUrl}
               alt={displayName}
-              width={28}
-              height={28}
-              className="rounded-lg"
+              width={24}
+              height={24}
+              className="rounded-full"
             />
           ) : (
-            <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
-              <User className="w-4 h-4 text-primary" />
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+              <User className="w-3 h-3 text-primary" />
             </div>
           )}
-          <span className="hidden sm:inline text-sm">{displayName.toLowerCase()}</span>
+          <span className="hidden sm:inline text-xs">{displayName}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 rounded-xl border-border/30 bg-card/95 backdrop-blur-xl">
+      <DropdownMenuContent align="end" className="w-48 rounded-xl">
         <div className="px-3 py-2">
-          <p className="text-sm font-light tracking-wide">{displayName.toLowerCase()}</p>
-          <p className="text-xs text-muted-foreground font-light">{user.email}</p>
+          <p className="text-sm font-medium">{displayName}</p>
+          <p className="text-xs text-muted-foreground">{user.email}</p>
         </div>
-        <DropdownMenuSeparator className="bg-border/30" />
-        <DropdownMenuItem asChild className="cursor-pointer font-light tracking-wide">
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/projects">
             <FolderOpen className="w-4 h-4 mr-2" />
-            my projects
+            My Projects
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer font-light tracking-wide">
+        <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/builder">
-            <Settings className="w-4 h-4 mr-2" />
-            builder
+            <Sparkles className="w-4 h-4 mr-2" />
+            Builder
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator className="bg-border/30" />
-        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer font-light tracking-wide text-destructive focus:text-destructive">
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
           <LogOut className="w-4 h-4 mr-2" />
-          sign out
+          Sign Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -3,39 +3,39 @@ import Image from "next/image"
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border/30 bg-background/50 backdrop-blur-xl">
-      <div className="container py-14 md:py-18">
-        <div className="flex flex-col items-center gap-8 text-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl overflow-hidden lotus-glow-sm">
+    <footer className="border-t border-border bg-secondary/30">
+      <div className="container py-12">
+        <div className="flex flex-col items-center gap-6 text-center">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg overflow-hidden">
               <Image 
                 src="/lotus-icon.jpg" 
-                alt="lotus" 
-                width={40} 
-                height={40}
+                alt="Lotus" 
+                width={32} 
+                height={32}
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="text-xl font-serif font-normal tracking-wide text-gradient-lotus">lotus</span>
+            <span className="text-base font-semibold">Lotus</span>
           </div>
 
-          <nav className="flex flex-wrap items-center justify-center gap-6 md:gap-8 text-sm text-muted-foreground">
-            <Link href="#features" className="hover:text-foreground transition-colors font-light tracking-wide">
-              features
+          <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+            <Link href="#features" className="hover:text-foreground transition-colors">
+              Features
             </Link>
-            <Link href="#how-it-works" className="hover:text-foreground transition-colors font-light tracking-wide">
-              how it works
+            <Link href="#how-it-works" className="hover:text-foreground transition-colors">
+              How it Works
             </Link>
-            <Link href="/builder" className="hover:text-foreground transition-colors font-light tracking-wide">
-              builder
+            <Link href="/builder" className="hover:text-foreground transition-colors">
+              Builder
             </Link>
-            <Link href="/auth/login" className="hover:text-foreground transition-colors font-light tracking-wide">
-              sign in
+            <Link href="/auth/login" className="hover:text-foreground transition-colors">
+              Sign In
             </Link>
           </nav>
 
-          <p className="text-sm text-muted-foreground font-light tracking-wide">
-            &copy; {new Date().getFullYear()} lotus. crafted with care.
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Lotus. All rights reserved.
           </p>
         </div>
       </div>
