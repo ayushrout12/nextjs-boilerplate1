@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
+import { UserNav } from "@/components/user-nav"
 import { Moon, Sun } from "lucide-react"
 
 export function SiteHeader() {
@@ -35,6 +36,9 @@ export function SiteHeader() {
           <Link href="/builder" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-light tracking-wide">
             builder
           </Link>
+          <Link href="/projects" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-light tracking-wide">
+            projects
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3 z-10">
@@ -48,12 +52,7 @@ export function SiteHeader() {
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">toggle theme</span>
           </Button>
-          <Button variant="ghost" size="sm" asChild className="rounded-xl font-light tracking-wide">
-            <Link href="/auth/login">sign in</Link>
-          </Button>
-          <Button size="sm" asChild className="rounded-xl bg-primary hover:bg-primary/90 font-light tracking-wide">
-            <Link href="/auth/sign-up">begin creating</Link>
-          </Button>
+          <UserNav />
         </div>
       </div>
     </header>
