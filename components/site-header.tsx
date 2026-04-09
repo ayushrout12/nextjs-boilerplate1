@@ -15,7 +15,7 @@ export function SiteHeader() {
       <div className="container relative flex h-16 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 z-10 group">
-          <div className="w-10 h-10 rounded-2xl overflow-hidden animate-pulse-glow animate-petal group-hover:scale-110 transition-transform duration-200">
+          <div className="w-10 h-10 rounded-2xl overflow-hidden lotus-glow group-hover:scale-110 transition-transform duration-200">
             <Image 
               src="/lotus-icon.jpg" 
               alt="lotus" 
