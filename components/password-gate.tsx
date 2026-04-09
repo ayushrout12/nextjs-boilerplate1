@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,8 +19,29 @@ export function PasswordGate({ children }: PasswordGateProps) {
   const [waitlistError, setWaitlistError] = useState("")
   const [waitlistSuccess, setWaitlistSuccess] = useState("")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [showTransition, setShowTransition] = useState(false)
+  const [typedText, setTypedText] = useState("")
+  const [showContent, setShowContent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isJoiningWaitlist, setIsJoiningWaitlist] = useState(false)
+
+  const fullText = "lotus"
+
+  // Typewriter effect
+  useEffect(() => {
+    if (showTransition && typedText.length < fullText.length) {
+      const timeout = setTimeout(() => {
+        setTypedText(fullText.slice(0, typedText.length + 1))
+      }, 150) // Speed of typing
+      return () => clearTimeout(timeout)
+    } else if (showTransition && typedText.length === fullText.length) {
+      // After typing completes, wait a moment then show content
+      const timeout = setTimeout(() => {
+        setShowContent(true)
+      }, 800)
+      return () => clearTimeout(timeout)
+    }
+  }, [showTransition, typedText])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,6 +51,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
     setTimeout(() => {
       if (password === CORRECT_PASSWORD) {
         setIsAuthenticated(true)
+        setShowTransition(true)
       } else {
         setError("incorrect password")
         setPassword("")
@@ -76,8 +98,42 @@ export function PasswordGate({ children }: PasswordGateProps) {
     }
   }
 
-  if (isAuthenticated) {
+  // Show content after typewriter animation
+  if (isAuthenticated && showContent) {
     return <>{children}</>
+  }
+
+  // Typewriter transition screen
+  if (isAuthenticated && showTransition) {
+    return (
+      <div className="min-h-screen bg-background lotus-gradient flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          {/* Logo with pulse animation */}
+          <div className="w-32 h-32 rounded-3xl overflow-hidden animate-pulse-glow mb-8 animate-petal">
+            <Image
+              src="/lotus-icon.jpg"
+              alt="lotus"
+              width={128}
+              height={128}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          
+          {/* Typewriter text */}
+          <div className="h-16 flex items-center justify-center">
+            <h1 className="text-5xl md:text-6xl font-serif tracking-wide text-gradient-lotus">
+              {typedText}
+              <span className="animate-pulse text-primary">|</span>
+            </h1>
+          </div>
+          
+          {/* Subtle loading indicator */}
+          <p className="text-muted-foreground/50 font-light text-sm mt-8 animate-pulse">
+            entering the garden...
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
