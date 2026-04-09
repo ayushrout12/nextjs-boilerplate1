@@ -21,9 +21,11 @@ import {
   Download,
   AlertCircle,
   Save,
-  Heart
+  Heart,
+  Globe
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { PublishModal } from "@/components/publish-modal"
 
 function getUIMessageText(msg: { parts?: Array<{ type: string; text?: string }> }): string {
   if (!msg.parts || !Array.isArray(msg.parts)) return ""
@@ -68,6 +70,7 @@ export default function BuilderClient() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [currentPrompt, setCurrentPrompt] = useState("")
+  const [publishModalOpen, setPublishModalOpen] = useState(false)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const codeEndRef = useRef<HTMLDivElement>(null)
@@ -210,6 +213,13 @@ export default function BuilderClient() {
   }
 
   return (
+    <>
+    <PublishModal
+      open={publishModalOpen}
+      onOpenChange={setPublishModalOpen}
+      htmlContent={previewHtml || ""}
+      title={currentPrompt ? currentPrompt.slice(0, 50) : "untitled website"}
+    />
     <div className="flex h-[calc(100vh-4rem)] bg-background">
       {/* chat panel */}
       <div className="w-[380px] flex flex-col border-r border-border/30 bg-muted/10 backdrop-blur-2xl">
@@ -388,6 +398,15 @@ export default function BuilderClient() {
                   )}
                   {saved ? "saved" : "save"}
                 </Button>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  onClick={() => setPublishModalOpen(true)}
+                  className="rounded-xl font-light tracking-wide bg-primary hover:bg-primary/90"
+                >
+                  <Globe className="w-4 h-4 mr-2" />
+                  publish
+                </Button>
                 <Button variant="ghost" size="icon" onClick={copyCode} className="rounded-xl">
                   {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                 </Button>
@@ -489,5 +508,6 @@ export default function BuilderClient() {
         </div>
       </div>
     </div>
+    </>
   )
 }

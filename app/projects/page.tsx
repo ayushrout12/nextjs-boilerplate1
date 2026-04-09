@@ -14,8 +14,10 @@ import {
   ExternalLink, 
   Code,
   Calendar,
-  Sparkles
+  Sparkles,
+  Globe
 } from "lucide-react"
+import { PublishModal } from "@/components/publish-modal"
 import type { User } from "@supabase/supabase-js"
 
 interface SavedWebsite {
@@ -27,12 +29,21 @@ interface SavedWebsite {
   updated_at: string
 }
 
+interface PublishedSite {
+  id: string
+  subdomain: string
+  website_id: string | null
+}
+
 export default function ProjectsPage() {
   const [user, setUser] = useState<User | null>(null)
   const [websites, setWebsites] = useState<SavedWebsite[]>([])
+  const [publishedSites, setPublishedSites] = useState<PublishedSite[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
   const [previewId, setPreviewId] = useState<string | null>(null)
+  const [publishModalOpen, setPublishModalOpen] = useState(false)
+  const [selectedWebsite, setSelectedWebsite] = useState<SavedWebsite | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -54,6 +65,15 @@ export default function ProjectsPage() {
       
       if (!error && data) {
         setWebsites(data)
+      }
+      
+      // Fetch published sites
+      const { data: publishedData } = await supabase
+        .from("published_sites")
+        .select("id, subdomain, website_id")
+      
+      if (publishedData) {
+        setPublishedSites(publishedData)
       }
       
       setLoading(false)
@@ -85,6 +105,16 @@ export default function ProjectsPage() {
     }).toLowerCase()
   }
 
+  const getPublishedUrl = (websiteId: string) => {
+    const published = publishedSites.find(p => p.website_id === websiteId)
+    return published ? `https://${published.subdomain}.trylotus.app` : null
+  }
+
+  const openPublishModal = (website: SavedWebsite) => {
+    setSelectedWebsite(website)
+    setPublishModalOpen(true)
+  }
+
   // Get user display name
   const displayName = user?.user_metadata?.full_name || 
                       user?.user_metadata?.name || 
@@ -111,6 +141,19 @@ export default function ProjectsPage() {
   }
 
   return (
+    <>
+    {selectedWebsite && (
+      <PublishModal
+        open={publishModalOpen}
+        onOpenChange={(open) => {
+          setPublishModalOpen(open)
+          if (!open) setSelectedWebsite(null)
+        }}
+        htmlContent={selectedWebsite.html_content}
+        title={selectedWebsite.title}
+        websiteId={selectedWebsite.id}
+      />
+    )}
     <div className="min-h-screen bg-background lotus-gradient">
       <SiteHeader />
       
@@ -194,6 +237,21 @@ export default function ProjectsPage() {
                       {website.prompt.toLowerCase()}
                     </p>
                     
+                    {/* Published status */}
+                    {getPublishedUrl(website.id) && (
+                      <div className="flex items-center gap-2 mb-3 text-xs">
+                        <Globe className="w-3 h-3 text-green-500" />
+                        <a 
+                          href={getPublishedUrl(website.id)!} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-green-500 hover:underline font-light tracking-wide truncate"
+                        >
+                          {getPublishedUrl(website.id)!.replace("https://", "")}
+                        </a>
+                      </div>
+                    )}
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70 font-light tracking-wide">
                         <Calendar className="w-3 h-3" />
@@ -201,6 +259,15 @@ export default function ProjectsPage() {
                       </div>
                       
                       <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openPublishModal(website)}
+                          className="h-8 rounded-lg text-muted-foreground hover:text-primary font-light tracking-wide text-xs"
+                        >
+                          <Globe className="w-3 h-3 mr-1" />
+                          {getPublishedUrl(website.id) ? "update" : "publish"}
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -243,5 +310,6 @@ export default function ProjectsPage() {
         </div>
       </main>
     </div>
+    </>
   )
 }
