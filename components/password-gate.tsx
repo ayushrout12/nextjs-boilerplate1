@@ -142,7 +142,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
         {/* Logo centered above */}
         <div className="flex flex-col items-center justify-center mb-12">
           <a href="/" className="block">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden lotus-glow mb-6 animate-petal cursor-pointer hover:scale-105 transition-transform">
+            <div className="w-24 h-24 rounded-3xl overflow-hidden lotus-glow mb-6 cursor-pointer hover:scale-105 transition-transform">
               <Image
                 src="/lotus-icon.jpg"
                 alt="lotus"
