@@ -11,8 +11,8 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-2xl">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
+      <div className="container relative flex h-16 items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 z-10">
           <div className="w-10 h-10 rounded-2xl overflow-hidden lotus-glow-sm animate-petal">
             <Image 
               src="/lotus-icon.jpg" 
@@ -25,7 +25,7 @@ export function SiteHeader() {
           <span className="text-xl font-serif font-normal tracking-wide text-gradient-lotus">lotus</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           <Link href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-light tracking-wide">
             features
           </Link>
@@ -37,7 +37,7 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 z-10">
           <Button
             variant="ghost"
             size="icon"
