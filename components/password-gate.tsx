@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Lock, ArrowRight, AlertCircle } from "lucide-react"
+import { ArrowRight, AlertCircle } from "lucide-react"
 
 const CORRECT_PASSWORD = "lotuswaitlist"
 
@@ -42,41 +42,37 @@ export function PasswordGate({ children }: PasswordGateProps) {
 
   // Show password gate
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
       {/* Background decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+      <div className="fixed inset-0 overflow-hidden pointer-events-none lotus-gradient">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,oklch(0.75_0.12_350_/_0.08),transparent)]" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-petal" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-petal" style={{ animationDelay: '1s' }} />
       </div>
 
-      <div className="relative w-full max-w-md">
-        <div className="text-center mb-10">
-          {/* Logo */}
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-3xl overflow-hidden lotus-glow">
-              <Image
-                src="/lotus-icon.jpg"
-                alt="lotus"
-                width={80}
-                height={80}
-                className="w-full h-full object-cover"
-              />
-            </div>
+      <div className="relative w-full max-w-sm mx-auto text-center">
+        {/* Logo */}
+        <div className="flex flex-col items-center justify-center mb-12">
+          <div className="w-24 h-24 rounded-3xl overflow-hidden lotus-glow mb-8">
+            <Image
+              src="/lotus-icon.jpg"
+              alt="lotus"
+              width={96}
+              height={96}
+              className="w-full h-full object-cover"
+            />
           </div>
 
-          <h1 className="text-3xl font-serif font-normal tracking-wide mb-3 text-gradient-lotus">
+          <h1 className="text-4xl font-serif font-normal tracking-wide mb-4 text-gradient-lotus">
             lotus
           </h1>
-          <p className="text-muted-foreground font-light tracking-wide">
+          <p className="text-muted-foreground font-light tracking-wide text-lg">
             enter the garden
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 w-full">
           <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-              <Lock className="w-4 h-4" />
-            </div>
             <Input
               type="password"
               value={password}
@@ -84,8 +80,8 @@ export function PasswordGate({ children }: PasswordGateProps) {
                 setPassword(e.target.value)
                 setError("")
               }}
-              placeholder="enter password"
-              className="pl-11 pr-4 h-14 rounded-2xl bg-card/50 border-border/30 backdrop-blur-xl font-light tracking-wide text-center placeholder:text-muted-foreground/50"
+              placeholder="password"
+              className="h-14 rounded-2xl bg-card/50 border-border/30 backdrop-blur-xl font-light tracking-widest text-center placeholder:text-muted-foreground/50 placeholder:tracking-wide"
               autoFocus
               autoComplete="off"
               disabled={isLoading}
@@ -115,7 +111,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
           </Button>
         </form>
 
-        <p className="text-center text-xs text-muted-foreground/50 mt-10 font-light tracking-wide">
+        <p className="text-center text-xs text-muted-foreground/50 mt-12 font-light tracking-wide">
           this site is currently in private beta
         </p>
       </div>
