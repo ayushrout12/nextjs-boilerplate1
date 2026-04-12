@@ -28,9 +28,27 @@ export const metadata: Metadata = {
   description: 'describe your vision, and lotus will craft it. no code, just creativity.',
   generator: 'Lotus',
   icons: {
-    icon: '/lotus-icon.jpg',
+    icon: [
+      { url: '/lotus-icon.jpg', sizes: 'any' },
+      { url: '/lotus-icon.jpg', type: 'image/jpeg', sizes: '192x192' },
+    ],
     shortcut: '/lotus-icon.jpg',
-    apple: '/lotus-icon.jpg',
+    apple: [
+      { url: '/lotus-icon.jpg', sizes: '180x180', type: 'image/jpeg' },
+    ],
+  },
+  openGraph: {
+    title: "Lotus — The World's Best Designer",
+    description: 'describe your vision, and lotus will craft it. no code, just creativity.',
+    images: [{ url: '/lotus-icon.jpg', width: 512, height: 512, alt: 'Lotus' }],
+    siteName: 'Lotus',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: "Lotus — The World's Best Designer",
+    description: 'describe your vision, and lotus will craft it. no code, just creativity.',
+    images: ['/lotus-icon.jpg'],
   },
 }
 
