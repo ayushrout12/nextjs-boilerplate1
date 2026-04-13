@@ -24,9 +24,25 @@ const jetbrains = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://trylotus.dev'),
   title: "Lotus — The World's Best Designer",
   description: 'describe your vision, and lotus will craft it. no code, just creativity.',
   generator: 'Lotus',
+  keywords: ['ai website builder', 'no code', 'website generator', 'ai design', 'lotus', 'web creation'],
+  authors: [{ name: 'Lotus' }],
+  creator: 'Lotus',
+  publisher: 'Lotus',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  alternates: {
+    canonical: 'https://trylotus.dev',
+  },
   icons: {
     icon: [
       { url: '/lotus-icon.jpg', sizes: 'any' },
