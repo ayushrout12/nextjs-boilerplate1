@@ -159,17 +159,17 @@ export function PasswordGate({ children }: PasswordGateProps) {
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left side - Lotus pond background image */}
       <div className="relative lg:w-1/2 min-h-[40vh] lg:min-h-screen overflow-hidden">
-        {/* Background image */}
+        {/* Background image - positioned to show the lotus flower */}
         <Image
           src="/lotus-pond-bg.png"
           alt="Lotus pond"
           fill
-          className="object-cover"
+          className="object-cover object-[70%_center]"
           priority
         />
         
         {/* Subtle overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
         
         {/* Floating petals animation */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -181,16 +181,17 @@ export function PasswordGate({ children }: PasswordGateProps) {
           <FloatingPetal delay={5} duration={10} left="85%" size={32} />
         </div>
         
-        {/* Logo and text overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-12">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg">
+        {/* Logo and text overlay - positioned at top left like jasmine */}
+        <div className="absolute top-0 left-0 right-0 p-8 lg:p-12">
+          {/* Glassy icon container */}
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-14 h-14 rounded-2xl overflow-hidden backdrop-blur-md bg-white/10 border border-white/20 shadow-lg flex items-center justify-center">
               <Image
                 src="/lotus-icon.jpg"
                 alt="lotus"
-                width={48}
-                height={48}
-                className="w-full h-full object-cover"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-xl object-cover"
               />
             </div>
             <span className="text-2xl font-serif text-white drop-shadow-lg">lotus</span>
@@ -199,10 +200,10 @@ export function PasswordGate({ children }: PasswordGateProps) {
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-white mb-4 leading-tight drop-shadow-lg">
             The World&apos;s Best
             <br />
-            <span className="text-pink-200">Designer</span>
+            Designer
           </h1>
           
-          <p className="text-white/90 font-light text-lg max-w-md drop-shadow-md">
+          <p className="text-white/80 font-light text-lg max-w-md drop-shadow-md">
             Describe what you want. Lotus crafts it. Edit, download, deploy.
           </p>
         </div>
