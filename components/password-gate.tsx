@@ -212,83 +212,84 @@ export function PasswordGate({ children }: PasswordGateProps) {
       {/* Right side - Form */}
       <div className="lg:w-1/2 min-h-[60vh] lg:min-h-screen bg-background flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md">
-          {/* Join the waitlist section */}
-          <div className="mb-10">
-            <h2 className="text-2xl md:text-3xl font-serif mb-2">Join the waitlist</h2>
-            <p className="text-muted-foreground font-light">
-              Sign up to get early access when we launch.
-            </p>
+          {/* Join the waitlist heading */}
+          <h2 className="text-2xl md:text-3xl font-serif mb-2">Join the waitlist</h2>
+          <p className="text-muted-foreground font-light mb-8">
+            Sign up to get early access when we launch.
+          </p>
+          
+          {/* Email field */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2">Email</label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setWaitlistError("")
+                setWaitlistSuccess("")
+              }}
+              placeholder="you@example.com"
+              className="h-12 rounded-lg bg-background border-border font-light"
+              disabled={isJoiningWaitlist}
+            />
           </div>
           
-          <form onSubmit={handleWaitlistSubmit} className="space-y-4 mb-8">
-            <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  setWaitlistError("")
-                  setWaitlistSuccess("")
-                }}
-                placeholder="you@example.com"
-                className="h-12 rounded-xl bg-background border-border font-light"
-                disabled={isJoiningWaitlist}
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">Password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  setError("")
-                }}
-                placeholder="********"
-                className="h-12 rounded-xl bg-background border-border font-light"
-                autoComplete="off"
-                disabled={isLoading}
-              />
-            </div>
-            
-            {waitlistError && (
-              <div className="flex items-center gap-2 text-destructive text-sm font-light">
-                <AlertCircle className="w-4 h-4" />
-                {waitlistError}
-              </div>
-            )}
-            
-            {waitlistSuccess && (
-              <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-light">
-                <Check className="w-4 h-4" />
-                {waitlistSuccess}
-              </div>
-            )}
-            
-            {error && (
-              <div className="flex items-center gap-2 text-destructive text-sm font-light">
-                <AlertCircle className="w-4 h-4" />
-                {error}
-              </div>
-            )}
-            
-            <Button
-              type="button"
-              disabled={!email || isJoiningWaitlist}
-              onClick={handleWaitlistSubmit}
-              className="w-full h-12 rounded-xl font-light bg-foreground text-background hover:bg-foreground/90"
-            >
-              {isJoiningWaitlist ? (
-                <span className="animate-pulse">joining...</span>
-              ) : (
-                "Join waitlist"
-              )}
-            </Button>
-          </form>
+          {/* Password field */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2">Password</label>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                setError("")
+              }}
+              placeholder="••••••••"
+              className="h-12 rounded-lg bg-background border-border font-light"
+              autoComplete="off"
+              disabled={isLoading}
+            />
+          </div>
           
-          <div className="relative mb-8">
+          {/* Error/Success messages */}
+          {waitlistError && (
+            <div className="flex items-center gap-2 text-destructive text-sm font-light mb-4">
+              <AlertCircle className="w-4 h-4" />
+              {waitlistError}
+            </div>
+          )}
+          
+          {waitlistSuccess && (
+            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-light mb-4">
+              <Check className="w-4 h-4" />
+              {waitlistSuccess}
+            </div>
+          )}
+          
+          {error && (
+            <div className="flex items-center gap-2 text-destructive text-sm font-light mb-4">
+              <AlertCircle className="w-4 h-4" />
+              {error}
+            </div>
+          )}
+          
+          {/* Join waitlist button */}
+          <Button
+            type="button"
+            disabled={!email || isJoiningWaitlist}
+            onClick={handleWaitlistSubmit}
+            className="w-full h-12 rounded-lg font-light bg-foreground text-background hover:bg-foreground/90 mb-6"
+          >
+            {isJoiningWaitlist ? (
+              <span className="animate-pulse">joining...</span>
+            ) : (
+              "Join waitlist"
+            )}
+          </Button>
+          
+          {/* Divider */}
+          <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border" />
             </div>
@@ -297,9 +298,10 @@ export function PasswordGate({ children }: PasswordGateProps) {
             </div>
           </div>
           
+          {/* Continue with Google */}
           <Button
             variant="outline"
-            className="w-full h-12 rounded-xl font-light"
+            className="w-full h-12 rounded-lg font-light border-border"
             onClick={() => {/* Google auth would go here */}}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -311,21 +313,17 @@ export function PasswordGate({ children }: PasswordGateProps) {
             Continue with Google
           </Button>
           
-          <div className="text-center text-sm text-muted-foreground mt-8 font-light">
+          {/* Already have access link */}
+          <p className="text-center text-sm text-muted-foreground mt-8 font-light">
             Already have access?{" "}
             <button 
               onClick={handleSubmit}
-              disabled={!password || isLoading}
-              className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+              className="text-primary hover:underline disabled:opacity-50"
             >
               {isLoading ? "verifying..." : "Go to website"}
             </button>
-            {!password && (
-              <p className="text-xs text-muted-foreground/70 mt-2">
-                Enter your password above first
-              </p>
-            )}
-          </div>
+          </p>
         </div>
       </div>
       
