@@ -157,68 +157,34 @@ export function PasswordGate({ children }: PasswordGateProps) {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left side - Animated lotus background */}
-      <div className="relative lg:w-1/2 min-h-[40vh] lg:min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 dark:from-pink-950/40 dark:via-rose-900/30 dark:to-pink-900/40 overflow-hidden">
-        {/* Animated gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-pink-200/50 via-transparent to-rose-100/30 dark:from-pink-900/50 dark:to-rose-800/30" />
+      {/* Left side - Lotus pond background image */}
+      <div className="relative lg:w-1/2 min-h-[40vh] lg:min-h-screen overflow-hidden">
+        {/* Background image */}
+        <Image
+          src="/lotus-pond-bg.png"
+          alt="Lotus pond"
+          fill
+          className="object-cover"
+          priority
+        />
+        
+        {/* Subtle overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
         
         {/* Floating petals animation */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <FloatingPetal delay={0} duration={8} left="10%" size={30} />
           <FloatingPetal delay={2} duration={10} left="25%" size={24} />
           <FloatingPetal delay={4} duration={9} left="40%" size={28} />
           <FloatingPetal delay={1} duration={11} left="55%" size={22} />
           <FloatingPetal delay={3} duration={8} left="70%" size={26} />
           <FloatingPetal delay={5} duration={10} left="85%" size={32} />
-          <FloatingPetal delay={6} duration={9} left="15%" size={20} />
-          <FloatingPetal delay={7} duration={12} left="60%" size={34} />
-        </div>
-        
-        {/* Large lotus flower illustration */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative">
-            {/* Lotus flower SVG */}
-            <svg 
-              viewBox="0 0 200 200" 
-              className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 animate-petal drop-shadow-2xl"
-            >
-              {/* Center */}
-              <ellipse cx="100" cy="110" rx="15" ry="10" fill="#f4d03f" />
-              
-              {/* Inner petals */}
-              <ellipse cx="100" cy="85" rx="12" ry="30" fill="#f8b4c4" />
-              <ellipse cx="75" cy="95" rx="12" ry="28" fill="#f8b4c4" transform="rotate(-30 75 95)" />
-              <ellipse cx="125" cy="95" rx="12" ry="28" fill="#f8b4c4" transform="rotate(30 125 95)" />
-              
-              {/* Middle petals */}
-              <ellipse cx="100" cy="70" rx="16" ry="40" fill="#f4a0b0" />
-              <ellipse cx="60" cy="90" rx="14" ry="35" fill="#f4a0b0" transform="rotate(-45 60 90)" />
-              <ellipse cx="140" cy="90" rx="14" ry="35" fill="#f4a0b0" transform="rotate(45 140 90)" />
-              <ellipse cx="50" cy="105" rx="12" ry="30" fill="#f4a0b0" transform="rotate(-60 50 105)" />
-              <ellipse cx="150" cy="105" rx="12" ry="30" fill="#f4a0b0" transform="rotate(60 150 105)" />
-              
-              {/* Outer petals */}
-              <ellipse cx="100" cy="55" rx="18" ry="45" fill="#e890a0" />
-              <ellipse cx="45" cy="85" rx="15" ry="40" fill="#e890a0" transform="rotate(-50 45 85)" />
-              <ellipse cx="155" cy="85" rx="15" ry="40" fill="#e890a0" transform="rotate(50 155 85)" />
-              <ellipse cx="35" cy="110" rx="14" ry="35" fill="#e890a0" transform="rotate(-70 35 110)" />
-              <ellipse cx="165" cy="110" rx="14" ry="35" fill="#e890a0" transform="rotate(70 165 110)" />
-              
-              {/* Outermost petals */}
-              <ellipse cx="100" cy="40" rx="20" ry="50" fill="#d4829a" opacity="0.8" />
-              <ellipse cx="30" cy="90" rx="16" ry="42" fill="#d4829a" opacity="0.8" transform="rotate(-55 30 90)" />
-              <ellipse cx="170" cy="90" rx="16" ry="42" fill="#d4829a" opacity="0.8" transform="rotate(55 170 90)" />
-            </svg>
-            
-            {/* Glow effect behind lotus */}
-            <div className="absolute inset-0 -z-10 blur-3xl bg-pink-300/40 dark:bg-pink-500/20 rounded-full scale-150" />
-          </div>
         </div>
         
         {/* Logo and text overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-12">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden lotus-glow">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg">
               <Image
                 src="/lotus-icon.jpg"
                 alt="lotus"
@@ -227,16 +193,16 @@ export function PasswordGate({ children }: PasswordGateProps) {
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="text-2xl font-serif text-foreground/90">lotus</span>
+            <span className="text-2xl font-serif text-white drop-shadow-lg">lotus</span>
           </div>
           
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground/90 mb-4 leading-tight">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-white mb-4 leading-tight drop-shadow-lg">
             The World&apos;s Best
             <br />
-            <span className="text-gradient-lotus">Designer</span>
+            <span className="text-pink-200">Designer</span>
           </h1>
           
-          <p className="text-foreground/70 font-light text-lg max-w-md">
+          <p className="text-white/90 font-light text-lg max-w-md drop-shadow-md">
             Describe what you want. Lotus crafts it. Edit, download, deploy.
           </p>
         </div>
