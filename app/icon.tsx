@@ -1,4 +1,6 @@
 import { ImageResponse } from 'next/og'
+import { readFile } from 'fs/promises'
+import { join } from 'path'
 
 export const size = {
   width: 32,
@@ -7,6 +9,10 @@ export const size = {
 export const contentType = 'image/png'
 
 export default async function Icon() {
+  const imageData = await readFile(join(process.cwd(), 'public', 'lotus-icon.jpg'))
+  const base64 = imageData.toString('base64')
+  const dataUrl = `data:image/jpeg;base64,${base64}`
+
   return new ImageResponse(
     (
       <div
@@ -16,43 +22,17 @@ export default async function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'transparent',
         }}
       >
-        {/* Dark circular background */}
-        <div
-          style={{
-            width: '30px',
-            height: '30px',
+        <img
+          src={dataUrl}
+          width={32}
+          height={32}
+          style={{ 
             borderRadius: '50%',
-            background: '#1a1a2e',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            objectFit: 'cover',
           }}
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 100 100"
-            fill="none"
-          >
-            {/* Center petal */}
-            <ellipse cx="50" cy="45" rx="12" ry="25" fill="#e8a4b8" />
-            <ellipse cx="50" cy="45" rx="8" ry="20" fill="#f0b8c8" />
-            
-            {/* Left petals */}
-            <ellipse cx="32" cy="50" rx="10" ry="22" fill="#d4829a" transform="rotate(-25 32 50)" />
-            <ellipse cx="20" cy="55" rx="8" ry="18" fill="#c97a92" transform="rotate(-45 20 55)" />
-            
-            {/* Right petals */}
-            <ellipse cx="68" cy="50" rx="10" ry="22" fill="#d4829a" transform="rotate(25 68 50)" />
-            <ellipse cx="80" cy="55" rx="8" ry="18" fill="#c97a92" transform="rotate(45 80 55)" />
-            
-            {/* Inner details */}
-            <ellipse cx="50" cy="55" rx="6" ry="10" fill="#f5c4d4" />
-          </svg>
-        </div>
+        />
       </div>
     ),
     {
