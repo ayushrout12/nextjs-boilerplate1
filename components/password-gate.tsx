@@ -4,12 +4,31 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowRight, AlertCircle, Check, Mail, Lock } from "lucide-react"
+import { ArrowRight, AlertCircle, Check } from "lucide-react"
 
 const CORRECT_PASSWORD = "lotuswaitlist"
 
 interface PasswordGateProps {
   children: React.ReactNode
+}
+
+// Floating lotus petal component
+function FloatingPetal({ delay, duration, left, size }: { delay: number; duration: number; left: string; size: number }) {
+  return (
+    <div
+      className="absolute opacity-60 pointer-events-none"
+      style={{
+        left,
+        top: '-50px',
+        animation: `floatDown ${duration}s linear ${delay}s infinite`,
+      }}
+    >
+      <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+        <ellipse cx="20" cy="20" rx="8" ry="18" fill="rgba(232, 164, 184, 0.6)" transform="rotate(-15 20 20)" />
+        <ellipse cx="20" cy="20" rx="6" ry="14" fill="rgba(212, 130, 154, 0.4)" transform="rotate(-15 20 20)" />
+      </svg>
+    </div>
+  )
 }
 
 export function PasswordGate({ children }: PasswordGateProps) {
@@ -32,10 +51,9 @@ export function PasswordGate({ children }: PasswordGateProps) {
     if (showTransition && typedText.length < fullText.length) {
       const timeout = setTimeout(() => {
         setTypedText(fullText.slice(0, typedText.length + 1))
-      }, 150) // Speed of typing
+      }, 150)
       return () => clearTimeout(timeout)
     } else if (showTransition && typedText.length === fullText.length) {
-      // After typing completes, wait a moment then show content
       const timeout = setTimeout(() => {
         setShowContent(true)
       }, 800)
@@ -91,7 +109,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
       
       setWaitlistSuccess("you're on the list!")
       setEmail("")
-    } catch (err) {
+    } catch {
       setWaitlistError("something went wrong")
     } finally {
       setIsJoiningWaitlist(false)
@@ -108,7 +126,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
     return (
       <div className="min-h-screen bg-background lotus-gradient flex items-center justify-center">
         <div className="flex flex-col items-center">
-          {/* Logo with pulse animation */}
           <div className="w-32 h-32 rounded-3xl overflow-hidden animate-pulse-glow mb-8 animate-petal">
             <Image
               src="/lotus-icon.jpg"
@@ -119,7 +136,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
             />
           </div>
           
-          {/* Typewriter text */}
           <div className="h-16 flex items-center justify-center">
             <h1 className="text-5xl md:text-6xl font-serif tracking-wide text-gradient-lotus">
               {typedText}
@@ -127,7 +143,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
             </h1>
           </div>
           
-          {/* Subtle loading indicator */}
           <p className="text-muted-foreground/50 font-light text-sm mt-8 animate-pulse">
             entering the garden...
           </p>
@@ -137,48 +152,106 @@ export function PasswordGate({ children }: PasswordGateProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background lotus-gradient flex items-center justify-center p-6 overflow-hidden">
-      <div className="w-full max-w-4xl mx-auto">
-        {/* Logo centered above */}
-        <div className="flex flex-col items-center justify-center mb-12">
-          <a href="/" className="block">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden lotus-glow mb-6 animate-petal cursor-pointer hover:scale-105 transition-transform">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left side - Animated lotus background */}
+      <div className="relative lg:w-1/2 min-h-[40vh] lg:min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-200 dark:from-pink-950/40 dark:via-rose-900/30 dark:to-pink-900/40 overflow-hidden">
+        {/* Animated gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-pink-200/50 via-transparent to-rose-100/30 dark:from-pink-900/50 dark:to-rose-800/30" />
+        
+        {/* Floating petals animation */}
+        <div className="absolute inset-0 overflow-hidden">
+          <FloatingPetal delay={0} duration={8} left="10%" size={30} />
+          <FloatingPetal delay={2} duration={10} left="25%" size={24} />
+          <FloatingPetal delay={4} duration={9} left="40%" size={28} />
+          <FloatingPetal delay={1} duration={11} left="55%" size={22} />
+          <FloatingPetal delay={3} duration={8} left="70%" size={26} />
+          <FloatingPetal delay={5} duration={10} left="85%" size={32} />
+          <FloatingPetal delay={6} duration={9} left="15%" size={20} />
+          <FloatingPetal delay={7} duration={12} left="60%" size={34} />
+        </div>
+        
+        {/* Large lotus flower illustration */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative">
+            {/* Lotus flower SVG */}
+            <svg 
+              viewBox="0 0 200 200" 
+              className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 animate-petal drop-shadow-2xl"
+            >
+              {/* Center */}
+              <ellipse cx="100" cy="110" rx="15" ry="10" fill="#f4d03f" />
+              
+              {/* Inner petals */}
+              <ellipse cx="100" cy="85" rx="12" ry="30" fill="#f8b4c4" />
+              <ellipse cx="75" cy="95" rx="12" ry="28" fill="#f8b4c4" transform="rotate(-30 75 95)" />
+              <ellipse cx="125" cy="95" rx="12" ry="28" fill="#f8b4c4" transform="rotate(30 125 95)" />
+              
+              {/* Middle petals */}
+              <ellipse cx="100" cy="70" rx="16" ry="40" fill="#f4a0b0" />
+              <ellipse cx="60" cy="90" rx="14" ry="35" fill="#f4a0b0" transform="rotate(-45 60 90)" />
+              <ellipse cx="140" cy="90" rx="14" ry="35" fill="#f4a0b0" transform="rotate(45 140 90)" />
+              <ellipse cx="50" cy="105" rx="12" ry="30" fill="#f4a0b0" transform="rotate(-60 50 105)" />
+              <ellipse cx="150" cy="105" rx="12" ry="30" fill="#f4a0b0" transform="rotate(60 150 105)" />
+              
+              {/* Outer petals */}
+              <ellipse cx="100" cy="55" rx="18" ry="45" fill="#e890a0" />
+              <ellipse cx="45" cy="85" rx="15" ry="40" fill="#e890a0" transform="rotate(-50 45 85)" />
+              <ellipse cx="155" cy="85" rx="15" ry="40" fill="#e890a0" transform="rotate(50 155 85)" />
+              <ellipse cx="35" cy="110" rx="14" ry="35" fill="#e890a0" transform="rotate(-70 35 110)" />
+              <ellipse cx="165" cy="110" rx="14" ry="35" fill="#e890a0" transform="rotate(70 165 110)" />
+              
+              {/* Outermost petals */}
+              <ellipse cx="100" cy="40" rx="20" ry="50" fill="#d4829a" opacity="0.8" />
+              <ellipse cx="30" cy="90" rx="16" ry="42" fill="#d4829a" opacity="0.8" transform="rotate(-55 30 90)" />
+              <ellipse cx="170" cy="90" rx="16" ry="42" fill="#d4829a" opacity="0.8" transform="rotate(55 170 90)" />
+            </svg>
+            
+            {/* Glow effect behind lotus */}
+            <div className="absolute inset-0 -z-10 blur-3xl bg-pink-300/40 dark:bg-pink-500/20 rounded-full scale-150" />
+          </div>
+        </div>
+        
+        {/* Logo and text overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-12">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden lotus-glow">
               <Image
                 src="/lotus-icon.jpg"
                 alt="lotus"
-                width={96}
-                height={96}
+                width={48}
+                height={48}
                 className="w-full h-full object-cover"
               />
             </div>
-          </a>
-          <h1 className="text-4xl font-serif tracking-wide text-gradient-lotus">
-            lotus
+            <span className="text-2xl font-serif text-foreground/90">lotus</span>
+          </div>
+          
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground/90 mb-4 leading-tight">
+            The World&apos;s Best
+            <br />
+            <span className="text-gradient-lotus">Designer</span>
           </h1>
-          <p className="text-muted-foreground mt-2 font-light">
-            ai-powered web creation
+          
+          <p className="text-foreground/70 font-light text-lg max-w-md">
+            Describe what you want. Lotus crafts it. Edit, download, deploy.
           </p>
         </div>
-
-        {/* Split view */}
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-          {/* Left side - Waitlist */}
-          <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 border border-border/50">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Mail className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-serif">join the waitlist</h2>
-                <p className="text-sm text-muted-foreground font-light">get early access</p>
-              </div>
-            </div>
-            
-            <p className="text-muted-foreground font-light mb-6 leading-relaxed">
-              be the first to know when lotus blooms. enter your email to join our exclusive waitlist and get notified when we launch.
+      </div>
+      
+      {/* Right side - Form */}
+      <div className="lg:w-1/2 min-h-[60vh] lg:min-h-screen bg-background flex items-center justify-center p-8 lg:p-12">
+        <div className="w-full max-w-md">
+          {/* Join the waitlist section */}
+          <div className="mb-10">
+            <h2 className="text-2xl md:text-3xl font-serif mb-2">Join the waitlist</h2>
+            <p className="text-muted-foreground font-light">
+              Sign up to get early access when we launch.
             </p>
-            
-            <form onSubmit={handleWaitlistSubmit} className="space-y-4">
+          </div>
+          
+          <form onSubmit={handleWaitlistSubmit} className="space-y-4 mb-8">
+            <div>
+              <label className="block text-sm font-medium mb-2">Email</label>
               <Input
                 type="email"
                 value={email}
@@ -187,60 +260,14 @@ export function PasswordGate({ children }: PasswordGateProps) {
                   setWaitlistError("")
                   setWaitlistSuccess("")
                 }}
-                placeholder="your@email.com"
-                className="h-12 rounded-xl bg-background/50 border-border/50 font-light"
+                placeholder="you@example.com"
+                className="h-12 rounded-xl bg-background border-border font-light"
                 disabled={isJoiningWaitlist}
               />
-              
-              {waitlistError && (
-                <div className="flex items-center gap-2 text-destructive text-sm font-light">
-                  <AlertCircle className="w-4 h-4" />
-                  {waitlistError}
-                </div>
-              )}
-              
-              {waitlistSuccess && (
-                <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-light">
-                  <Check className="w-4 h-4" />
-                  {waitlistSuccess}
-                </div>
-              )}
-              
-              <Button
-                type="submit"
-                variant="outline"
-                disabled={!email || isJoiningWaitlist}
-                className="w-full h-12 rounded-xl font-light border-primary/30 hover:bg-primary/5 hover:border-primary/50"
-              >
-                {isJoiningWaitlist ? (
-                  <span className="animate-pulse">joining...</span>
-                ) : (
-                  <>
-                    join waitlist
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </>
-                )}
-              </Button>
-            </form>
-          </div>
-
-          {/* Right side - Password */}
-          <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 border border-border/50">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-serif">enter the garden</h2>
-                <p className="text-sm text-muted-foreground font-light">private beta access</p>
-              </div>
             </div>
             
-            <p className="text-muted-foreground font-light mb-6 leading-relaxed">
-              already have access? enter your password below to unlock the full lotus experience and start creating.
-            </p>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Password</label>
               <Input
                 type="password"
                 value={password}
@@ -248,41 +275,112 @@ export function PasswordGate({ children }: PasswordGateProps) {
                   setPassword(e.target.value)
                   setError("")
                 }}
-                placeholder="password"
-                className="h-12 rounded-xl bg-background/50 border-border/50 font-light tracking-widest text-center placeholder:tracking-normal"
+                placeholder="********"
+                className="h-12 rounded-xl bg-background border-border font-light"
                 autoComplete="off"
                 disabled={isLoading}
               />
-
-              {error && (
-                <div className="flex items-center justify-center gap-2 text-destructive text-sm font-light">
-                  <AlertCircle className="w-4 h-4" />
-                  {error}
-                </div>
+            </div>
+            
+            {waitlistError && (
+              <div className="flex items-center gap-2 text-destructive text-sm font-light">
+                <AlertCircle className="w-4 h-4" />
+                {waitlistError}
+              </div>
+            )}
+            
+            {waitlistSuccess && (
+              <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-light">
+                <Check className="w-4 h-4" />
+                {waitlistSuccess}
+              </div>
+            )}
+            
+            {error && (
+              <div className="flex items-center gap-2 text-destructive text-sm font-light">
+                <AlertCircle className="w-4 h-4" />
+                {error}
+              </div>
+            )}
+            
+            <Button
+              type="submit"
+              disabled={(!email && !password) || isJoiningWaitlist || isLoading}
+              onClick={(e) => {
+                if (password && !email) {
+                  e.preventDefault()
+                  handleSubmit(e)
+                }
+              }}
+              className="w-full h-12 rounded-xl font-light bg-foreground text-background hover:bg-foreground/90"
+            >
+              {isJoiningWaitlist ? (
+                <span className="animate-pulse">joining...</span>
+              ) : isLoading ? (
+                <span className="animate-pulse">verifying...</span>
+              ) : (
+                "Join waitlist"
               )}
-
-              <Button
-                type="submit"
-                disabled={!password || isLoading}
-                className="w-full h-12 rounded-xl font-light lotus-glow-sm"
-              >
-                {isLoading ? (
-                  <span className="animate-pulse">verifying...</span>
-                ) : (
-                  <>
-                    unlock
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </>
-                )}
-              </Button>
-            </form>
+            </Button>
+          </form>
+          
+          <div className="relative mb-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-background text-muted-foreground font-light">or</span>
+            </div>
           </div>
+          
+          <Button
+            variant="outline"
+            className="w-full h-12 rounded-xl font-light"
+            onClick={() => {/* Google auth would go here */}}
+          >
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continue with Google
+          </Button>
+          
+          <p className="text-center text-sm text-muted-foreground mt-8 font-light">
+            Already have access?{" "}
+            <button 
+              onClick={(e) => {
+                e.preventDefault()
+                if (password) handleSubmit(e as any)
+              }}
+              className="text-primary hover:underline"
+            >
+              Go to website
+            </button>
+          </p>
         </div>
-
-        <p className="text-center text-xs text-muted-foreground mt-10 font-light">
-          this site is currently in private beta
-        </p>
       </div>
+      
+      {/* CSS for floating animation */}
+      <style jsx global>{`
+        @keyframes floatDown {
+          0% {
+            transform: translateY(-50px) rotate(0deg);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.6;
+          }
+          90% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   )
 }
