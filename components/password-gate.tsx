@@ -61,8 +61,12 @@ export function PasswordGate({ children }: PasswordGateProps) {
     }
   }, [showTransition, typedText])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault()
+    if (!password) {
+      setError("please enter the password")
+      return
+    }
     setIsLoading(true)
     setError("")
 
@@ -304,20 +308,13 @@ export function PasswordGate({ children }: PasswordGateProps) {
             )}
             
             <Button
-              type="submit"
-              disabled={(!email && !password) || isJoiningWaitlist || isLoading}
-              onClick={(e) => {
-                if (password && !email) {
-                  e.preventDefault()
-                  handleSubmit(e)
-                }
-              }}
+              type="button"
+              disabled={!email || isJoiningWaitlist}
+              onClick={handleWaitlistSubmit}
               className="w-full h-12 rounded-xl font-light bg-foreground text-background hover:bg-foreground/90"
             >
               {isJoiningWaitlist ? (
                 <span className="animate-pulse">joining...</span>
-              ) : isLoading ? (
-                <span className="animate-pulse">verifying...</span>
               ) : (
                 "Join waitlist"
               )}
@@ -347,18 +344,21 @@ export function PasswordGate({ children }: PasswordGateProps) {
             Continue with Google
           </Button>
           
-          <p className="text-center text-sm text-muted-foreground mt-8 font-light">
+          <div className="text-center text-sm text-muted-foreground mt-8 font-light">
             Already have access?{" "}
             <button 
-              onClick={(e) => {
-                e.preventDefault()
-                if (password) handleSubmit(e as any)
-              }}
-              className="text-primary hover:underline"
+              onClick={handleSubmit}
+              disabled={!password || isLoading}
+              className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Go to website
+              {isLoading ? "verifying..." : "Go to website"}
             </button>
-          </p>
+            {!password && (
+              <p className="text-xs text-muted-foreground/70 mt-2">
+                Enter your password above first
+              </p>
+            )}
+          </div>
         </div>
       </div>
       
