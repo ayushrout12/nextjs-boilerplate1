@@ -1,6 +1,4 @@
 import { ImageResponse } from 'next/og'
-import { readFile } from 'fs/promises'
-import { join } from 'path'
 
 export const size = {
   width: 32,
@@ -8,11 +6,7 @@ export const size = {
 }
 export const contentType = 'image/png'
 
-export default async function Icon() {
-  const imageData = await readFile(join(process.cwd(), 'public', 'lotus-icon.jpg'))
-  const base64 = imageData.toString('base64')
-  const dataUrl = `data:image/jpeg;base64,${base64}`
-
+export default function Icon() {
   return new ImageResponse(
     (
       <div
@@ -22,17 +16,10 @@ export default async function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '6px',
-          overflow: 'hidden',
+          fontSize: 26,
         }}
       >
-        <img
-          src={dataUrl}
-          alt="Lotus"
-          width={32}
-          height={32}
-          style={{ objectFit: 'cover' }}
-        />
+        🪷
       </div>
     ),
     {
