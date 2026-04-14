@@ -43,6 +43,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
   const [showContent, setShowContent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isJoiningWaitlist, setIsJoiningWaitlist] = useState(false)
+  const [showPasswordPage, setShowPasswordPage] = useState(false)
 
   const fullText = "lotus"
 
@@ -155,6 +156,88 @@ export function PasswordGate({ children }: PasswordGateProps) {
     )
   }
 
+  // Password entry page (like tryjasmine.dev/website)
+  if (showPasswordPage) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+        <div className="w-full max-w-md text-center">
+          {/* Logo and name */}
+          <div className="flex items-center justify-center gap-3 mb-12">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden">
+              <Image
+                src="/lotus-icon.jpg"
+                alt="lotus"
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="text-2xl font-serif">lotus</span>
+          </div>
+          
+          {/* Enter password heading */}
+          <h1 className="text-2xl md:text-3xl font-serif mb-3">Enter password</h1>
+          <p className="text-muted-foreground font-light mb-8">
+            This site is in private beta. Enter the password to continue.
+          </p>
+          
+          {/* Password input */}
+          <div className="mb-6">
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                setError("")
+              }}
+              placeholder="Password"
+              className="h-12 rounded-lg bg-background border-border font-light text-center"
+              autoComplete="off"
+              disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSubmit()
+              }}
+            />
+          </div>
+          
+          {/* Error message */}
+          {error && (
+            <div className="flex items-center justify-center gap-2 text-destructive text-sm font-light mb-4">
+              <AlertCircle className="w-4 h-4" />
+              {error}
+            </div>
+          )}
+          
+          {/* Continue button */}
+          <Button
+            type="button"
+            disabled={!password || isLoading}
+            onClick={() => handleSubmit()}
+            className="w-full h-12 rounded-lg font-light bg-foreground text-background hover:bg-foreground/90 mb-6"
+          >
+            {isLoading ? (
+              <span className="animate-pulse">verifying...</span>
+            ) : (
+              "Continue"
+            )}
+          </Button>
+          
+          {/* Back to waitlist link */}
+          <button
+            onClick={() => {
+              setShowPasswordPage(false)
+              setPassword("")
+              setError("")
+            }}
+            className="text-primary hover:underline font-light text-sm"
+          >
+            ← Back to waitlist
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left side - Lotus pond background image */}
@@ -235,23 +318,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
             />
           </div>
           
-          {/* Password field */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">Password</label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                setError("")
-              }}
-              placeholder="••••••••"
-              className="h-12 rounded-lg bg-background border-border font-light"
-              autoComplete="off"
-              disabled={isLoading}
-            />
-          </div>
-          
           {/* Error/Success messages */}
           {waitlistError && (
             <div className="flex items-center gap-2 text-destructive text-sm font-light mb-4">
@@ -264,13 +330,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-light mb-4">
               <Check className="w-4 h-4" />
               {waitlistSuccess}
-            </div>
-          )}
-          
-          {error && (
-            <div className="flex items-center gap-2 text-destructive text-sm font-light mb-4">
-              <AlertCircle className="w-4 h-4" />
-              {error}
             </div>
           )}
           
@@ -317,11 +376,10 @@ export function PasswordGate({ children }: PasswordGateProps) {
           <p className="text-center text-sm text-muted-foreground mt-8 font-light">
             Already have access?{" "}
             <button 
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="text-primary hover:underline disabled:opacity-50"
+              onClick={() => setShowPasswordPage(true)}
+              className="text-primary hover:underline"
             >
-              {isLoading ? "verifying..." : "Go to website"}
+              Go to website
             </button>
           </p>
         </div>
