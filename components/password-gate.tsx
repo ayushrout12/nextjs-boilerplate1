@@ -43,6 +43,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
   const [showContent, setShowContent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isJoiningWaitlist, setIsJoiningWaitlist] = useState(false)
+  const [showPasswordPage, setShowPasswordPage] = useState(false)
 
   const fullText = "lotus"
 
@@ -155,6 +156,94 @@ export function PasswordGate({ children }: PasswordGateProps) {
     )
   }
 
+  // Password entry page (like tryjasmine.dev/website)
+  if (showPasswordPage) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-8">
+        <div className="w-full max-w-md text-center">
+          {/* Logo and name */}
+          <div className="flex items-center justify-center gap-3 mb-12">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden">
+              <Image
+                src="/lotus-icon.jpg"
+                alt="lotus"
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="text-2xl font-serif">lotus</span>
+          </div>
+          
+          {/* Enter password heading */}
+          <h1 className="text-2xl md:text-3xl font-serif mb-3">Enter password</h1>
+          <p className="text-muted-foreground font-light mb-8">
+            This site is in private beta. Enter the password to continue.
+          </p>
+          
+          {/* Password input */}
+          <div className="mb-6">
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                setError("")
+              }}
+              placeholder="Password"
+              className="h-12 rounded-lg bg-background border-border font-light text-center"
+              autoComplete="off"
+              disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSubmit()
+              }}
+            />
+          </div>
+          
+          {/* Error message */}
+          {error && (
+            <div className="flex items-center justify-center gap-2 text-destructive text-sm font-light mb-4">
+              <AlertCircle className="w-4 h-4" />
+              {error}
+            </div>
+          )}
+          
+          {/* Continue button */}
+          <Button
+            type="button"
+            disabled={isLoading}
+            onClick={() => {
+              if (!password) {
+                setError("password is required")
+                return
+              }
+              handleSubmit()
+            }}
+            className="w-full h-12 rounded-lg font-light bg-foreground text-background hover:bg-foreground/90 mb-6"
+          >
+            {isLoading ? (
+              <span className="animate-pulse">verifying...</span>
+            ) : (
+              "Continue"
+            )}
+          </Button>
+          
+          {/* Back to waitlist link */}
+          <button
+            onClick={() => {
+              setShowPasswordPage(false)
+              setPassword("")
+              setError("")
+            }}
+            className="text-primary hover:underline font-light text-sm"
+          >
+            ← Back to waitlist
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left side - Lotus pond background image */}
@@ -212,83 +301,66 @@ export function PasswordGate({ children }: PasswordGateProps) {
       {/* Right side - Form */}
       <div className="lg:w-1/2 min-h-[60vh] lg:min-h-screen bg-background flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md">
-          {/* Join the waitlist section */}
-          <div className="mb-10">
-            <h2 className="text-2xl md:text-3xl font-serif mb-2">Join the waitlist</h2>
-            <p className="text-muted-foreground font-light">
-              Sign up to get early access when we launch.
-            </p>
+          {/* Join the waitlist heading */}
+          <h2 className="text-2xl md:text-3xl font-serif mb-2">Join the waitlist</h2>
+          <p className="text-muted-foreground font-light mb-8">
+            Sign up to get early access when we launch.
+          </p>
+          
+          {/* Email field */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2">Email</label>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setWaitlistError("")
+                setWaitlistSuccess("")
+              }}
+              placeholder="you@example.com"
+              className="h-12 rounded-lg bg-background border-border font-light"
+              disabled={isJoiningWaitlist}
+            />
           </div>
           
-          <form onSubmit={handleWaitlistSubmit} className="space-y-4 mb-8">
-            <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  setWaitlistError("")
-                  setWaitlistSuccess("")
-                }}
-                placeholder="you@example.com"
-                className="h-12 rounded-xl bg-background border-border font-light"
-                disabled={isJoiningWaitlist}
-              />
+          {/* Error/Success messages */}
+          {waitlistError && (
+            <div className="flex items-center gap-2 text-destructive text-sm font-light mb-4">
+              <AlertCircle className="w-4 h-4" />
+              {waitlistError}
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium mb-2">Password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  setError("")
-                }}
-                placeholder="********"
-                className="h-12 rounded-xl bg-background border-border font-light"
-                autoComplete="off"
-                disabled={isLoading}
-              />
-            </div>
-            
-            {waitlistError && (
-              <div className="flex items-center gap-2 text-destructive text-sm font-light">
-                <AlertCircle className="w-4 h-4" />
-                {waitlistError}
-              </div>
-            )}
-            
-            {waitlistSuccess && (
-              <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-light">
-                <Check className="w-4 h-4" />
-                {waitlistSuccess}
-              </div>
-            )}
-            
-            {error && (
-              <div className="flex items-center gap-2 text-destructive text-sm font-light">
-                <AlertCircle className="w-4 h-4" />
-                {error}
-              </div>
-            )}
-            
-            <Button
-              type="button"
-              disabled={!email || isJoiningWaitlist}
-              onClick={handleWaitlistSubmit}
-              className="w-full h-12 rounded-xl font-light bg-foreground text-background hover:bg-foreground/90"
-            >
-              {isJoiningWaitlist ? (
-                <span className="animate-pulse">joining...</span>
-              ) : (
-                "Join waitlist"
-              )}
-            </Button>
-          </form>
+          )}
           
-          <div className="relative mb-8">
+          {waitlistSuccess && (
+            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-light mb-4">
+              <Check className="w-4 h-4" />
+              {waitlistSuccess}
+            </div>
+          )}
+          
+          {/* Join waitlist button */}
+          <Button
+            type="button"
+            disabled={isJoiningWaitlist}
+            onClick={(e) => {
+              if (!email) {
+                setWaitlistError("email is required")
+                return
+              }
+              handleWaitlistSubmit(e)
+            }}
+            className="w-full h-12 rounded-lg font-light bg-foreground text-background hover:bg-foreground/90 mb-6"
+          >
+            {isJoiningWaitlist ? (
+              <span className="animate-pulse">joining...</span>
+            ) : (
+              "Join waitlist"
+            )}
+          </Button>
+          
+          {/* Divider */}
+          <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border" />
             </div>
@@ -297,9 +369,10 @@ export function PasswordGate({ children }: PasswordGateProps) {
             </div>
           </div>
           
+          {/* Continue with Google */}
           <Button
             variant="outline"
-            className="w-full h-12 rounded-xl font-light"
+            className="w-full h-12 rounded-lg font-light border-border"
             onClick={() => {/* Google auth would go here */}}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -311,21 +384,16 @@ export function PasswordGate({ children }: PasswordGateProps) {
             Continue with Google
           </Button>
           
-          <div className="text-center text-sm text-muted-foreground mt-8 font-light">
+          {/* Already have access link */}
+          <p className="text-center text-sm text-muted-foreground mt-8 font-light">
             Already have access?{" "}
             <button 
-              onClick={handleSubmit}
-              disabled={!password || isLoading}
-              className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => setShowPasswordPage(true)}
+              className="text-primary hover:underline"
             >
-              {isLoading ? "verifying..." : "Go to website"}
+              Go to website
             </button>
-            {!password && (
-              <p className="text-xs text-muted-foreground/70 mt-2">
-                Enter your password above first
-              </p>
-            )}
-          </div>
+          </p>
         </div>
       </div>
       
