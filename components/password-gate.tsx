@@ -211,8 +211,14 @@ export function PasswordGate({ children }: PasswordGateProps) {
           {/* Continue button */}
           <Button
             type="button"
-            disabled={!password || isLoading}
-            onClick={() => handleSubmit()}
+            disabled={isLoading}
+            onClick={() => {
+              if (!password) {
+                setError("password is required")
+                return
+              }
+              handleSubmit()
+            }}
             className="w-full h-12 rounded-lg font-light bg-foreground text-background hover:bg-foreground/90 mb-6"
           >
             {isLoading ? (
@@ -336,8 +342,14 @@ export function PasswordGate({ children }: PasswordGateProps) {
           {/* Join waitlist button */}
           <Button
             type="button"
-            disabled={!email || isJoiningWaitlist}
-            onClick={handleWaitlistSubmit}
+            disabled={isJoiningWaitlist}
+            onClick={(e) => {
+              if (!email) {
+                setWaitlistError("email is required")
+                return
+              }
+              handleWaitlistSubmit(e)
+            }}
             className="w-full h-12 rounded-lg font-light bg-foreground text-background hover:bg-foreground/90 mb-6"
           >
             {isJoiningWaitlist ? (
