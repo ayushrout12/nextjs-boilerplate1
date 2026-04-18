@@ -96,6 +96,7 @@ export async function POST(req: Request) {
       system: SYSTEM_PROMPT,
       messages: await convertToModelMessages(messages),
       maxOutputTokens: 8000,
+      experimental_telemetry: { isEnabled: false },
     })
 
     return result.toUIMessageStreamResponse()
