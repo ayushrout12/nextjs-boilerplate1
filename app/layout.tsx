@@ -92,9 +92,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PasswordGate>
             {children}
-          </PasswordGate>
         </ThemeProvider>
         <Analytics />
       </body>
