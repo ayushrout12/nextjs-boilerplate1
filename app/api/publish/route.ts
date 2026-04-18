@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextRequest, NextResponse } from "next/server"
 
-// Publish API for lotus.app subdomains
-
 // Reserved subdomains that cannot be used
 const RESERVED_SUBDOMAINS = [
   'www', 'api', 'app', 'admin', 'dashboard', 'builder', 
@@ -98,7 +96,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         site: data,
-        url: `https://${subdomainLower}.lotus.app`,
+        url: `https://${subdomainLower}.trylotus.app`,
         message: "site updated successfully"
       })
     }
@@ -133,7 +131,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       site: data,
-      url: `https://${subdomainLower}.lotus.app`,
+      url: `https://${subdomainLower}.trylotus.app`,
       message: "site published successfully"
     })
 
