@@ -104,3 +104,25 @@ export default function RootLayout({
     </html>
   )
 }
+export const metadata = {
+  title: "lotus",
+  description: "the world's best designer",
+  openGraph: {
+    title: "lotus",
+    description: "the world's best designer",
+    url: "https://trylotus.dev",
+    images: [
+      {
+        url: "https://trylotus.dev/preview.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "lotus",
+    description: "the world's best designer",
+    images: ["https://trylotus.dev/preview.png"],
+  },
+};
