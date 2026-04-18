@@ -202,7 +202,7 @@ export function PublishModal({
                     </div>
                   )}
                 </div>
-                <span className="text-sm text-muted-foreground font-light">.lotus.app</span>
+                <span className="text-sm text-muted-foreground font-light">.trylotus.app</span>
               </div>
 
               {availability && (
@@ -239,7 +239,7 @@ export function PublishModal({
             </Button>
 
             <p className="text-xs text-center text-muted-foreground/70 font-light tracking-wide">
-              your site will be live at {subdomain || "yoursite"}.lotus.app
+              your site will be live at {subdomain || "yoursite"}.trylotus.app
             </p>
           </div>
         )}

@@ -61,7 +61,7 @@ export async function GET(
   <div class="container">
     <h1>oops</h1>
     <p>this site doesn't exist yet. maybe it's waiting to bloom?</p>
-    <a href="https://lotus.app">create your own with lotus</a>
+    <a href="https://trylotus.dev">create your own with lotus</a>
   </div>
 </body>
 </html>`,
