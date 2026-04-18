@@ -105,21 +105,15 @@ export default function BuilderClient() {
 
   useEffect(() => {
     const assistantMessages = messages.filter((m) => m.role === "assistant")
-    console.log("[v0] Assistant messages count:", assistantMessages.length, "Status:", status)
     if (assistantMessages.length > 0) {
       const latestMessage = assistantMessages[assistantMessages.length - 1]
       const text = getUIMessageText(latestMessage)
-      
-      console.log("[v0] Latest message text length:", text.length)
-      console.log("[v0] Text preview:", text.substring(0, 200))
       
       setStreamingCode(text)
       
       if (status === "ready" && text) {
         const html = extractHtmlFromResponse(text)
-        console.log("[v0] Extracted HTML:", html ? `Found (${html.length} chars)` : "Not found")
         if (html) {
-          console.log("[v0] HTML preview:", html.substring(0, 300))
           setPreviewHtml(html)
           setGenerationComplete(true)
           setViewMode("preview")
