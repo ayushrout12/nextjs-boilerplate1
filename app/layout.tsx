@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
-import { PasswordGate } from '@/components/password-gate'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({ 
@@ -41,7 +40,7 @@ export const metadata: Metadata = {
     siteName: "lotus",
     images: [
       {
-        url: "https://trylotus.dev/preview.png",
+        url: "https://i.imgur.com/gernMuE.png",
         width: 1200,
         height: 630,
         alt: "lotus preview",
@@ -54,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "lotus",
     description: "the world's best designer",
-    images: ["https://trylotus.dev/preview.png"],
+    images: ["https://i.imgur.com/gernMuE.png"],
   },
 
   icons: {
@@ -92,7 +91,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-            {children}
+          {children}
         </ThemeProvider>
         <Analytics />
       </body>
