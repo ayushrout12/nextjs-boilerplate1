@@ -28,9 +28,6 @@ export const metadata: Metadata = {
   title: "Lotus — The World's Best Designer",
   description: 'describe your vision, and lotus will craft it. no code, just creativity.',
   generator: 'Lotus',
-  verification: {
-    google: 'Fu8TU5tLcz_FIVidS4ADOG2WffSgr8j9bxL1cjEfzK0',
-  },
   keywords: ['ai website builder', 'no code', 'website generator', 'ai design', 'lotus', 'web creation'],
   authors: [{ name: 'Lotus' }],
   creator: 'Lotus',
