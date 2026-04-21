@@ -94,12 +94,7 @@ export default function BuilderClient() {
   const [currentPrompt, setCurrentPrompt] = useState("")
   const [publishModalOpen, setPublishModalOpen] = useState(false)
   
-  // E2B Sandbox state
-  const [sandboxId, setSandboxId] = useState<string | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [sandboxLoading, setSandboxLoading] = useState(false)
-  const [sandboxError, setSandboxError] = useState<string | null>(null)
-  const sessionId = useRef<string>(`session-${Date.now()}-${Math.random().toString(36).slice(2)}`)
+  
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const codeEndRef = useRef<HTMLDivElement>(null)
@@ -119,63 +114,7 @@ export default function BuilderClient() {
 
   const isLoading = status === "streaming" || status === "submitted"
 
-  // Create E2B sandbox on mount
-  const createE2BSandbox = async () => {
-    if (sandboxId) return // Already have a sandbox
-    
-    setSandboxLoading(true)
-    setSandboxError(null)
-    
-    try {
-      const response = await fetch("/api/sandbox/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: sessionId.current }),
-      })
-      
-      const data = await response.json()
-      
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create sandbox")
-      }
-      
-      setSandboxId(data.sandboxId)
-      setPreviewUrl(data.previewUrl)
-    } catch (err) {
-      console.error("Sandbox creation error:", err)
-      setSandboxError(err instanceof Error ? err.message : "Failed to create sandbox")
-    } finally {
-      setSandboxLoading(false)
-    }
-  }
-
-  // Write code to sandbox
-  const writeToE2BSandbox = async (html: string) => {
-    if (!sandboxId) return
-    
-    try {
-      await fetch("/api/sandbox/write", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: sessionId.current, html }),
-      })
-    } catch (err) {
-      console.error("Failed to write to sandbox:", err)
-    }
-  }
-
-  // Kill sandbox on unmount
-  useEffect(() => {
-    return () => {
-      if (sandboxId) {
-        fetch("/api/sandbox/kill", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: sessionId.current }),
-        }).catch(console.error)
-      }
-    }
-  }, [sandboxId])
+  
 
   useEffect(() => {
     if (initialPrompt && !hasInitialized && status === "ready") {
@@ -215,15 +154,10 @@ export default function BuilderClient() {
         // When generation is complete
         if (status === "ready") {
           setGenerationComplete(true)
-          
-          // Write final HTML to E2B sandbox
-          if (sandboxId) {
-            writeToE2BSandbox(html)
-          }
         }
       }
     }
-  }, [messages, status, sandboxId, previewHtml, viewMode])
+  }, [messages, status, previewHtml, viewMode])
 
   useEffect(() => {
     if (isLoading) {
@@ -243,12 +177,6 @@ export default function BuilderClient() {
     setViewMode("code")
     setError(null)
     setCurrentPrompt(input.trim())
-    
-    // Create sandbox if not already created
-    if (!sandboxId && !sandboxLoading) {
-      await createE2BSandbox()
-    }
-    
     sendMessage({ text: input.trim() })
     setInput("")
   }
@@ -261,13 +189,8 @@ export default function BuilderClient() {
   }
 
   const refreshPreview = () => {
-    if (iframeRef.current) {
-      if (previewUrl) {
-        // Reload E2B sandbox preview
-        iframeRef.current.src = previewUrl
-      } else if (previewHtml) {
-        // Reload static preview
-        iframeRef.current.srcdoc = previewHtml
+    if (iframeRef.current && previewHtml) {
+      iframeRef.current.srcdoc = previewHtml
       }
     }
   }
@@ -450,18 +373,6 @@ export default function BuilderClient() {
         {/* toolbar */}
         <div className="h-14 border-b border-border/30 flex items-center justify-between px-5 bg-background/50 backdrop-blur-2xl">
           <div className="flex items-center gap-2">
-            {sandboxLoading && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground font-light">
-                <Loader2 className="w-3 h-3 animate-spin" />
-                <span>starting sandbox...</span>
-              </div>
-            )}
-            {previewUrl && !sandboxLoading && (
-              <div className="flex items-center gap-2 text-xs text-emerald-500 font-light">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>live</span>
-              </div>
-            )}
             <Button
               variant={viewMode === "preview" ? "secondary" : "ghost"}
               size="sm"
@@ -589,25 +500,13 @@ export default function BuilderClient() {
                   deviceMode === "mobile" ? "w-[375px] h-[667px]" : "w-full h-full"
                 )}
               >
-                {previewUrl ? (
-                  // Use E2B sandbox live preview
-                  <iframe
-                    ref={iframeRef}
-                    src={previewUrl}
-                    className="w-full h-full border-0"
-                    title="website preview"
-                    allow="cross-origin-isolated"
-                  />
-                ) : (
-                  // Fallback to static HTML preview
-                  <iframe
-                    ref={iframeRef}
-                    srcDoc={previewHtml}
-                    className="w-full h-full border-0"
-                    title="website preview"
-                    sandbox="allow-scripts"
-                  />
-                )}
+                <iframe
+                  ref={iframeRef}
+                  srcDoc={previewHtml}
+                  className="w-full h-full border-0"
+                  title="website preview"
+                  sandbox="allow-scripts allow-same-origin"
+                />
                 {/* Show loading overlay while still generating */}
                 {!generationComplete && (
                   <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/70 text-white px-3 py-2 rounded-full text-sm backdrop-blur-sm">
