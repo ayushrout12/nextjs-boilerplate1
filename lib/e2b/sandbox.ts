@@ -1,4 +1,4 @@
-import { Sandbox } from "@e2b/code-interpreter"
+import { Sandbox } from "e2b"
 
 // Store active sandboxes in memory (in production, use Redis/database)
 const activeSandboxes = new Map<string, Sandbox>()
@@ -7,9 +7,10 @@ export async function createSandbox(sessionId: string): Promise<{
   sandboxId: string
   previewUrl: string
 }> {
-  // Create a new sandbox
-  const sandbox = await Sandbox.create({
+  // Create a new sandbox with base template
+  const sandbox = await Sandbox.create("base", {
     timeoutMs: 10 * 60 * 1000, // 10 minutes timeout
+    apiKey: process.env.E2B_API_KEY,
   })
 
   // Store sandbox reference
