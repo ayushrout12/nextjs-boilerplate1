@@ -5,9 +5,10 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
   const url = request.nextUrl.clone()
 
-  // Check if this is a subdomain request on trylotus.app
-  // e.g., xyz.trylotus.app or xyz.trylotus.dev (for testing)
+  // Check if this is a subdomain request on lotus.app
+  // e.g., xyz.lotus.app or xyz.trylotus.app (legacy)
   const isSubdomainRequest = 
+    hostname.endsWith('.lotus.app') || 
     hostname.endsWith('.trylotus.app') || 
     hostname.endsWith('.trylotus.dev') ||
     // Local testing with subdomains
