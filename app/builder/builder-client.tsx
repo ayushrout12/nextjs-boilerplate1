@@ -170,15 +170,22 @@ export default function BuilderClient() {
 
   useEffect(() => {
     const assistantMessages = messages.filter((m) => m.role === "assistant")
+    console.log("[v0] Messages effect - status:", status, "assistant count:", assistantMessages.length)
+    
     if (assistantMessages.length > 0) {
       const latestMessage = assistantMessages[assistantMessages.length - 1]
       const text = getUIMessageText(latestMessage)
       
+      console.log("[v0] Got text length:", text.length)
       setStreamingCode(text)
       
       if (status === "ready" && text) {
+        console.log("[v0] Status is ready, extracting HTML...")
         const html = extractHtmlFromResponse(text)
+        console.log("[v0] Extracted HTML:", html ? `Found ${html.length} chars` : "NOT FOUND")
+        
         if (html) {
+          console.log("[v0] Setting preview and switching to preview mode")
           setPreviewHtml(html)
           setGenerationComplete(true)
           setViewMode("preview")
@@ -187,6 +194,9 @@ export default function BuilderClient() {
           if (sandboxId) {
             writeToE2BSandbox(html)
           }
+        } else {
+          // Debug: show first 500 chars of text to see what we're getting
+          console.log("[v0] Text snippet (first 500 chars):", text.substring(0, 500))
         }
       }
     }
