@@ -36,21 +36,28 @@ function getUIMessageText(msg: { parts?: Array<{ type: string; text?: string }> 
 }
 
 function extractHtmlFromResponse(text: string): string | null {
+  // Try code block first
   const htmlMatch = text.match(/```html\s*([\s\S]*?)```/)
   if (htmlMatch) {
+    console.log("[v0] Found HTML in code block, length:", htmlMatch[1].trim().length)
     return htmlMatch[1].trim()
   }
   
+  // Try raw HTML
   if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
     const startIndex = text.indexOf("<!DOCTYPE html>") !== -1 
       ? text.indexOf("<!DOCTYPE html>") 
       : text.indexOf("<html")
     const endIndex = text.lastIndexOf("</html>")
     if (endIndex !== -1) {
-      return text.slice(startIndex, endIndex + 7)
+      const html = text.slice(startIndex, endIndex + 7)
+      console.log("[v0] Found raw HTML, length:", html.length)
+      return html
     }
+    console.log("[v0] Found HTML start but no </html> end tag")
   }
   
+  console.log("[v0] No HTML found in text of length:", text.length)
   return null
 }
 
@@ -179,18 +186,19 @@ export default function BuilderClient() {
       
       // Try to extract HTML even during streaming for real-time preview
       const html = extractHtmlFromResponse(text)
+      
       if (html) {
         setPreviewHtml(html)
-      }
-      
-      // When generation is complete, switch to preview mode
-      if (status === "ready" && text && html) {
-        setGenerationComplete(true)
-        setViewMode("preview")
         
-        // Write to E2B sandbox for live preview
-        if (sandboxId) {
-          writeToE2BSandbox(html)
+        // When generation is complete, switch to preview mode
+        if (status === "ready") {
+          setGenerationComplete(true)
+          setViewMode("preview")
+          
+          // Write to E2B sandbox for live preview
+          if (sandboxId) {
+            writeToE2BSandbox(html)
+          }
         }
       }
     }
