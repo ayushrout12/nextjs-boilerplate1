@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         site: data,
-        url: `https://${subdomainLower}.trylotus.app`,
+        url: `https://${subdomainLower}.lotus.app`,
         message: "site updated successfully"
       })
     }
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       site: data,
-      url: `https://${subdomainLower}.trylotus.app`,
+      url: `https://${subdomainLower}.lotus.app`,
       message: "site published successfully"
     })
 
