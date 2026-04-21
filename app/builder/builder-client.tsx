@@ -191,7 +191,6 @@ export default function BuilderClient() {
   const refreshPreview = () => {
     if (iframeRef.current && previewHtml) {
       iframeRef.current.srcdoc = previewHtml
-      }
     }
   }
 
