@@ -35,29 +35,44 @@ function getUIMessageText(msg: { parts?: Array<{ type: string; text?: string }> 
     .join("")
 }
 
-function extractHtmlFromResponse(text: string): string | null {
-  // Try code block first
+function extractHtmlFromResponse(text: string, allowPartial: boolean = false): string | null {
+  // Try complete code block first
   const htmlMatch = text.match(/```html\s*([\s\S]*?)```/)
   if (htmlMatch) {
-    console.log("[v0] Found HTML in code block, length:", htmlMatch[1].trim().length)
     return htmlMatch[1].trim()
   }
   
-  // Try raw HTML
+  // Try partial code block (still streaming)
+  if (allowPartial) {
+    const partialMatch = text.match(/```html\s*([\s\S]*)$/)
+    if (partialMatch && partialMatch[1].length > 100) {
+      // Return partial HTML with closing tags to make it renderable
+      let partial = partialMatch[1].trim()
+      if (!partial.includes("</body>")) partial += "</body>"
+      if (!partial.includes("</html>")) partial += "</html>"
+      return partial
+    }
+  }
+  
+  // Try raw HTML (complete)
   if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
     const startIndex = text.indexOf("<!DOCTYPE html>") !== -1 
       ? text.indexOf("<!DOCTYPE html>") 
       : text.indexOf("<html")
     const endIndex = text.lastIndexOf("</html>")
     if (endIndex !== -1) {
-      const html = text.slice(startIndex, endIndex + 7)
-      console.log("[v0] Found raw HTML, length:", html.length)
-      return html
+      return text.slice(startIndex, endIndex + 7)
     }
-    console.log("[v0] Found HTML start but no </html> end tag")
+    
+    // Allow partial raw HTML during streaming
+    if (allowPartial && text.includes("<body")) {
+      let partial = text.slice(startIndex)
+      if (!partial.includes("</body>")) partial += "</body>"
+      if (!partial.includes("</html>")) partial += "</html>"
+      return partial
+    }
   }
   
-  console.log("[v0] No HTML found in text of length:", text.length)
   return null
 }
 
@@ -184,25 +199,31 @@ export default function BuilderClient() {
       
       setStreamingCode(text)
       
-      // Try to extract HTML even during streaming for real-time preview
-      const html = extractHtmlFromResponse(text)
+      const isStreaming = status === "streaming"
+      
+      // Extract HTML - allow partial during streaming for real-time preview
+      const html = extractHtmlFromResponse(text, isStreaming)
       
       if (html) {
         setPreviewHtml(html)
         
-        // When generation is complete, switch to preview mode
+        // Auto-switch to preview tab once we have content
+        if (!previewHtml && viewMode === "code") {
+          setViewMode("preview")
+        }
+        
+        // When generation is complete
         if (status === "ready") {
           setGenerationComplete(true)
-          setViewMode("preview")
           
-          // Write to E2B sandbox for live preview
+          // Write final HTML to E2B sandbox
           if (sandboxId) {
             writeToE2BSandbox(html)
           }
         }
       }
     }
-  }, [messages, status, sandboxId])
+  }, [messages, status, sandboxId, previewHtml, viewMode])
 
   useEffect(() => {
     if (isLoading) {
