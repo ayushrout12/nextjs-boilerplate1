@@ -170,37 +170,31 @@ export default function BuilderClient() {
 
   useEffect(() => {
     const assistantMessages = messages.filter((m) => m.role === "assistant")
-    console.log("[v0] Messages effect - status:", status, "assistant count:", assistantMessages.length)
     
     if (assistantMessages.length > 0) {
       const latestMessage = assistantMessages[assistantMessages.length - 1]
       const text = getUIMessageText(latestMessage)
       
-      console.log("[v0] Got text length:", text.length)
       setStreamingCode(text)
       
-      if (status === "ready" && text) {
-        console.log("[v0] Status is ready, extracting HTML...")
-        const html = extractHtmlFromResponse(text)
-        console.log("[v0] Extracted HTML:", html ? `Found ${html.length} chars` : "NOT FOUND")
+      // Try to extract HTML even during streaming for real-time preview
+      const html = extractHtmlFromResponse(text)
+      if (html) {
+        setPreviewHtml(html)
+      }
+      
+      // When generation is complete, switch to preview mode
+      if (status === "ready" && text && html) {
+        setGenerationComplete(true)
+        setViewMode("preview")
         
-        if (html) {
-          console.log("[v0] Setting preview and switching to preview mode")
-          setPreviewHtml(html)
-          setGenerationComplete(true)
-          setViewMode("preview")
-          
-          // Write to E2B sandbox for live preview
-          if (sandboxId) {
-            writeToE2BSandbox(html)
-          }
-        } else {
-          // Debug: show first 500 chars of text to see what we're getting
-          console.log("[v0] Text snippet (first 500 chars):", text.substring(0, 500))
+        // Write to E2B sandbox for live preview
+        if (sandboxId) {
+          writeToE2BSandbox(html)
         }
       }
     }
-  }, [messages, status])
+  }, [messages, status, sandboxId])
 
   useEffect(() => {
     if (isLoading) {
@@ -443,11 +437,14 @@ export default function BuilderClient() {
               variant={viewMode === "preview" ? "secondary" : "ghost"}
               size="sm"
               onClick={() => setViewMode("preview")}
-              disabled={!generationComplete}
+              disabled={!previewHtml}
               className="rounded-xl font-light tracking-wide"
             >
               <Eye className="w-4 h-4 mr-2" />
               preview
+              {previewHtml && !generationComplete && (
+                <span className="ml-2 w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              )}
             </Button>
             <Button
               variant={viewMode === "code" ? "secondary" : "ghost"}
@@ -556,10 +553,10 @@ export default function BuilderClient() {
               )}
             </div>
           ) : (
-            generationComplete && previewHtml ? (
+            previewHtml ? (
               <div 
                 className={cn(
-                  "bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 lotus-glow",
+                  "bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 lotus-glow relative",
                   deviceMode === "mobile" ? "w-[375px] h-[667px]" : "w-full h-full"
                 )}
               >
@@ -581,6 +578,13 @@ export default function BuilderClient() {
                     title="website preview"
                     sandbox="allow-scripts"
                   />
+                )}
+                {/* Show loading overlay while still generating */}
+                {!generationComplete && (
+                  <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/70 text-white px-3 py-2 rounded-full text-sm backdrop-blur-sm">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="font-light">updating...</span>
+                  </div>
                 )}
               </div>
             ) : (
