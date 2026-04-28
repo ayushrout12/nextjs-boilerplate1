@@ -61,20 +61,21 @@ export const metadata: Metadata = {
 
   // ✅ FINAL FIX (absolute URLs)
   openGraph: {
-    title: "Lotus — The World's Best Designer",
-    description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-    url: 'https://trylotus.dev',
-    siteName: 'Lotus',
-    images: [
-      {
-        url: 'https://trylotus.dev/lotus-preview.png', // ✅ absolute URL fixes X
-        width: 1200,
-        height: 630,
-        alt: 'Lotus Preview',
-      },
-    ],
-    type: 'website',
-  },
+  title: "Lotus — The World's Best Designer",
+  description: 'describe your vision, and lotus will craft it. no code, just creativity.',
+  url: 'https://trylotus.dev',
+  siteName: 'Lotus',
+  images: [
+    {
+      url: 'https://trylotus.dev/lotus-preview.png',
+      width: 1200,
+      height: 630,
+      type: 'image/png', // ← ADD THIS
+      alt: 'Lotus Preview',
+    },
+  ],
+  type: 'website',
+},
 
   twitter: {
     card: 'summary_large_image',
