@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     ],
   },
 
-  // ✅ FIXED OPEN GRAPH
+  // ✅ FINAL FIX (absolute URLs)
   openGraph: {
     title: "Lotus — The World's Best Designer",
     description: 'describe your vision, and lotus will craft it. no code, just creativity.',
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     siteName: 'Lotus',
     images: [
       {
-        url: '/lotus-preview.png', // ← your Canva image
+        url: 'https://trylotus.dev/lotus-preview.png', // ✅ absolute URL fixes X
         width: 1200,
         height: 630,
         alt: 'Lotus Preview',
@@ -76,12 +76,11 @@ export const metadata: Metadata = {
     type: 'website',
   },
 
-  // ✅ FIXED TWITTER (X) CARD
   twitter: {
-    card: 'summary_large_image', // ← makes it BIG
+    card: 'summary_large_image',
     title: "Lotus — The World's Best Designer",
     description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-    images: ['/lotus-preview.png'], // ← same image
+    images: ['https://trylotus.dev/lotus-preview.png'], // ✅ absolute URL
   },
 }
 
