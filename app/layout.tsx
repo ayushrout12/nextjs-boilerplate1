@@ -25,13 +25,16 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://trylotus.dev'),
+
   title: "Lotus — The World's Best Designer",
   description: 'describe your vision, and lotus will craft it. no code, just creativity.',
+
   generator: 'Lotus',
   keywords: ['ai website builder', 'no code', 'website generator', 'ai design', 'lotus', 'web creation'],
   authors: [{ name: 'Lotus' }],
   creator: 'Lotus',
   publisher: 'Lotus',
+
   robots: {
     index: true,
     follow: true,
@@ -40,9 +43,11 @@ export const metadata: Metadata = {
       follow: true,
     },
   },
+
   alternates: {
     canonical: 'https://trylotus.dev',
   },
+
   icons: {
     icon: [
       { url: '/lotus-icon.jpg', sizes: 'any' },
@@ -53,18 +58,30 @@ export const metadata: Metadata = {
       { url: '/lotus-icon.jpg', sizes: '180x180', type: 'image/jpeg' },
     ],
   },
+
+  // ✅ FIXED OPEN GRAPH
   openGraph: {
     title: "Lotus — The World's Best Designer",
     description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-    images: [{ url: '/lotus-icon.jpg', width: 512, height: 512, alt: 'Lotus' }],
+    url: 'https://trylotus.dev',
     siteName: 'Lotus',
+    images: [
+      {
+        url: '/lotus-preview.png', // ← your Canva image
+        width: 1200,
+        height: 630,
+        alt: 'Lotus Preview',
+      },
+    ],
     type: 'website',
   },
+
+  // ✅ FIXED TWITTER (X) CARD
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image', // ← makes it BIG
     title: "Lotus — The World's Best Designer",
     description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-    images: ['/lotus-icon.jpg'],
+    images: ['/lotus-preview.png'], // ← same image
   },
 }
 
@@ -84,7 +101,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable} bg-background`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable} bg-background`}
+    >
       <body className="font-sans antialiased lowercase">
         <ThemeProvider
           attribute="class"
