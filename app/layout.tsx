@@ -86,14 +86,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable} bg-background`}>
       <body className="font-sans antialiased lowercase">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <p className="text-black text-2xl font-medium normal-case">This Site Is Currently Unavailable</p>
+        </div>
         <Analytics />
       </body>
     </html>
