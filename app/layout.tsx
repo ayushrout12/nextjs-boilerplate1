@@ -35,7 +35,7 @@ export const viewport: Viewport = {
 }
 
 // 🔒 TOGGLE THIS
-const SITE_LIVE = false
+const SITE_LIVE = true
 
 export default function RootLayout({
   children,
