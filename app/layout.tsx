@@ -27,68 +27,35 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://trylotus.dev'),
   title: "Lotus — The World's Best Designer",
   description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-  generator: 'Lotus',
-  keywords: ['ai website builder', 'no code', 'website generator', 'ai design', 'lotus', 'web creation'],
-  authors: [{ name: 'Lotus' }],
-  creator: 'Lotus',
-  publisher: 'Lotus',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-  alternates: {
-    canonical: 'https://trylotus.dev',
-  },
-  icons: {
-    icon: [
-      { url: '/lotus-icon.jpg', sizes: 'any' },
-      { url: '/lotus-icon.jpg', type: 'image/jpeg', sizes: '192x192' },
-    ],
-    shortcut: '/lotus-icon.jpg',
-    apple: [
-      { url: '/lotus-icon.jpg', sizes: '180x180', type: 'image/jpeg' },
-    ],
-  },
-  openGraph: {
-    title: "Lotus — The World's Best Designer",
-    description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-    images: [{ url: '/lotus-icon.jpg', width: 512, height: 512, alt: 'Lotus' }],
-    siteName: 'Lotus',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: "Lotus — The World's Best Designer",
-    description: 'describe your vision, and lotus will craft it. no code, just creativity.',
-    images: ['/lotus-icon.jpg'],
-  },
 }
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf8f7' },
-    { media: '(prefers-color-scheme: dark)', color: '#1a1516' },
-  ],
 }
+
+// 🔒 TOGGLE THIS
+const SITE_LIVE = false
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable} bg-background`}>
-      <body className="font-sans antialiased lowercase">
-        <div className="min-h-screen bg-white flex items-center justify-center">
-          <p className="text-black text-2xl font-medium normal-case">This Site Is Currently Unavailable</p>
-        </div>
+    <html lang="en" className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable}`}>
+      <body className="font-sans antialiased">
+        {SITE_LIVE ? (
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            {children}
+          </ThemeProvider>
+        ) : (
+          <div className="min-h-screen flex items-center justify-center bg-white">
+            <p className="text-black text-2xl font-medium">
+              This Site Is Currently Unavailable
+            </p>
+          </div>
+        )}
         <Analytics />
       </body>
     </html>
