@@ -119,63 +119,65 @@ export function PublishModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-card border-border/30 rounded-2xl">
+      <DialogContent className="sm:max-w-md bg-zinc-950 border-zinc-800 rounded-xl">
         <DialogHeader className="text-center">
-          <DialogTitle className="text-xl font-serif font-normal tracking-wide flex items-center justify-center gap-2">
-            <Globe className="w-5 h-5 text-primary" />
-            publish to the web
+          <DialogTitle className="text-lg font-medium text-white flex items-center justify-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500/20 to-orange-500/20 flex items-center justify-center">
+              <Globe className="w-4 h-4 text-rose-400" />
+            </div>
+            Publish to the Web
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground font-light tracking-wide">
-            share your creation with the world
+          <DialogDescription className="text-zinc-500 text-sm">
+            Share your website with the world
           </DialogDescription>
         </DialogHeader>
 
         {publishedUrl ? (
           <div className="space-y-6 py-4">
-            <div className="text-center space-y-2">
-              <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                <Check className="w-8 h-8 text-primary" />
+            <div className="text-center space-y-3">
+              <div className="w-14 h-14 mx-auto rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center">
+                <Check className="w-7 h-7 text-green-400" />
               </div>
-              <p className="text-lg font-serif font-normal tracking-wide">your site is live!</p>
+              <p className="text-lg font-medium text-white">Your site is live!</p>
             </div>
 
-            <div className="flex items-center gap-2 p-3 bg-background/50 rounded-xl border border-border/30">
-              <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <span className="text-sm font-light tracking-wide truncate flex-1">
+            <div className="flex items-center gap-2 p-3 bg-zinc-900 rounded-lg border border-zinc-800">
+              <Globe className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+              <span className="text-sm text-zinc-300 truncate flex-1">
                 {publishedUrl}
               </span>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-lg flex-shrink-0"
+                className="h-8 w-8 rounded-lg flex-shrink-0 text-zinc-500 hover:text-zinc-300"
                 onClick={copyUrl}
               >
-                {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
               </Button>
             </div>
 
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                className="flex-1 rounded-xl font-light tracking-wide"
+                className="flex-1 rounded-lg text-sm border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-white"
                 onClick={handleClose}
               >
-                done
+                Done
               </Button>
               <Button
-                className="flex-1 rounded-xl bg-primary hover:bg-primary/90 font-light tracking-wide"
+                className="flex-1 rounded-lg text-sm bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white"
                 onClick={() => window.open(publishedUrl, "_blank")}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                visit site
+                Visit Site
               </Button>
             </div>
           </div>
         ) : (
           <div className="space-y-6 py-4">
             <div className="space-y-3">
-              <label className="text-sm font-light tracking-wide text-muted-foreground">
-                choose your subdomain
+              <label className="text-sm text-zinc-400">
+                Choose your subdomain
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
@@ -186,35 +188,35 @@ export function PublishModal({
                       setError(null)
                     }}
                     placeholder="mysite"
-                    className="pr-10 rounded-xl bg-background/50 border-border/30 font-light tracking-wide"
+                    className="pr-10 rounded-lg bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-rose-500/50 focus:border-rose-500/50"
                     disabled={publishing}
                   />
                   {checking && (
-                    <Loader2 className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground" />
+                    <Loader2 className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-zinc-500" />
                   )}
                   {!checking && availability && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {availability.available ? (
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="w-4 h-4 text-green-400" />
                       ) : (
-                        <X className="w-4 h-4 text-destructive" />
+                        <X className="w-4 h-4 text-red-400" />
                       )}
                     </div>
                   )}
                 </div>
-                <span className="text-sm text-muted-foreground font-light">.lotus.app</span>
+                <span className="text-sm text-zinc-500">.lotus.app</span>
               </div>
 
               {availability && (
-                <p className={`text-xs font-light tracking-wide ${
-                  availability.available ? "text-green-500" : "text-destructive"
+                <p className={`text-xs ${
+                  availability.available ? "text-green-400" : "text-red-400"
                 }`}>
                   {availability.reason}
                 </p>
               )}
 
               {error && (
-                <p className="text-xs font-light tracking-wide text-destructive">
+                <p className="text-xs text-red-400">
                   {error}
                 </p>
               )}
@@ -223,23 +225,23 @@ export function PublishModal({
             <Button
               onClick={handlePublish}
               disabled={!subdomain || !availability?.available || publishing}
-              className="w-full rounded-xl bg-primary hover:bg-primary/90 font-light tracking-wide h-12"
+              className="w-full rounded-lg h-11 text-sm bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white disabled:opacity-50"
             >
               {publishing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  publishing...
+                  Publishing...
                 </>
               ) : (
                 <>
                   <Globe className="w-4 h-4 mr-2" />
-                  publish site
+                  Publish Site
                 </>
               )}
             </Button>
 
-            <p className="text-xs text-center text-muted-foreground/70 font-light tracking-wide">
-              your site will be live at {subdomain || "yoursite"}.lotus.app
+            <p className="text-xs text-center text-zinc-600">
+              Your site will be live at {subdomain || "yoursite"}.lotus.app
             </p>
           </div>
         )}

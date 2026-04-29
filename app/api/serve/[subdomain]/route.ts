@@ -1,12 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextRequest, NextResponse } from "next/server"
 
-// Use service role for public read access
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ subdomain: string }> }
@@ -16,6 +10,12 @@ export async function GET(
   if (!subdomain) {
     return NextResponse.redirect(new URL("/", request.url))
   }
+
+  // Create Supabase client dynamically (not at module level to avoid build errors)
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   const { data, error } = await supabase
     .from("published_sites")
