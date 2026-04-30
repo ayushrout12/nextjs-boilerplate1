@@ -8,6 +8,33 @@ import { ArrowRight, AlertCircle, Check } from "lucide-react"
 
 const CORRECT_PASSWORD = "lotuswaitlist"
 
+// Allowed email domains
+const ALLOWED_DOMAINS = [
+  "gmail.com",
+  "yahoo.com",
+  "hotmail.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "sbcglobal.net",
+  "outlook.com",
+  "live.com",
+]
+
+function validateEmail(email: string): { valid: boolean; reason?: string } {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return { valid: false, reason: "please enter a valid email address" }
+  }
+  
+  const domain = email.split("@")[1]?.toLowerCase()
+  if (!domain || !ALLOWED_DOMAINS.includes(domain)) {
+    return { valid: false, reason: "please use Gmail, Yahoo, iCloud, Hotmail, or similar" }
+  }
+  
+  return { valid: true }
+}
+
 interface PasswordGateProps {
   children: React.ReactNode
 }
@@ -85,8 +112,10 @@ export function PasswordGate({ children }: PasswordGateProps) {
 
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !email.includes("@")) {
-      setWaitlistError("please enter a valid email")
+    
+    const validation = validateEmail(email)
+    if (!validation.valid) {
+      setWaitlistError(validation.reason || "please enter a valid email")
       return
     }
     
