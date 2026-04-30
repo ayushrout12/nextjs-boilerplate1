@@ -35,11 +35,6 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-// 🔒 TOGGLE THIS TO CONTROL SITE ACCESS
-// false = Shows "Site Unavailable" with simple password bypass
-// true = Shows full waitlist page with email signup, Google auth, etc.
-const SITE_LIVE = false
-
 export default function RootLayout({
   children,
 }: {
@@ -49,13 +44,9 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable}`}>
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          {SITE_LIVE ? (
-            <PasswordGate>
-              {children}
-            </PasswordGate>
-          ) : (
-            children
-          )}
+          <PasswordGate>
+            {children}
+          </PasswordGate>
         </ThemeProvider>
         <Analytics />
       </body>
