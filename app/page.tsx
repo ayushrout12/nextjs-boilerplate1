@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { SiteHeader } from "@/components/site-header"
 import { HeroSection } from "@/components/hero-section"
 import { FeaturesSection } from "@/components/features-section"
@@ -12,34 +12,51 @@ import { SiteFooter } from "@/components/site-footer"
 
 // 🔒 TOGGLE THIS (must match layout.tsx)
 const SITE_LIVE = false
+const ACCESS_PASSWORD = "Ayush@2012USA"
 
 export default function HomePage() {
-  const [hasAccess, setHasAccess] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [hasAccess, setHasAccess] = useState(SITE_LIVE)
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState(false)
 
-  useEffect(() => {
-    // Check if user has access via /enter password
-    const accessGranted = localStorage.getItem("lotus_access_granted") === "true"
-    setHasAccess(accessGranted)
-    setIsLoading(false)
-  }, [])
-
-  // Show loading state briefly while checking access
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="w-8 h-8 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-      </div>
-    )
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (password === ACCESS_PASSWORD) {
+      setHasAccess(true)
+      setError(false)
+    } else {
+      setError(true)
+    }
   }
 
-  // Show unavailable message when site is not live AND user doesn't have access
-  if (!SITE_LIVE && !hasAccess) {
+  // Show unavailable message with password input when site is not live
+  if (!hasAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-6">
         <p className="text-black text-2xl font-medium">
           This Site Is Currently Unavailable
         </p>
+        <form onSubmit={handlePasswordSubmit} className="flex flex-col items-center gap-3">
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              setError(false)
+            }}
+            placeholder="Enter password"
+            className="px-4 py-2 border border-gray-300 rounded-lg text-black text-center focus:outline-none focus:ring-2 focus:ring-black/20"
+          />
+          <button
+            type="submit"
+            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-black/80 transition-colors"
+          >
+            Enter
+          </button>
+          {error && (
+            <p className="text-red-500 text-sm">Incorrect password</p>
+          )}
+        </form>
       </div>
     )
   }
