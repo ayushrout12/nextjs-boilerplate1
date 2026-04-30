@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
+import { SiteGate } from '@/components/site-gate'
 import { PasswordGate } from '@/components/password-gate'
 
 import './globals.css'
@@ -44,9 +45,11 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable}`}>
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <PasswordGate>
-            {children}
-          </PasswordGate>
+          <SiteGate>
+            <PasswordGate>
+              {children}
+            </PasswordGate>
+          </SiteGate>
         </ThemeProvider>
         <Analytics />
       </body>
