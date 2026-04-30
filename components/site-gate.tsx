@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-const ACCESS_PASSWORD = "AyushRout@2012USA"
+const ACCESS_PASSWORD = "Ayush@2012USA"
 
 export function SiteGate({ children }: { children: React.ReactNode }) {
   const [hasAccess, setHasAccess] = useState(false)
