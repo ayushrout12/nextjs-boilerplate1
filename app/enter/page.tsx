@@ -51,6 +51,8 @@ export default function EnterPage() {
       }, 150)
       return () => clearTimeout(timeout)
     } else if (showTransition && typedText.length === fullText.length) {
+      // Set access granted in localStorage before redirecting
+      localStorage.setItem("lotus_access_granted", "true")
       const timeout = setTimeout(() => {
         router.push("/")
       }, 800)

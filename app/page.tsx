@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { SiteHeader } from "@/components/site-header"
 import { HeroSection } from "@/components/hero-section"
 import { FeaturesSection } from "@/components/features-section"
@@ -11,8 +14,27 @@ import { SiteFooter } from "@/components/site-footer"
 const SITE_LIVE = false
 
 export default function HomePage() {
-  // Show unavailable message when site is not live
-  if (!SITE_LIVE) {
+  const [hasAccess, setHasAccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Check if user has access via /enter password
+    const accessGranted = localStorage.getItem("lotus_access_granted") === "true"
+    setHasAccess(accessGranted)
+    setIsLoading(false)
+  }, [])
+
+  // Show loading state briefly while checking access
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-8 h-8 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  // Show unavailable message when site is not live AND user doesn't have access
+  if (!SITE_LIVE && !hasAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <p className="text-black text-2xl font-medium">
