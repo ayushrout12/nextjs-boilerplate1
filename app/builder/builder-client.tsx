@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
+import { useTheme } from "next-themes"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { 
@@ -21,7 +23,10 @@ import {
   AlertCircle,
   Globe,
   MessageSquare,
-  Wand2
+  Wand2,
+  ArrowLeft,
+  Moon,
+  Sun
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PublishModal } from "@/components/publish-modal"
@@ -73,6 +78,7 @@ function extractHtmlFromResponse(text: string, allowPartial: boolean = false): s
 export default function BuilderClient() {
   const searchParams = useSearchParams()
   const initialPrompt = searchParams.get("prompt") || ""
+  const { theme, setTheme } = useTheme()
   
   const [input, setInput] = useState("")
   const [previewHtml, setPreviewHtml] = useState<string | null>(null)
@@ -206,24 +212,41 @@ export default function BuilderClient() {
         title={currentPrompt ? currentPrompt.slice(0, 50) : "Untitled Website"}
       />
       
-      <div className="flex h-screen bg-zinc-950">
+      <div className="flex h-screen bg-background">
         {/* Left Panel - Chat */}
-        <div className="w-[420px] flex flex-col border-r border-zinc-800/50 bg-zinc-950">
+        <div className="w-[420px] flex flex-col border-r border-border bg-background">
           {/* Header */}
-          <div className="h-16 px-6 flex items-center gap-3 border-b border-zinc-800/50">
-            <div className="w-8 h-8 rounded-xl overflow-hidden ring-2 ring-rose-500/20">
-              <Image 
-                src="/lotus-icon.jpg" 
-                alt="Lotus" 
-                width={32} 
-                height={32}
-                className="w-full h-full object-cover"
-              />
+          <div className="h-16 px-4 flex items-center justify-between border-b border-border/50">
+            <div className="flex items-center gap-3">
+              <Link href="/">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+              </Link>
+              <div className="w-8 h-8 rounded-xl overflow-hidden ring-2 ring-rose-500/20">
+                <Image 
+                  src="/lotus-icon.jpg" 
+                  alt="Lotus" 
+                  width={32} 
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <h1 className="text-sm font-medium">Lotus</h1>
+                <p className="text-xs text-muted-foreground">AI Website Builder</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-sm font-medium text-white">Lotus</h1>
-              <p className="text-xs text-zinc-500">AI Website Builder</p>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="h-8 w-8 rounded-lg"
+            >
+              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
           </div>
 
           {/* Messages */}
@@ -233,7 +256,7 @@ export default function BuilderClient() {
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-500/20 to-orange-500/20 flex items-center justify-center mb-6">
                   <Wand2 className="w-8 h-8 text-rose-400" />
                 </div>
-                <h2 className="text-lg font-medium text-white mb-2">Create your website</h2>
+                <h2 className="text-lg font-medium mb-2">Create your website</h2>
                 <p className="text-sm text-zinc-500 leading-relaxed max-w-[280px]">
                   Describe what you want to build and Lotus will generate a complete, production-ready website.
                 </p>
@@ -252,7 +275,7 @@ export default function BuilderClient() {
                         setInput(prompt)
                         inputRef.current?.focus()
                       }}
-                      className="w-full text-left px-4 py-3 rounded-xl bg-zinc-900/50 border border-zinc-800/50 text-sm text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-300 hover:border-zinc-700/50 transition-all"
+                      className="w-full text-left px-4 py-3 rounded-xl bg-muted/50 border border-border text-sm text-muted-foreground hover:bg-muted hover:text-foreground hover:border-border transition-all"
                     >
                       {prompt}
                     </button>
@@ -291,8 +314,8 @@ export default function BuilderClient() {
                       className={cn(
                         "rounded-xl p-4 text-sm",
                         isAssistant 
-                          ? "bg-zinc-900/50 border border-zinc-800/50" 
-                          : "bg-gradient-to-r from-rose-500/90 to-orange-500/90 text-white ml-8"
+? "bg-muted/50 border border-border"
+                        : "bg-gradient-to-r from-rose-500/90 to-orange-500/90 text-white ml-8"
                       )}
                     >
                       {isAssistant ? (
@@ -322,7 +345,7 @@ export default function BuilderClient() {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-zinc-800/50">
+          <div className="p-4 border-t border-border">
             <form onSubmit={handleSubmit}>
               <div className="relative">
                 <textarea
@@ -332,7 +355,7 @@ export default function BuilderClient() {
                   onKeyDown={handleKeyDown}
                   placeholder="Describe your website..."
                   rows={3}
-                  className="w-full px-4 py-3 pr-12 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 resize-none transition-all"
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-muted border border-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 resize-none transition-all"
                   disabled={isLoading}
                 />
                 <Button
@@ -353,9 +376,9 @@ export default function BuilderClient() {
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="flex-1 flex flex-col bg-zinc-900/50">
+        <div className="flex-1 flex flex-col bg-muted/30">
           {/* Toolbar */}
-          <div className="h-14 px-4 flex items-center justify-between border-b border-zinc-800/50 bg-zinc-950/50 backdrop-blur-sm">
+          <div className="h-14 px-4 flex items-center justify-between border-b border-border bg-background/50 backdrop-blur-sm">
             <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
@@ -365,8 +388,8 @@ export default function BuilderClient() {
                 className={cn(
                   "h-8 px-3 rounded-lg text-xs font-medium transition-all",
                   viewMode === "preview" 
-                    ? "bg-zinc-800 text-white" 
-                    : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                    ? "bg-muted text-foreground" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
                 <Eye className="w-3.5 h-3.5 mr-1.5" />
@@ -382,8 +405,8 @@ export default function BuilderClient() {
                 className={cn(
                   "h-8 px-3 rounded-lg text-xs font-medium transition-all",
                   viewMode === "code" 
-                    ? "bg-zinc-800 text-white" 
-                    : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                    ? "bg-muted text-foreground" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
                 <Code className="w-3.5 h-3.5 mr-1.5" />
@@ -400,7 +423,7 @@ export default function BuilderClient() {
                     onClick={() => setDeviceMode("desktop")}
                     className={cn(
                       "h-8 w-8 rounded-lg transition-all",
-                      deviceMode === "desktop" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                      deviceMode === "desktop" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     <Monitor className="w-4 h-4" />
@@ -411,12 +434,12 @@ export default function BuilderClient() {
                     onClick={() => setDeviceMode("mobile")}
                     className={cn(
                       "h-8 w-8 rounded-lg transition-all",
-                      deviceMode === "mobile" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                      deviceMode === "mobile" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     <Smartphone className="w-4 h-4" />
                   </Button>
-                  <div className="w-px h-5 bg-zinc-800 mx-1" />
+                  <div className="w-px h-5 bg-border mx-1" />
                   <Button
                     variant="ghost"
                     size="icon"
@@ -430,7 +453,7 @@ export default function BuilderClient() {
               
               {previewHtml && (
                 <>
-                  <div className="w-px h-5 bg-zinc-800 mx-1" />
+                  <div className="w-px h-5 bg-border mx-1" />
                   <Button
                     variant="ghost"
                     size="icon"
@@ -447,7 +470,7 @@ export default function BuilderClient() {
                   >
                     <Download className="w-4 h-4" />
                   </Button>
-                  <div className="w-px h-5 bg-zinc-800 mx-1" />
+                  <div className="w-px h-5 bg-border mx-1" />
                   <Button 
                     onClick={() => setPublishModalOpen(true)}
                     className="h-8 px-4 rounded-lg text-xs font-medium bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-600 hover:to-orange-600 text-white"
@@ -463,11 +486,11 @@ export default function BuilderClient() {
           {/* Content Area */}
           <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
             {viewMode === "code" ? (
-              <div className="w-full h-full rounded-xl bg-zinc-950 border border-zinc-800/50 overflow-hidden">
+              <div className="w-full h-full rounded-xl bg-background border border-border overflow-hidden">
                 {streamingCode || previewHtml ? (
                   <div className="relative h-full">
                     {isLoading && (
-                      <div className="sticky top-0 z-10 px-4 py-2.5 flex items-center gap-2 bg-zinc-950/95 border-b border-zinc-800/50 backdrop-blur-sm">
+                      <div className="sticky top-0 z-10 px-4 py-2.5 flex items-center gap-2 bg-background/95 border-b border-border backdrop-blur-sm">
                         <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" />
                         <span className="text-xs text-zinc-500">Generating code...</span>
                       </div>
@@ -479,7 +502,7 @@ export default function BuilderClient() {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-center">
-                    <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4">
                       <Code className="w-6 h-6 text-zinc-600" />
                     </div>
                     <p className="text-sm text-zinc-600">No code generated yet</p>
@@ -503,7 +526,7 @@ export default function BuilderClient() {
                     sandbox="allow-scripts allow-same-origin"
                   />
                   {!generationComplete && (
-                    <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-zinc-900/90 text-white px-3 py-2 rounded-lg text-xs backdrop-blur-sm border border-zinc-800">
+                    <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-background/90 px-3 py-2 rounded-lg text-xs backdrop-blur-sm border border-border">
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" />
                       <span>Updating preview...</span>
                     </div>
@@ -527,13 +550,13 @@ export default function BuilderClient() {
                   </div>
                   
                   {isLoading ? (
-                    <div className="flex items-center gap-3 text-white">
+                    <div className="flex items-center gap-3">
                       <Loader2 className="w-5 h-5 animate-spin text-rose-400" />
                       <span className="text-sm font-medium">Creating your website...</span>
                     </div>
                   ) : (
                     <>
-                      <h3 className="text-lg font-medium text-white mb-2">Preview Area</h3>
+                      <h3 className="text-lg font-medium mb-2">Preview Area</h3>
                       <p className="text-sm text-zinc-500">Your website will appear here</p>
                     </>
                   )}
