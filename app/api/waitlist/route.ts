@@ -1,13 +1,55 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
+// Allowed email domains
+const ALLOWED_DOMAINS = [
+  "gmail.com",
+  "yahoo.com",
+  "hotmail.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "sbcglobal.net",
+  "outlook.com",
+  "live.com",
+]
+
+function isValidEmail(email: string): { valid: boolean; reason?: string } {
+  // Basic format check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return { valid: false, reason: "please enter a valid email address" }
+  }
+  
+  // Extract domain
+  const domain = email.split("@")[1]?.toLowerCase()
+  if (!domain) {
+    return { valid: false, reason: "please enter a valid email address" }
+  }
+  
+  // Check if domain is allowed
+  if (!ALLOWED_DOMAINS.includes(domain)) {
+    return { valid: false, reason: "please use a common email provider (Gmail, Yahoo, iCloud, Hotmail, etc.)" }
+  }
+  
+  return { valid: true }
+}
+
 export async function POST(request: Request) {
   try {
     const { email } = await request.json()
     
-    if (!email || !email.includes("@")) {
+    if (!email) {
       return NextResponse.json(
-        { error: "please enter a valid email" },
+        { error: "please enter an email address" },
+        { status: 400 }
+      )
+    }
+    
+    const validation = isValidEmail(email)
+    if (!validation.valid) {
+      return NextResponse.json(
+        { error: validation.reason },
         { status: 400 }
       )
     }
