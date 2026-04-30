@@ -22,8 +22,9 @@ export default function Page() {
     }
   }
 
-  // Show unavailable message with password input when site is not live
-  if (!hasAccess) {
+  // When SITE_LIVE = false, show unavailable message with password bypass
+  // When SITE_LIVE = true, the PasswordGate in layout handles access
+  if (!SITE_LIVE && !hasAccess) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-6">
         <p className="text-black text-2xl font-medium">

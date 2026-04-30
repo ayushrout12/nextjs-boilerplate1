@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
+import { PasswordGate } from '@/components/password-gate'
 
 import './globals.css'
 
@@ -34,7 +35,9 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-// 🔒 TOGGLE THIS
+// 🔒 TOGGLE THIS TO CONTROL SITE ACCESS
+// false = Shows "Site Unavailable" with simple password bypass
+// true = Shows full waitlist page with email signup, Google auth, etc.
 const SITE_LIVE = false
 
 export default function RootLayout({
@@ -46,7 +49,13 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable}`}>
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          {children}
+          {SITE_LIVE ? (
+            <PasswordGate>
+              {children}
+            </PasswordGate>
+          ) : (
+            children
+          )}
         </ThemeProvider>
         <Analytics />
       </body>

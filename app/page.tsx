@@ -11,6 +11,8 @@ import { CTASection } from "@/components/cta-section"
 import { SiteFooter } from "@/components/site-footer"
 
 // 🔒 TOGGLE THIS (must match layout.tsx)
+// false = Shows "Site Unavailable" with simple password bypass
+// true = Shows full waitlist page (handled by PasswordGate in layout)
 const SITE_LIVE = false
 const ACCESS_PASSWORD = "Ayush@2012USA"
 
@@ -29,8 +31,9 @@ export default function HomePage() {
     }
   }
 
-  // Show unavailable message with password input when site is not live
-  if (!hasAccess) {
+  // When SITE_LIVE = false, show unavailable message with password bypass
+  // When SITE_LIVE = true, the PasswordGate in layout handles access
+  if (!SITE_LIVE && !hasAccess) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-6">
         <p className="text-black text-2xl font-medium">
