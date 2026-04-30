@@ -45,17 +45,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable}`}>
       <body className="font-sans antialiased">
-        {SITE_LIVE ? (
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-            {children}
-          </ThemeProvider>
-        ) : (
-          <div className="min-h-screen flex items-center justify-center bg-white">
-            <p className="text-black text-2xl font-medium">
-              This Site Is Currently Unavailable
-            </p>
-          </div>
-        )}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          {children}
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

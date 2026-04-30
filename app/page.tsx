@@ -7,7 +7,21 @@ import { FounderSection } from "@/components/founder-section"
 import { CTASection } from "@/components/cta-section"
 import { SiteFooter } from "@/components/site-footer"
 
+// 🔒 TOGGLE THIS (must match layout.tsx)
+const SITE_LIVE = false
+
 export default function HomePage() {
+  // Show unavailable message when site is not live
+  if (!SITE_LIVE) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p className="text-black text-2xl font-medium">
+          This Site Is Currently Unavailable
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
