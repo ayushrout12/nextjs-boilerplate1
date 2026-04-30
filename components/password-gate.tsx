@@ -39,20 +39,20 @@ interface PasswordGateProps {
   children: React.ReactNode
 }
 
-// Floating lotus petal component
+// Floating lotus petal component - GPU accelerated
 function FloatingPetal({ delay, duration, left, size }: { delay: number; duration: number; left: string; size: number }) {
   return (
     <div
-      className="absolute opacity-60 pointer-events-none"
+      className="absolute opacity-40 pointer-events-none will-change-transform"
       style={{
         left,
         top: '-50px',
+        transform: 'translateZ(0)',
         animation: `floatDown ${duration}s linear ${delay}s infinite`,
       }}
     >
       <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-        <ellipse cx="20" cy="20" rx="8" ry="18" fill="rgba(232, 164, 184, 0.6)" transform="rotate(-15 20 20)" />
-        <ellipse cx="20" cy="20" rx="6" ry="14" fill="rgba(212, 130, 154, 0.4)" transform="rotate(-15 20 20)" />
+        <ellipse cx="20" cy="20" rx="8" ry="18" fill="rgba(232, 164, 184, 0.5)" transform="rotate(-15 20 20)" />
       </svg>
     </div>
   )
@@ -289,14 +289,11 @@ export function PasswordGate({ children }: PasswordGateProps) {
         {/* Subtle overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
         
-        {/* Floating petals animation */}
+        {/* Floating petals animation - reduced for performance */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <FloatingPetal delay={0} duration={8} left="10%" size={30} />
-          <FloatingPetal delay={2} duration={10} left="25%" size={24} />
-          <FloatingPetal delay={4} duration={9} left="40%" size={28} />
-          <FloatingPetal delay={1} duration={11} left="55%" size={22} />
-          <FloatingPetal delay={3} duration={8} left="70%" size={26} />
-          <FloatingPetal delay={5} duration={10} left="85%" size={32} />
+          <FloatingPetal delay={0} duration={12} left="15%" size={24} />
+          <FloatingPetal delay={4} duration={14} left="50%" size={20} />
+          <FloatingPetal delay={8} duration={16} left="80%" size={22} />
         </div>
         
         {/* Logo and text overlay - positioned at top left like jasmine */}
@@ -426,21 +423,21 @@ export function PasswordGate({ children }: PasswordGateProps) {
         </div>
       </div>
       
-      {/* CSS for floating animation */}
+      {/* CSS for floating animation - GPU accelerated */}
       <style jsx global>{`
         @keyframes floatDown {
           0% {
-            transform: translateY(-50px) rotate(0deg);
+            transform: translate3d(0, -50px, 0) rotate(0deg);
             opacity: 0;
           }
           10% {
-            opacity: 0.6;
+            opacity: 0.4;
           }
           90% {
-            opacity: 0.6;
+            opacity: 0.4;
           }
           100% {
-            transform: translateY(100vh) rotate(360deg);
+            transform: translate3d(0, 100vh, 0) rotate(180deg);
             opacity: 0;
           }
         }
