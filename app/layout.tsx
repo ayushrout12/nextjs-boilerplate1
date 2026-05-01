@@ -45,11 +45,12 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${playfair.variable} ${jetbrains.variable}`}>
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <SiteGate>
+          {/* SiteGate temporarily disabled - uncomment to re-enable */}
+          {/* <SiteGate> */}
             <PasswordGate>
               {children}
             </PasswordGate>
-          </SiteGate>
+          {/* </SiteGate> */}
         </ThemeProvider>
         <Analytics />
       </body>
