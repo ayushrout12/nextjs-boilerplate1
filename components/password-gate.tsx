@@ -71,8 +71,19 @@ export function PasswordGate({ children }: PasswordGateProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isJoiningWaitlist, setIsJoiningWaitlist] = useState(false)
   const [showPasswordPage, setShowPasswordPage] = useState(false)
+  const [checkingAccess, setCheckingAccess] = useState(true)
 
   const fullText = "lotus"
+
+  // Check for existing access from /website password entry
+  useEffect(() => {
+    const hasAccess = localStorage.getItem("lotus_access") === "granted"
+    if (hasAccess) {
+      setIsAuthenticated(true)
+      setShowContent(true)
+    }
+    setCheckingAccess(false)
+  }, [])
 
   // Typewriter effect
   useEffect(() => {
@@ -100,6 +111,7 @@ export function PasswordGate({ children }: PasswordGateProps) {
 
     setTimeout(() => {
       if (password === CORRECT_PASSWORD) {
+        localStorage.setItem("lotus_access", "granted")
         setIsAuthenticated(true)
         setShowTransition(true)
       } else {
@@ -150,7 +162,16 @@ export function PasswordGate({ children }: PasswordGateProps) {
     }
   }
 
-  // Show content after typewriter animation
+  // Show loading while checking access
+  if (checkingAccess) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-muted-foreground/20 border-t-muted-foreground rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  // Show content after typewriter animation or if already authenticated
   if (isAuthenticated && showContent) {
     return <>{children}</>
   }
