@@ -4,6 +4,60 @@ import pptxgen from "pptxgenjs"
 export const runtime = "nodejs"
 export const maxDuration = 60
 
+// Simple PDF text extraction - works for text-based PDFs
+async function extractTextFromPDF(buffer: Buffer): Promise<string[]> {
+  const text = buffer.toString("latin1")
+  
+  // Extract text between stream markers (simplified PDF text extraction)
+  const textChunks: string[] = []
+  
+  // Look for text in PDF streams
+  const streamRegex = /stream[\r\n]+([\s\S]*?)[\r\n]+endstream/g
+  let match
+  
+  while ((match = streamRegex.exec(text)) !== null) {
+    const streamContent = match[1]
+    
+    // Extract text from Tj and TJ operators (PDF text operators)
+    const tjMatches = streamContent.match(/\(([^)]+)\)\s*Tj/g) || []
+    const tjArrayMatches = streamContent.match(/\[([^\]]+)\]\s*TJ/g) || []
+    
+    for (const tj of tjMatches) {
+      const extracted = tj.match(/\(([^)]+)\)/)
+      if (extracted) {
+        textChunks.push(decodeURIComponent(escape(extracted[1])))
+      }
+    }
+    
+    for (const tjArray of tjArrayMatches) {
+      const parts = tjArray.match(/\(([^)]+)\)/g) || []
+      const line = parts.map(p => {
+        const m = p.match(/\(([^)]+)\)/)
+        return m ? m[1] : ""
+      }).join("")
+      if (line.trim()) {
+        textChunks.push(decodeURIComponent(escape(line)))
+      }
+    }
+  }
+  
+  // If no text found with stream method, try simple text extraction
+  if (textChunks.length === 0) {
+    // Extract readable ASCII text sequences
+    const readableText = text.match(/[\x20-\x7E]{10,}/g) || []
+    return readableText.filter(t => 
+      !t.includes("obj") && 
+      !t.includes("endobj") && 
+      !t.includes("stream") &&
+      !t.includes("/Type") &&
+      !t.includes("/Font") &&
+      t.trim().length > 20
+    )
+  }
+  
+  return textChunks
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -13,25 +67,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No PDF file provided" }, { status: 400 })
     }
 
-    if (file.type !== "application/pdf") {
+    if (!file.type.includes("pdf") && !file.name.toLowerCase().endsWith(".pdf")) {
       return NextResponse.json({ error: "File must be a PDF" }, { status: 400 })
     }
+
+    console.log("[v0] Processing PDF:", file.name, "Size:", file.size)
 
     // Get PDF buffer
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    // Dynamic import pdf-parse (CommonJS module)
-    const pdfParse = (await import("pdf-parse")).default
-    
-    // Parse PDF
-    const pdfData = await pdfParse(buffer)
-    
-    // Split text into pages/sections
-    const pages = pdfData.text
-      .split(/\n\s*\n/)
-      .filter((section: string) => section.trim().length > 0)
-      .map((section: string) => section.trim())
+    // Extract text from PDF
+    const textChunks = await extractTextFromPDF(buffer)
+    console.log("[v0] Extracted text chunks:", textChunks.length)
 
     // Create presentation
     const pptx = new pptxgen()
@@ -61,48 +109,65 @@ export async function POST(request: NextRequest) {
       color: "666666",
     })
 
-    // Add content slides
-    const maxCharsPerSlide = 800
-    let currentText = ""
-    
-    for (const page of pages) {
-      if (currentText.length + page.length > maxCharsPerSlide) {
-        if (currentText.trim()) {
-          const slide = pptx.addSlide()
-          slide.addText(currentText.trim(), {
-            x: 0.5,
-            y: 0.5,
-            w: 9,
-            h: 5,
-            fontSize: 14,
-            color: "363636",
-            valign: "top",
-            breakLine: true,
-          })
+    if (textChunks.length === 0) {
+      // Add a slide indicating no text was found
+      const infoSlide = pptx.addSlide()
+      infoSlide.addText("This PDF appears to be image-based or encrypted.\n\nThe converter works best with text-based PDFs.\n\nFor image PDFs, consider using OCR software first.", {
+        x: 0.5,
+        y: 1.5,
+        w: 9,
+        h: 3,
+        fontSize: 18,
+        align: "center",
+        color: "666666",
+        valign: "middle",
+      })
+    } else {
+      // Add content slides
+      const maxCharsPerSlide = 600
+      let currentText = ""
+      
+      for (const chunk of textChunks) {
+        if (currentText.length + chunk.length > maxCharsPerSlide) {
+          if (currentText.trim()) {
+            const slide = pptx.addSlide()
+            slide.addText(currentText.trim(), {
+              x: 0.5,
+              y: 0.5,
+              w: 9,
+              h: 5,
+              fontSize: 14,
+              color: "363636",
+              valign: "top",
+            })
+          }
+          currentText = chunk
+        } else {
+          currentText += " " + chunk
         }
-        currentText = page
-      } else {
-        currentText += "\n\n" + page
+      }
+
+      // Add remaining text
+      if (currentText.trim()) {
+        const slide = pptx.addSlide()
+        slide.addText(currentText.trim(), {
+          x: 0.5,
+          y: 0.5,
+          w: 9,
+          h: 5,
+          fontSize: 14,
+          color: "363636",
+          valign: "top",
+        })
       }
     }
 
-    // Add remaining text
-    if (currentText.trim()) {
-      const slide = pptx.addSlide()
-      slide.addText(currentText.trim(), {
-        x: 0.5,
-        y: 0.5,
-        w: 9,
-        h: 5,
-        fontSize: 14,
-        color: "363636",
-        valign: "top",
-        breakLine: true,
-      })
-    }
-
+    console.log("[v0] Generating PPTX...")
+    
     // Generate PPTX file
     const pptxBuffer = await pptx.write({ outputType: "nodebuffer" }) as Buffer
+
+    console.log("[v0] PPTX generated, size:", pptxBuffer.length)
 
     return new NextResponse(pptxBuffer, {
       headers: {
@@ -111,9 +176,9 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error("PDF conversion error:", error)
+    console.error("[v0] PDF conversion error:", error)
     return NextResponse.json(
-      { error: "Failed to convert PDF. Please try again." },
+      { error: `Failed to convert PDF: ${error instanceof Error ? error.message : "Unknown error"}` },
       { status: 500 }
     )
   }
