@@ -5,8 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { FileUp, Presentation, Loader2, Download, CheckCircle, AlertCircle } from "lucide-react"
 
+type OutputFormat = "pptx" | "keynote"
+
 export function ExtraFeaturesSection() {
   const [file, setFile] = useState<File | null>(null)
+  const [format, setFormat] = useState<OutputFormat>("pptx")
   const [isConverting, setIsConverting] = useState(false)
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -34,6 +37,7 @@ export function ExtraFeaturesSection() {
     try {
       const formData = new FormData()
       formData.append("pdf", file)
+      formData.append("format", format)
 
       const response = await fetch("/api/convert-pdf", {
         method: "POST",
@@ -59,7 +63,8 @@ export function ExtraFeaturesSection() {
     if (downloadUrl) {
       const link = document.createElement("a")
       link.href = downloadUrl
-      link.download = `${file?.name.replace(".pdf", "")}_presentation.pptx`
+      const suffix = format === "keynote" ? "_keynote" : "_presentation"
+      link.download = `${file?.name.replace(".pdf", "")}${suffix}.pptx`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -95,11 +100,41 @@ export function ExtraFeaturesSection() {
               </div>
               <CardTitle className="text-2xl font-semibold">PDF to Keynote Converter</CardTitle>
               <CardDescription className="text-base mt-2 max-w-md mx-auto">
-                Upload any PDF file and convert it into a PowerPoint presentation that opens seamlessly in Apple Keynote. 
+                Upload any PDF file and convert it into a presentation. Each page of your PDF becomes a slide. 
                 Perfect for turning documents, reports, or designs into presentation slides.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Format Selection */}
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={() => setFormat("pptx")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    format === "pptx"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  PowerPoint (.pptx)
+                </button>
+                <button
+                  onClick={() => setFormat("keynote")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    format === "keynote"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  Keynote (.pptx)
+                </button>
+              </div>
+              
+              {format === "keynote" && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Outputs .pptx format which Keynote opens and edits natively
+                </p>
+              )}
+
               {/* Upload Area */}
               <div
                 onClick={() => fileInputRef.current?.click()}
@@ -169,7 +204,7 @@ export function ExtraFeaturesSection() {
                       className="flex-1 h-12 rounded-xl"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      Download .pptx
+                      Download {format === "keynote" ? "for Keynote" : ".pptx"}
                     </Button>
                     <Button
                       variant="outline"

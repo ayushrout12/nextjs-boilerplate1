@@ -1,67 +1,169 @@
 import { NextRequest, NextResponse } from "next/server"
 import pptxgen from "pptxgenjs"
+import { PDFDocument } from "pdf-lib"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
 
-// Simple PDF text extraction - works for text-based PDFs
-async function extractTextFromPDF(buffer: Buffer): Promise<string[]> {
-  const text = buffer.toString("latin1")
+// Extract text content from PDF pages using multiple methods
+async function extractPDFContent(buffer: Buffer): Promise<{ pages: string[], pageCount: number }> {
+  const pages: string[] = []
   
-  // Extract text between stream markers (simplified PDF text extraction)
-  const textChunks: string[] = []
-  
-  // Look for text in PDF streams
-  const streamRegex = /stream[\r\n]+([\s\S]*?)[\r\n]+endstream/g
-  let match
-  
-  while ((match = streamRegex.exec(text)) !== null) {
-    const streamContent = match[1]
+  try {
+    // Load PDF to get page count
+    const pdfDoc = await PDFDocument.load(buffer, { ignoreEncryption: true })
+    const pageCount = pdfDoc.getPageCount()
     
-    // Extract text from Tj and TJ operators (PDF text operators)
-    const tjMatches = streamContent.match(/\(([^)]+)\)\s*Tj/g) || []
-    const tjArrayMatches = streamContent.match(/\[([^\]]+)\]\s*TJ/g) || []
+    console.log("[v0] PDF has", pageCount, "pages")
     
-    for (const tj of tjMatches) {
-      const extracted = tj.match(/\(([^)]+)\)/)
-      if (extracted) {
-        textChunks.push(decodeURIComponent(escape(extracted[1])))
+    // Convert buffer to string for text extraction
+    const pdfString = buffer.toString("latin1")
+    
+    // Find all page object boundaries
+    const pageObjects: { start: number, end: number }[] = []
+    const pageRegex = /(\d+)\s+0\s+obj[\s\S]*?\/Type\s*\/Page[^s]/g
+    let match
+    
+    while ((match = pageRegex.exec(pdfString)) !== null) {
+      pageObjects.push({ start: match.index, end: match.index + 5000 }) // Approximate page content area
+    }
+    
+    // Extract text from each page region or use stream-based extraction
+    const streamRegex = /stream\r?\n([\s\S]*?)\r?\nendstream/g
+    const allStreams: string[] = []
+    
+    while ((match = streamRegex.exec(pdfString)) !== null) {
+      const streamContent = match[1]
+      const extractedText = extractTextFromStream(streamContent)
+      if (extractedText.trim()) {
+        allStreams.push(extractedText)
       }
     }
     
-    for (const tjArray of tjArrayMatches) {
-      const parts = tjArray.match(/\(([^)]+)\)/g) || []
-      const line = parts.map(p => {
-        const m = p.match(/\(([^)]+)\)/)
-        return m ? m[1] : ""
-      }).join("")
-      if (line.trim()) {
-        textChunks.push(decodeURIComponent(escape(line)))
+    // Distribute extracted text across pages
+    if (allStreams.length > 0) {
+      const textsPerPage = Math.ceil(allStreams.length / pageCount)
+      
+      for (let i = 0; i < pageCount; i++) {
+        const startIdx = i * textsPerPage
+        const endIdx = Math.min(startIdx + textsPerPage, allStreams.length)
+        const pageText = allStreams.slice(startIdx, endIdx).join("\n\n")
+        pages.push(pageText || `Page ${i + 1}`)
+      }
+    } else {
+      // Fallback: try to extract any readable text and split by page markers
+      const readableText = extractReadableText(pdfString)
+      
+      if (readableText.trim()) {
+        // Split text roughly by page count
+        const words = readableText.split(/\s+/)
+        const wordsPerPage = Math.ceil(words.length / pageCount)
+        
+        for (let i = 0; i < pageCount; i++) {
+          const startIdx = i * wordsPerPage
+          const endIdx = Math.min(startIdx + wordsPerPage, words.length)
+          const pageText = words.slice(startIdx, endIdx).join(" ")
+          pages.push(pageText || `Page ${i + 1}`)
+        }
+      } else {
+        // No text found - create placeholder pages
+        for (let i = 0; i < pageCount; i++) {
+          pages.push(`[Page ${i + 1} - Image or encrypted content]`)
+        }
+      }
+    }
+    
+    return { pages, pageCount }
+  } catch (error) {
+    console.error("[v0] PDF parsing error:", error)
+    return { pages: ["Error extracting PDF content"], pageCount: 1 }
+  }
+}
+
+// Extract text from PDF stream content
+function extractTextFromStream(streamContent: string): string {
+  const textParts: string[] = []
+  
+  // Match Tj operator (single string)
+  const tjMatches = streamContent.match(/\(([^)]*)\)\s*Tj/g) || []
+  for (const tj of tjMatches) {
+    const extracted = tj.match(/\(([^)]*)\)/)
+    if (extracted && extracted[1]) {
+      textParts.push(decodePDFString(extracted[1]))
+    }
+  }
+  
+  // Match TJ operator (array of strings)
+  const tjArrayMatches = streamContent.match(/\[((?:[^[\]]*|\[[^\]]*\])*)\]\s*TJ/g) || []
+  for (const tjArray of tjArrayMatches) {
+    const parts = tjArray.match(/\(([^)]*)\)/g) || []
+    const line = parts.map(p => {
+      const m = p.match(/\(([^)]*)\)/)
+      return m ? decodePDFString(m[1]) : ""
+    }).join("")
+    if (line.trim()) {
+      textParts.push(line)
+    }
+  }
+  
+  // Match BT...ET text blocks
+  const btMatches = streamContent.match(/BT[\s\S]*?ET/g) || []
+  for (const bt of btMatches) {
+    const innerTj = bt.match(/\(([^)]*)\)\s*Tj/g) || []
+    for (const tj of innerTj) {
+      const extracted = tj.match(/\(([^)]*)\)/)
+      if (extracted && extracted[1] && !textParts.includes(decodePDFString(extracted[1]))) {
+        textParts.push(decodePDFString(extracted[1]))
       }
     }
   }
   
-  // If no text found with stream method, try simple text extraction
-  if (textChunks.length === 0) {
-    // Extract readable ASCII text sequences
-    const readableText = text.match(/[\x20-\x7E]{10,}/g) || []
-    return readableText.filter(t => 
-      !t.includes("obj") && 
-      !t.includes("endobj") && 
-      !t.includes("stream") &&
-      !t.includes("/Type") &&
-      !t.includes("/Font") &&
-      t.trim().length > 20
-    )
-  }
+  return textParts.join(" ")
+}
+
+// Decode PDF string escapes
+function decodePDFString(str: string): string {
+  return str
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\r")
+    .replace(/\\t/g, "\t")
+    .replace(/\\\(/g, "(")
+    .replace(/\\\)/g, ")")
+    .replace(/\\\\/g, "\\")
+    .replace(/\\(\d{3})/g, (_, oct) => String.fromCharCode(parseInt(oct, 8)))
+}
+
+// Extract any readable ASCII text
+function extractReadableText(pdfString: string): string {
+  // Find sequences of printable ASCII characters
+  const matches = pdfString.match(/[\x20-\x7E]{4,}/g) || []
   
-  return textChunks
+  // Filter out PDF syntax
+  const filtered = matches.filter(t => 
+    !t.includes("obj") && 
+    !t.includes("endobj") && 
+    !t.includes("stream") &&
+    !t.includes("endstream") &&
+    !t.includes("/Type") &&
+    !t.includes("/Font") &&
+    !t.includes("/Page") &&
+    !t.includes("/Resources") &&
+    !t.includes("/MediaBox") &&
+    !t.includes("/Contents") &&
+    !t.includes("xref") &&
+    !t.includes("trailer") &&
+    !t.match(/^\d+\s+\d+\s+R$/) &&
+    t.trim().length > 10
+  )
+  
+  return filtered.join(" ")
 }
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get("pdf") as File
+    const format = formData.get("format") as string || "pptx"
 
     if (!file) {
       return NextResponse.json({ error: "No PDF file provided" }, { status: 400 })
@@ -71,108 +173,89 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "File must be a PDF" }, { status: 400 })
     }
 
-    console.log("[v0] Processing PDF:", file.name, "Size:", file.size)
+    console.log("[v0] Processing PDF:", file.name, "Size:", file.size, "Format:", format)
 
     // Get PDF buffer
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    // Extract text from PDF
-    const textChunks = await extractTextFromPDF(buffer)
-    console.log("[v0] Extracted text chunks:", textChunks.length)
+    // Extract content from all pages
+    const { pages, pageCount } = await extractPDFContent(buffer)
+    console.log("[v0] Extracted", pages.length, "pages from PDF with", pageCount, "total pages")
 
     // Create presentation
     const pptx = new pptxgen()
     pptx.author = "Lotus"
     pptx.title = file.name.replace(".pdf", "")
     pptx.subject = "Converted from PDF"
+    pptx.layout = "LAYOUT_16x9"
 
     // Add title slide
     const titleSlide = pptx.addSlide()
     titleSlide.addText(file.name.replace(".pdf", ""), {
       x: 0.5,
-      y: 2,
+      y: 2.5,
       w: 9,
-      h: 1.5,
+      h: 1,
       fontSize: 36,
       bold: true,
       align: "center",
       color: "363636",
     })
-    titleSlide.addText("Converted with Lotus", {
+    titleSlide.addText(`${pageCount} pages | Converted with Lotus`, {
       x: 0.5,
-      y: 3.5,
+      y: 3.7,
       w: 9,
       h: 0.5,
       fontSize: 14,
       align: "center",
-      color: "666666",
+      color: "888888",
     })
 
-    if (textChunks.length === 0) {
-      // Add a slide indicating no text was found
-      const infoSlide = pptx.addSlide()
-      infoSlide.addText("This PDF appears to be image-based or encrypted.\n\nThe converter works best with text-based PDFs.\n\nFor image PDFs, consider using OCR software first.", {
-        x: 0.5,
-        y: 1.5,
-        w: 9,
-        h: 3,
-        fontSize: 18,
-        align: "center",
-        color: "666666",
-        valign: "middle",
-      })
-    } else {
-      // Add content slides
-      const maxCharsPerSlide = 600
-      let currentText = ""
+    // Add a slide for each page
+    for (let i = 0; i < pages.length; i++) {
+      const slide = pptx.addSlide()
       
-      for (const chunk of textChunks) {
-        if (currentText.length + chunk.length > maxCharsPerSlide) {
-          if (currentText.trim()) {
-            const slide = pptx.addSlide()
-            slide.addText(currentText.trim(), {
-              x: 0.5,
-              y: 0.5,
-              w: 9,
-              h: 5,
-              fontSize: 14,
-              color: "363636",
-              valign: "top",
-            })
-          }
-          currentText = chunk
-        } else {
-          currentText += " " + chunk
-        }
-      }
-
-      // Add remaining text
-      if (currentText.trim()) {
-        const slide = pptx.addSlide()
-        slide.addText(currentText.trim(), {
-          x: 0.5,
-          y: 0.5,
-          w: 9,
-          h: 5,
-          fontSize: 14,
-          color: "363636",
-          valign: "top",
-        })
-      }
+      // Page header
+      slide.addText(`Page ${i + 1}`, {
+        x: 0.3,
+        y: 0.2,
+        w: 2,
+        h: 0.4,
+        fontSize: 10,
+        color: "888888",
+      })
+      
+      // Page content
+      const pageContent = pages[i] || `[Page ${i + 1}]`
+      slide.addText(pageContent, {
+        x: 0.5,
+        y: 0.7,
+        w: 9,
+        h: 4.8,
+        fontSize: 12,
+        color: "363636",
+        valign: "top",
+        wrap: true,
+      })
     }
 
-    console.log("[v0] Generating PPTX...")
+    console.log("[v0] Generating presentation with", pptx.slides.length, "slides")
     
-    // Generate PPTX file
+    // Generate file
     const pptxBuffer = await pptx.write({ outputType: "nodebuffer" }) as Buffer
 
-    console.log("[v0] PPTX generated, size:", pptxBuffer.length)
+    console.log("[v0] Presentation generated, size:", pptxBuffer.length)
+
+    // For Keynote format, we still output PPTX since Keynote opens it natively
+    // The .key format is proprietary and not easily generated
+    const filename = `${file.name.replace(".pdf", "")}.pptx`
+    const contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 
     return new NextResponse(pptxBuffer, {
       headers: {
-        "Content-Type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "Content-Disposition": `attachment; filename="${file.name.replace(".pdf", "")}.pptx"`,
+        "Content-Type": contentType,
+        "Content-Disposition": `attachment; filename="${filename}"`,
       },
     })
   } catch (error) {
