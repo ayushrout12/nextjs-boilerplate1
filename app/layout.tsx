@@ -27,7 +27,8 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://trylotus.dev'),
-  title: "Lotus — The World's Best Designer",
+  // title temporarily removed
+  title: "",
   description: 'describe your vision, and lotus will craft it. no code, just creativity.',
 }
 
