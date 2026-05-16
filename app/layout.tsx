@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/lotus-preview.png",
+        url: "https://trylotus.dev/lotus-preview.png",
         width: 1200,
         height: 630,
         alt: "Lotus preview",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lotus — The World’s Best Designer",
     description: "Describe your vision, and Lotus will craft it. No code, just creativity.",
-    images: ["/lotus-preview.png"],
+    images: ["https://trylotus.dev/lotus-preview.png"],
   },
   icons: {
     icon: "/favicon.ico",
