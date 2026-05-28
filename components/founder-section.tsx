@@ -30,7 +30,8 @@ export function FounderSection() {
                   sizes="(max-width: 768px) 176px, 208px"
                   quality={100}
                   priority
-                  className="object-cover object-top"
+                  unoptimized
+                  className="object-cover object-[center_25%] scale-150"
                 />
               </div>
             </div>
