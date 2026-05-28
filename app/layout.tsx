@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next"
 import { Cormorant_Garamond, Playfair_Display, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SiteGate } from "@/components/site-gate"
 import { PasswordGate } from "@/components/password-gate"
 
 import "./globals.css"
@@ -27,10 +26,10 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://trylotus.dev"),
-  title: "Lotus — The World’s Best Designer",
+  title: "Lotus — The World's Best Designer",
   description: "Describe your vision, and Lotus will craft it. No code, just creativity.",
   openGraph: {
-    title: "Lotus — The World’s Best Designer",
+    title: "Lotus — The World's Best Designer",
     description: "Describe your vision, and Lotus will craft it. No code, just creativity.",
     url: "https://trylotus.dev",
     siteName: "Lotus",
@@ -46,7 +45,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lotus — The World’s Best Designer",
+    title: "Lotus — The World's Best Designer",
     description: "Describe your vision, and Lotus will craft it. No code, just creativity.",
     images: ["https://trylotus.dev/lotus-preview.png"],
   },
@@ -73,9 +72,9 @@ export default function RootLayout({
     >
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <SiteGate>
-            <PasswordGate>{children}</PasswordGate>
-          </SiteGate>
+          <PasswordGate>
+            {children}
+          </PasswordGate>
         </ThemeProvider>
         <Analytics />
       </body>
