@@ -31,7 +31,7 @@ export function FounderSection() {
                   quality={100}
                   priority
                   unoptimized
-                  className="object-cover object-[center_25%] scale-150"
+                  className="object-cover object-center scale-110"
                 />
               </div>
             </div>
