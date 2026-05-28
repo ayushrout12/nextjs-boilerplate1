@@ -19,15 +19,19 @@ export function FounderSection() {
           </div>
 
           <div className="flex flex-col items-center text-center space-y-8">
-            {/* founder image placeholder - circular with glow */}
+            {/* founder image - circular with glow */}
             <div className="relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-full blur-2xl opacity-60" />
-              <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-2 border-primary/20 lotus-glow">
+              <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-2 border-primary/20 lotus-glow">
                 <Image
-                  src="/lotus-icon.jpg"
+                  src="/founder.png"
                   alt="ayush rout"
                   fill
-                  className="object-cover"
+                  sizes="(max-width: 768px) 192px, 224px"
+                  quality={100}
+                  priority
+                  unoptimized
+                  className="object-cover object-[center_20%] scale-105"
                 />
               </div>
             </div>
