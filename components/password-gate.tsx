@@ -75,13 +75,9 @@ export function PasswordGate({ children }: PasswordGateProps) {
 
   const fullText = "lotus"
 
-  // Check for existing access from /website password entry
+  // Access is intentionally NOT persisted. Every page refresh resets the gate
+  // and sends the user back to the waitlist screen.
   useEffect(() => {
-    const hasAccess = localStorage.getItem("lotus_access") === "granted"
-    if (hasAccess) {
-      setIsAuthenticated(true)
-      setShowContent(true)
-    }
     setCheckingAccess(false)
   }, [])
 
@@ -111,7 +107,6 @@ export function PasswordGate({ children }: PasswordGateProps) {
 
     setTimeout(() => {
       if (password === CORRECT_PASSWORD) {
-        localStorage.setItem("lotus_access", "granted")
         setIsAuthenticated(true)
         setShowTransition(true)
       } else {
