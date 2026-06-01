@@ -13,6 +13,9 @@ import {
 import { Globe, Loader2, Check, X, ExternalLink, Copy } from "lucide-react"
 import { useDebounce } from "@/hooks/use-debounce"
 
+const PUBLISH_DOMAIN = process.env.NEXT_PUBLIC_PUBLISH_DOMAIN || "lotus.app"
+const WILDCARD_READY = process.env.NEXT_PUBLIC_WILDCARD_DOMAIN_READY === "true"
+
 interface PublishModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -204,7 +207,7 @@ export function PublishModal({
                     </div>
                   )}
                 </div>
-                <span className="text-sm text-zinc-500">.lotus.app</span>
+                <span className="text-sm text-zinc-500">.{PUBLISH_DOMAIN}</span>
               </div>
 
               {availability && (
@@ -241,7 +244,9 @@ export function PublishModal({
             </Button>
 
             <p className="text-xs text-center text-zinc-600">
-              Your site will be live at {subdomain || "yoursite"}.lotus.app
+              {WILDCARD_READY
+                ? `Your site will be live at ${subdomain || "yoursite"}.${PUBLISH_DOMAIN}`
+                : `Your site will be live and shareable with anyone worldwide`}
             </p>
           </div>
         )}
