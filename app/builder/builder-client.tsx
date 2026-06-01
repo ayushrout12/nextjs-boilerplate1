@@ -416,10 +416,10 @@ export default function BuilderClient() {
             </div>
 
             {leftTab === "chat" ? (
-              /* ─── Chat Panel ──────────────────────────── */
+              /* �����── Chat Panel ──────────────────────────── */
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Chat messages */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden">
                   {messages.length === 0 && !isLoading ? (
                     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
                       <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3">
@@ -458,15 +458,19 @@ export default function BuilderClient() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium text-muted-foreground mb-0.5">You</p>
-                                <p className="text-sm">{text}</p>
+                                <p className="text-sm break-words whitespace-pre-wrap">{text}</p>
                               </div>
                             </div>
                           )
                         }
                         
-                        // Assistant message - show conversational text only
+                        // Assistant message - show only conversational text, never code
                         const conversationText = extractConversationText(text)
                         const fileCount = parseFiles(text, false).length
+                        const isComplete = status === "ready"
+                        
+                        // If there's no conversational text and no files, skip
+                        if (!conversationText && fileCount === 0) return null
                         
                         return (
                           <div key={i} className="flex gap-2.5">
@@ -476,30 +480,42 @@ export default function BuilderClient() {
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-medium text-muted-foreground mb-0.5">Lotus</p>
                               {conversationText && (
-                                <p className="text-sm text-foreground/80 mb-2">{conversationText}</p>
+                                <p className="text-sm text-foreground/80 mb-2 leading-relaxed break-words whitespace-pre-wrap">{conversationText}</p>
                               )}
-                              {fileCount > 0 && (
-                                <button 
-                                  onClick={() => setLeftTab("files")}
-                                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-2.5 py-1.5 rounded-md hover:text-foreground transition-colors"
-                                >
-                                  <Code className="w-3 h-3" />
-                                  {fileCount} file{fileCount > 1 ? "s" : ""} generated
-                                </button>
+                              {fileCount > 0 && isComplete && (
+                                <div className="flex items-center gap-2 mt-1">
+                                  <button 
+                                    onClick={() => setLeftTab("files")}
+                                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-2.5 py-1.5 rounded-md hover:text-foreground transition-colors"
+                                  >
+                                    <Code className="w-3 h-3" />
+                                    {fileCount} file{fileCount > 1 ? "s" : ""}
+                                  </button>
+                                  <button
+                                    onClick={() => setViewMode("preview")}
+                                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-2.5 py-1.5 rounded-md hover:text-foreground transition-colors"
+                                  >
+                                    <Eye className="w-3 h-3" />
+                                    preview
+                                  </button>
+                                </div>
                               )}
                             </div>
                           </div>
                         )
                       })}
                       
-                      {isLoading && (
+                      {isLoading && messages.filter(m => m.role === "assistant").length === 0 && (
                         <div className="flex gap-2.5">
                           <div className="w-6 h-6 rounded-full bg-foreground/10 flex items-center justify-center shrink-0 mt-0.5">
                             <Bot className="w-3.5 h-3.5 text-foreground/70" />
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            <span>building your site...</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-muted-foreground mb-0.5">Lotus</p>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>working on it...</span>
+                            </div>
                           </div>
                         </div>
                       )}
