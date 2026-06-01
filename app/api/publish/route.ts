@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextRequest, NextResponse } from "next/server"
 
+// The root domain published sites live on (e.g. lotus.app => xyz.lotus.app)
+const PUBLISH_DOMAIN = process.env.NEXT_PUBLIC_PUBLISH_DOMAIN || "lotus.app"
+
 // Reserved subdomains that cannot be used
 const RESERVED_SUBDOMAINS = [
   'www', 'api', 'app', 'admin', 'dashboard', 'builder', 
@@ -96,7 +99,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         site: data,
-        url: `https://${subdomainLower}.lotus.app`,
+        url: `https://${subdomainLower}.${PUBLISH_DOMAIN}`,
         message: "site updated successfully"
       })
     }
@@ -131,7 +134,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       site: data,
-      url: `https://${subdomainLower}.lotus.app`,
+      url: `https://${subdomainLower}.${PUBLISH_DOMAIN}`,
       message: "site published successfully"
     })
 
