@@ -25,6 +25,25 @@
   --input: #fdf2f4;
   --ring: #d4829a;
   --radius: 1rem;
+
+  /* Jasmine-style surfaces (lotus cream/rose) */
+  --surface: #fbf7f8;
+  --surface-raised: #ffffff;
+  --surface-overlay: #fdf2f4;
+  --border-subtle: #f3e8ec;
+  --border-default: #ecdce2;
+
+  /* Lotus-themed falling cards (OpenNote style) */
+  --card-rose-bg: #fde4ec;
+  --card-rose-text: #7a2942;
+  --card-blush-bg: #ffeef2;
+  --card-blush-text: #8a3a52;
+  --card-cream-bg: #fbf3e8;
+  --card-cream-text: #6b5230;
+  --card-sage-bg: #e9f1e9;
+  --card-sage-text: #2f4a30;
+  --card-lavender-bg: #f1ebf7;
+  --card-lavender-text: #4a3a5c;
 }
 
 .dark {
