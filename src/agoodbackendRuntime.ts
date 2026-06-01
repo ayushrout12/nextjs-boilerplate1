@@ -1,4 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
 import { LOTUS_SYSTEM_PROMPT } from "./systemPrompt.js";
 
 export interface GeneratedFile {
@@ -169,40 +168,42 @@ export async function runAgoodbackendTurn({
   setScrapingStatus: (value: string | null) => void;
   setScrapingError: (value: string | null) => void;
 }) {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
+  // History for the server (excludes the latest user message, which is sent separately).
   const history = messages.slice(0, -1).map(m => ({
-    role: m.role === 'user' ? 'user' : 'model',
-    parts: [
-      { text: m.content },
-      ...(m.images || []).map(img => ({ inlineData: { data: img.data, mimeType: img.mimeType } }))
-    ]
+    role: m.role,
+    content: m.content,
+    images: m.images || [],
   }));
 
   const scrapeResult = await scrapeUrls(prompt, setScrapingStatus, setScrapingError);
 
-  const currentParts: any[] = [
-    { text: scrapeResult.text },
-    ...attachedImages.map(img => ({ inlineData: { data: img.data, mimeType: img.mimeType } })),
-    ...scrapeResult.images.map(img => ({ inlineData: { data: img.data, mimeType: img.mimeType } }))
+  // Combine attached images and any scraped screenshots into one list.
+  const requestImages = [
+    ...attachedImages.map(img => ({ mimeType: img.mimeType, data: img.data })),
+    ...scrapeResult.images.map(img => ({ mimeType: img.mimeType, data: img.data })),
   ];
 
   let fullText = '';
   let currentMergedFiles = [...files];
 
   if (selectedModel === 'gemini-2.5-flash-image') {
-    const response = await ai.models.generateContent({
-      model: selectedModel,
-      contents: currentParts,
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: scrapeResult.text,
+        model: selectedModel,
+        history,
+        images: requestImages,
+      }),
     });
 
-    let imageUrl = '';
-    for (const part of response.candidates?.[0]?.content?.parts || []) {
-      if (part.inlineData) {
-        imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-        break;
-      }
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `Image generation failed (${response.status})`);
     }
+
+    const { imageUrl } = await response.json();
 
     if (imageUrl) {
       const imageHtml = `<!DOCTYPE html>
@@ -231,36 +232,66 @@ export async function runAgoodbackendTurn({
       throw new Error("No image was returned by the model.");
     }
   } else {
-    const responseStream = await ai.models.generateContentStream({
-      model: selectedModel,
-      contents: [
-        ...history,
-        { role: 'user', parts: currentParts }
-      ],
-      config: {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: scrapeResult.text,
         systemInstruction: LOTUS_SYSTEM_PROMPT,
         temperature: 0.7,
-      },
+        model: selectedModel,
+        history,
+        images: requestImages,
+      }),
     });
 
-    for await (const chunk of responseStream) {
-      const text = chunk.text;
-      if (text) {
-        fullText += text;
-        setStreamingText(fullText);
+    if (!response.ok || !response.body) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `Generation failed (${response.status})`);
+    }
 
-        const currentFiles = parseFiles(fullText);
-        if (currentFiles.length > 0) {
-          currentFiles.forEach(cf => {
-            const idx = currentMergedFiles.findIndex(f => f.path === cf.path);
-            if (idx !== -1) {
-              currentMergedFiles[idx] = cf;
-            } else {
-              currentMergedFiles.push(cf);
-            }
-          });
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
 
-          onFiles([...currentMergedFiles]);
+    const applyFiles = () => {
+      const currentFiles = parseFiles(fullText);
+      if (currentFiles.length > 0) {
+        currentFiles.forEach(cf => {
+          const idx = currentMergedFiles.findIndex(f => f.path === cf.path);
+          if (idx !== -1) {
+            currentMergedFiles[idx] = cf;
+          } else {
+            currentMergedFiles.push(cf);
+          }
+        });
+        onFiles([...currentMergedFiles]);
+      }
+    };
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data:')) continue;
+        const payload = trimmed.slice(5).trim();
+        if (payload === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(payload);
+          if (parsed.error) throw new Error(parsed.error);
+          if (parsed.text) {
+            fullText += parsed.text;
+            setStreamingText(fullText);
+            applyFiles();
+          }
+        } catch (e: any) {
+          if (e?.message && !/JSON/.test(e.message)) throw e;
         }
       }
     }
