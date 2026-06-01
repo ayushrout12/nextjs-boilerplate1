@@ -107,7 +107,14 @@ export default function ProjectsPage() {
 
   const getPublishedUrl = (websiteId: string) => {
     const published = publishedSites.find(p => p.website_id === websiteId)
-    return published ? `https://${published.subdomain}.trylotus.app` : null
+    if (!published) return null
+    const domain = process.env.NEXT_PUBLIC_PUBLISH_DOMAIN || "lotus.app"
+    const wildcardReady = process.env.NEXT_PUBLIC_WILDCARD_DOMAIN_READY === "true"
+    // Use the subdomain URL once the wildcard domain is live; otherwise use the
+    // path-based fallback on the current origin so the link always works.
+    if (wildcardReady) return `https://${published.subdomain}.${domain}`
+    const origin = typeof window !== "undefined" ? window.location.origin : ""
+    return `${origin}/s/${published.subdomain}`
   }
 
   const openPublishModal = (website: SavedWebsite) => {

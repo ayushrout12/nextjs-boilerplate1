@@ -4,6 +4,29 @@ import { NextRequest, NextResponse } from "next/server"
 // The root domain published sites live on (e.g. lotus.app => xyz.lotus.app)
 const PUBLISH_DOMAIN = process.env.NEXT_PUBLIC_PUBLISH_DOMAIN || "lotus.app"
 
+// Set to "true" only once the wildcard domain (*.PUBLISH_DOMAIN) is verified on
+// Vercel. Until then, the path-based URL (origin/s/<name>) is the one that works.
+const WILDCARD_READY = process.env.NEXT_PUBLIC_WILDCARD_DOMAIN_READY === "true"
+
+// Build the live URLs for a published site.
+function buildUrls(request: NextRequest, subdomainLower: string) {
+  const subdomainUrl = `https://${subdomainLower}.${PUBLISH_DOMAIN}`
+
+  // Derive the current origin so the path fallback works on any deployment
+  // (preview, production, or a custom domain) without hardcoding.
+  const host = request.headers.get("host") || ""
+  const proto = request.headers.get("x-forwarded-proto") || "https"
+  const origin = host ? `${proto}://${host}` : ""
+  const pathUrl = origin ? `${origin}/s/${subdomainLower}` : `/s/${subdomainLower}`
+
+  return {
+    subdomainUrl,
+    pathUrl,
+    // The URL we tell the user to use right now
+    url: WILDCARD_READY ? subdomainUrl : pathUrl,
+  }
+}
+
 // Reserved subdomains that cannot be used
 const RESERVED_SUBDOMAINS = [
   'www', 'api', 'app', 'admin', 'dashboard', 'builder', 
@@ -99,7 +122,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         site: data,
-        url: `https://${subdomainLower}.${PUBLISH_DOMAIN}`,
+        ...buildUrls(request, subdomainLower),
         message: "site updated successfully"
       })
     }
@@ -134,7 +157,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       site: data,
-      url: `https://${subdomainLower}.${PUBLISH_DOMAIN}`,
+      ...buildUrls(request, subdomainLower),
       message: "site published successfully"
     })
 
