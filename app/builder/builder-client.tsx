@@ -416,10 +416,10 @@ export default function BuilderClient() {
             </div>
 
             {leftTab === "chat" ? (
-              /* ���── Chat Panel ──────────────────────────── */
+              /* �����── Chat Panel ──────────────────────────── */
               <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Chat messages */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden">
                   {messages.length === 0 && !isLoading ? (
                     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
                       <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3">
@@ -458,7 +458,7 @@ export default function BuilderClient() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium text-muted-foreground mb-0.5">You</p>
-                                <p className="text-sm">{text}</p>
+                                <p className="text-sm break-words whitespace-pre-wrap">{text}</p>
                               </div>
                             </div>
                           )
@@ -480,7 +480,7 @@ export default function BuilderClient() {
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-medium text-muted-foreground mb-0.5">Lotus</p>
                               {conversationText && (
-                                <p className="text-sm text-foreground/80 mb-2 leading-relaxed">{conversationText}</p>
+                                <p className="text-sm text-foreground/80 mb-2 leading-relaxed break-words whitespace-pre-wrap">{conversationText}</p>
                               )}
                               {fileCount > 0 && isComplete && (
                                 <div className="flex items-center gap-2 mt-1">
