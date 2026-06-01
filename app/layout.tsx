@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Playfair_Display, JetBrains_Mono } from "next/font/
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { PasswordGate } from "@/components/password-gate"
+import { ChunkErrorHandler } from "@/components/chunk-error-handler"
 
 import "./globals.css"
 
@@ -71,6 +72,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">
+        <ChunkErrorHandler />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <PasswordGate>
             {children}
