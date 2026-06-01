@@ -16,8 +16,11 @@
     "postinstall": "node scripts/patch-babel-types.mjs"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.67",
     "@google/genai": "^1.29.0",
+    "ai": "^6.0.194",
     "dotenv": "^17.2.3",
+    "e2b": "^2.27.0",
     "express": "^4.21.2",
     "firebase": "^12.10.0",
     "framer-motion": "^12.34.3",
