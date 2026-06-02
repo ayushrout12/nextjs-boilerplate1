@@ -1299,11 +1299,34 @@ function App() {
   };
 
   const deployToNetlify = async () => {
-    setError('Deploy backend removed. Use /download to get your project.');
+    const html = generatedHTML || streamingRaw;
+    if (!html) {
+      setError('Generate a site first, then deploy it.');
+      return;
+    }
+    setNetlifyDeploying(true);
+    setError('');
+    try {
+      const name = (prompt || 'lotus-site').slice(0, 40);
+      const res = await fetch('/api/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html, name, title: name }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || `Deploy failed (${res.status})`);
+      }
+      setNetlifyUrl(data.url);
+    } catch (e) {
+      setError(e.message || 'Deploy failed');
+    } finally {
+      setNetlifyDeploying(false);
+    }
   };
 
   const pushToGitHub = async () => {
-    setError('GitHub push backend removed. Use /download to get your project.');
+    setError('GitHub push is not configured. Use /download to get your project files.');
   };
 
   const downloadProject = async () => {

@@ -1,6 +1,27 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { getHtmlPages, getHtmlPreviewContent } from '../api';
 
+// Normalizes generated CDN-based previews so they render reliably in the iframe:
+// 1. Aliases the framer-motion UMD global so both `Motion` and `FramerMotion` work.
+// 2. Provides a `LucideReact` global (built from the vanilla `lucide` icon data),
+//    since the lucide-react CDN bundle does not expose that global.
+// 3. Re-runs Babel's JSX transform on load, since the auto-run is unreliable
+//    when the document is injected via doc.write().
+const RUNTIME_SHIM = `<script>(function(){
+  function aliasMotion(){try{var m=window.Motion||window.FramerMotion||window.framerMotion;if(m){window.Motion=m;window.FramerMotion=m;window.framerMotion=m;}}catch(e){}}
+  function makeIcon(name){return function(props){props=props||{};var R=window.React;if(!R)return null;var data=(window.lucide&&((window.lucide.icons&&window.lucide.icons[name])||window.lucide[name]))||[];var size=props.size!=null?props.size:24;var kids=(Array.isArray(data)?data:[]).map(function(n,i){return R.createElement(n[0],Object.assign({key:i},n[1]));});return R.createElement('svg',{xmlns:'http://www.w3.org/2000/svg',width:size,height:size,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:props.strokeWidth!=null?props.strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round',className:props.className,style:props.style,'aria-hidden':true},kids);};}
+  function aliasLucide(){try{if(typeof window.LucideReact==='undefined'&&typeof Proxy!=='undefined'){var p=new Proxy({},{get:function(_,name){if(typeof name!=='string'||name==='__esModule'||name==='default')return undefined;return makeIcon(name);}});window.LucideReact=p;window.lucideReact=p;}}catch(e){}}
+  aliasMotion();aliasLucide();
+  window.addEventListener('load',function(){try{aliasMotion();aliasLucide();if(window.Babel&&window.Babel.transformScriptTags){window.Babel.transformScriptTags();}}catch(e){console.error('[preview]',e);}});
+})();</script>`;
+
+function withPreviewRuntimeFixes(html) {
+  if (!html || typeof html !== 'string') return html;
+  // Inject the shim at the end of <head> so it runs after the CDN scripts load.
+  if (html.includes('</head>')) return html.replace('</head>', `${RUNTIME_SHIM}</head>`);
+  return RUNTIME_SHIM + html;
+}
+
 /**
  * HTML preview: displays generated HTML with Open in new tab and Refresh.
  * Uses doc.write (like lotus-studio) for reliable rendering.
@@ -17,7 +38,8 @@ export default function EditableHtmlPreview({ html: htmlProp, project, theme }) 
     }
   }, [pages.join(','), selectedPage]);
 
-  const html = project ? getHtmlPreviewContent(project, selectedPage) : htmlProp || '';
+  const rawHtml = project ? getHtmlPreviewContent(project, selectedPage) : htmlProp || '';
+  const html = withPreviewRuntimeFixes(rawHtml);
 
   useEffect(() => {
     if (!html || !iframeRef.current) return;
