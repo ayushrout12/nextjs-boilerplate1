@@ -38,12 +38,70 @@ function DocsChat({ theme, className = '' }) {
     if (!text || loading) return;
 
     setInput('');
+    const history = messages.map((m) => ({ role: m.role, content: m.content, images: [] }));
     setMessages((prev) => [...prev, { role: 'user', content: text }]);
     setLoading(true);
     setError(null);
 
     try {
-      setError('Docs chat backend removed.');
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: text,
+          systemInstruction: DOCS_SYSTEM_PROMPT,
+          temperature: 0.4,
+          model: 'gemini-2.5-flash',
+          history,
+          images: [],
+        }),
+      });
+
+      if (!res.ok || !res.body) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Failed to get response (${res.status})`);
+      }
+
+      setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true }]);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let answer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data:')) continue;
+          const payload = trimmed.slice(5).trim();
+          if (payload === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(payload);
+            if (parsed.error) throw new Error(parsed.error);
+            if (parsed.text) {
+              answer += parsed.text;
+              setMessages((prev) => {
+                const next = [...prev];
+                next[next.length - 1] = { role: 'assistant', content: answer, streaming: true };
+                return next;
+              });
+            }
+          } catch (e) {
+            if (e?.message && !/JSON/.test(e.message)) throw e;
+          }
+        }
+      }
+
+      setMessages((prev) => {
+        const next = [...prev];
+        next[next.length - 1] = { role: 'assistant', content: answer || 'No response.' };
+        return next;
+      });
     } catch (e) {
       const errMsg = e.message || 'Failed to get response';
       setError(errMsg);

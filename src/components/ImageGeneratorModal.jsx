@@ -16,7 +16,25 @@ export default function ImageGeneratorModal({ onClose, theme, initialPrompt = ''
     setImage(null);
     setLoading(true);
     try {
-      setError('Image generation backend removed.');
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          model: 'gemini-2.5-flash-image',
+          history: [],
+          images: [],
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Image generation failed (${res.status})`);
+      }
+      const { imageUrl } = await res.json();
+      if (!imageUrl) throw new Error('No image was returned.');
+      setImage(imageUrl);
+    } catch (e) {
+      setError(e.message || 'Image generation failed.');
     } finally {
       setLoading(false);
     }
