@@ -1,4 +1,5 @@
 import { LOTUS_SYSTEM_PROMPT } from "./systemPrompt.js";
+import { getUserApiKey } from "./apiKey.js";
 
 export interface GeneratedFile {
   path: string;
@@ -195,6 +196,7 @@ export async function runAgoodbackendTurn({
         model: selectedModel,
         history,
         images: requestImages,
+        apiKey: getUserApiKey(),
       }),
     });
 
@@ -242,6 +244,7 @@ export async function runAgoodbackendTurn({
         model: selectedModel,
         history,
         images: requestImages,
+        apiKey: getUserApiKey(),
       }),
     });
 

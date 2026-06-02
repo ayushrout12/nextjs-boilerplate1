@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import { streamText, generateText } from "ai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
@@ -64,6 +65,40 @@ const MODEL_MAP: Record<string, string> = {
 const DEFAULT_MODEL = "google/gemini-2.5-flash";
 const IMAGE_MODEL = "google/gemini-2.5-flash-image-preview";
 
+// Direct Google model ids (no "google/" prefix) for when a user supplies
+// their own Gemini API key instead of using the AI Gateway.
+const GOOGLE_MODEL_MAP: Record<string, string> = {
+  "gemini-3.1-pro-preview": "gemini-2.5-pro",
+  "gemini-3.1-flash-preview": "gemini-2.5-flash",
+  "gemini-3.1-flash-lite-preview": "gemini-2.5-flash",
+  "gemini-3-pro-preview": "gemini-2.5-pro",
+  "gemini-3-flash-preview": "gemini-2.5-flash",
+  "gemini-2.5-flash": "gemini-2.5-flash",
+  "gemini-2.5-flash-image": "gemini-2.5-flash-image-preview",
+};
+const GOOGLE_DEFAULT_MODEL = "gemini-2.5-flash";
+const GOOGLE_IMAGE_MODEL = "gemini-2.5-flash-image-preview";
+
+// Resolve which model object to use. With a user-provided Gemini key we hit
+// Google directly; otherwise we use the AI Gateway model string.
+function resolveModel(
+  modelId: string,
+  userApiKey: string | undefined,
+  forImage: boolean,
+) {
+  const key = typeof userApiKey === "string" ? userApiKey.trim() : "";
+  if (key) {
+    const google = createGoogleGenerativeAI({ apiKey: key });
+    const googleId = forImage
+      ? GOOGLE_IMAGE_MODEL
+      : GOOGLE_MODEL_MAP[modelId] || GOOGLE_DEFAULT_MODEL;
+    return google(googleId);
+  }
+  // Fall back to the AI Gateway (model string, zero-config with AI_GATEWAY_API_KEY).
+  if (forImage) return IMAGE_MODEL;
+  return MODEL_MAP[modelId] || DEFAULT_MODEL;
+}
+
 type IncomingImage = { mimeType: string; data: string };
 type IncomingMessage = {
   role: "user" | "assistant";
@@ -114,17 +149,18 @@ async function startServer() {
       history,
       model,
       images,
+      apiKey,
     } = req.body || {};
 
     try {
-      const requestedModel = MODEL_MAP[model] || DEFAULT_MODEL;
-      const isImage = model === "gemini-2.5-flash-image" || requestedModel === IMAGE_MODEL;
+      const isImage = model === "gemini-2.5-flash-image";
+      const requestedModel = resolveModel(model, apiKey, isImage);
       const messages = toModelMessages(history || [], prompt || "", images || []);
 
       // Image generation: return a single base64 data URL.
       if (isImage) {
         const result = await generateText({
-          model: IMAGE_MODEL,
+          model: requestedModel,
           messages,
         });
 
@@ -148,11 +184,18 @@ async function startServer() {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
+      let streamError: string | null = null;
+
       const result = streamText({
         model: requestedModel,
         system: systemInstruction || undefined,
         messages,
         temperature: typeof temperature === "number" ? temperature : 0.7,
+        onError: ({ error }: { error: unknown }) => {
+          streamError =
+            (error as any)?.message || "Generation failed. Check your API key.";
+          console.error("AI stream error:", error);
+        },
       });
 
       for await (const delta of result.textStream) {
@@ -161,6 +204,9 @@ async function startServer() {
         }
       }
 
+      if (streamError) {
+        res.write(`data: ${JSON.stringify({ error: streamError })}\n\n`);
+      }
       res.write("data: [DONE]\n\n");
       res.end();
     } catch (error: any) {

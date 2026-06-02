@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getUserApiKey } from '../apiKey.js';
 
 export default function ImageGeneratorModal({ onClose, theme, initialPrompt = '' }) {
   const [prompt, setPrompt] = useState(initialPrompt);
@@ -24,6 +25,7 @@ export default function ImageGeneratorModal({ onClose, theme, initialPrompt = ''
           model: 'gemini-2.5-flash-image',
           history: [],
           images: [],
+          apiKey: getUserApiKey(),
         }),
       });
       if (!res.ok) {

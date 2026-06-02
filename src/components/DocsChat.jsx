@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getUserApiKey } from '../apiKey.js';
 
 const DOCS_SYSTEM_PROMPT = `You are a helpful assistant for Lotus, an AI-powered design tool that turns prompts into full frontends. Answer questions about how to use Lotus:
 
@@ -54,6 +55,7 @@ function DocsChat({ theme, className = '' }) {
           model: 'gemini-2.5-flash',
           history,
           images: [],
+          apiKey: getUserApiKey(),
         }),
       });
 

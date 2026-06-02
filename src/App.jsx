@@ -18,6 +18,8 @@ import ProjectSidebar from './components/ProjectSidebar';
 import CommandPalette from './components/CommandPalette';
 import EditableHtmlPreview from './components/EditableHtmlPreview';
 import ShareModal from './components/ShareModal';
+import SettingsModal from './components/SettingsModal';
+import { hasUserApiKey } from './apiKey.js';
 import { useAuth } from './contexts/AuthContext';
 import { listProjects, listSharedWithMe, getProject, deleteProject } from './lib/projects';
 
@@ -159,6 +161,8 @@ function AppBody({
   sharedProjectsCount,
 }) {
   const isLight = theme === 'light';
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [usingOwnKey, setUsingOwnKey] = useState(() => hasUserApiKey());
   const borderCl = isLight ? 'border-[rgba(220,211,195,0.9)]' : 'border-white/[0.06]';
   const ghostCl = isLight ? 'bg-[#f6f4ec] hover:bg-[#e9dfcf] border-[rgba(220,211,195,0.9)] text-text-primary' : 'btn-ghost';
   const inputCl = isLight ? 'bg-[#fffaf0] border-[rgba(220,211,195,0.9)] focus:border-[#379f57]' : 'input-premium';
@@ -555,6 +559,16 @@ function AppBody({
                             </option>
                           ))}
                         </select>
+                        <motion.button
+                          type="button"
+                          onClick={() => setShowApiKeyModal(true)}
+                          className={`flex items-center gap-1.5 p-2 rounded-lg border ${borderCl} transition-colors ${usingOwnKey ? 'text-emerald-500' : isLight ? 'text-text-secondary hover:bg-[#f6f4ec]' : 'text-text-muted hover:bg-white/[0.06]'}`}
+                          title={usingOwnKey ? 'Using your Gemini API key' : 'Set your Gemini API key'}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <i className="ph ph-key text-base" />
+                        </motion.button>
                         <span className="text-[11px] text-text-muted tracking-[0.02em] uppercase font-medium">
                           {navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'} + Enter
                         </span>
@@ -922,6 +936,15 @@ function AppBody({
               </div>
             )}
       </div>
+      {showApiKeyModal && (
+        <SettingsModal
+          theme={theme}
+          onClose={() => {
+            setShowApiKeyModal(false);
+            setUsingOwnKey(hasUserApiKey());
+          }}
+        />
+      )}
     </>
   );
 }
