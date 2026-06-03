@@ -602,7 +602,6 @@ function AppBody({
                   </div>
                   </div>
                 )}
-                </div>
 
               {deployUrl && (
                 <div className="mx-4 sm:mx-6 mb-4 px-4 py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center justify-between gap-3">
@@ -610,24 +609,24 @@ function AppBody({
                   <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline flex items-center gap-1">
                     Open <i className="ph ph-arrow-square-out text-base"></i>
                   </a>
-                    </div>
+                </div>
               )}
-                {netlifyUrl && (
-                  <div className="mx-4 sm:mx-6 mb-4 px-4 py-2.5 rounded-lg bg-lotus-500/10 border border-lotus-500/20 text-lotus-400 text-sm flex items-center justify-between gap-3">
-                    <span>Deployed to Netlify</span>
-                    <a href={netlifyUrl} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline flex items-center gap-1">
-                      View site <i className="ph ph-arrow-square-out text-base"></i>
-                    </a>
-                  </div>
-                )}
-                {githubUrl && (
-                  <div className="mx-4 sm:mx-6 mb-4 px-4 py-2.5 rounded-lg bg-gray-500/10 border border-gray-500/20 text-gray-300 text-sm flex items-center justify-between gap-3">
-                    <span>Pushed to GitHub</span>
-                    <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline flex items-center gap-1">
-                      View repo <i className="ph ph-arrow-square-out text-base"></i>
-                    </a>
-              </div>
-                )}
+              {netlifyUrl && (
+                <div className="mx-4 sm:mx-6 mb-4 px-4 py-2.5 rounded-lg bg-lotus-500/10 border border-lotus-500/20 text-lotus-400 text-sm flex items-center justify-between gap-3">
+                  <span>Deployed to Netlify</span>
+                  <a href={netlifyUrl} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline flex items-center gap-1">
+                    View site <i className="ph ph-arrow-square-out text-base"></i>
+                  </a>
+                </div>
+              )}
+              {githubUrl && (
+                <div className="mx-4 sm:mx-6 mb-4 px-4 py-2.5 rounded-lg bg-gray-500/10 border border-gray-500/20 text-gray-300 text-sm flex items-center justify-between gap-3">
+                  <span>Pushed to GitHub</span>
+                  <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline flex items-center gap-1">
+                    View repo <i className="ph ph-arrow-square-out text-base"></i>
+                  </a>
+                </div>
+              )}
               {error && (
                 <div className="mx-4 sm:mx-6 mb-4 px-4 py-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -646,7 +645,7 @@ function AppBody({
                     <p className="text-emerald-400/90 text-xs">
                       Your project is ready — download the ZIP and run <code className="bg-white/10 px-1 rounded">npm install && npm run dev</code> locally.
                     </p>
-              )}
+                  )}
                 </div>
               )}
             </div>
