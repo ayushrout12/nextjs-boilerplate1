@@ -86,7 +86,15 @@ function resolveModel(
   userApiKey: string | undefined,
   forImage: boolean,
 ) {
-  const key = typeof userApiKey === "string" ? userApiKey.trim() : "";
+  // Prefer a per-request user key; otherwise use the app's configured Gemini
+  // key from the environment (the "chosen" key shared by all visitors).
+  const userKey = typeof userApiKey === "string" ? userApiKey.trim() : "";
+  const envKey = (
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.GEMINI_API_KEY ||
+    ""
+  ).trim();
+  const key = userKey || envKey;
   if (key) {
     const google = createGoogleGenerativeAI({ apiKey: key });
     const googleId = forImage
