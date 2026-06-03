@@ -67,11 +67,17 @@ const IMAGE_MODEL = "google/gemini-2.5-flash-image-preview";
 
 // Direct Google model ids (no "google/" prefix) for when a user supplies
 // their own Gemini API key instead of using the AI Gateway.
+// NOTE: free-tier Gemini keys have a quota of 0 for gemini-2.5-pro, so by
+// default we map the "pro" selections to flash (which the free tier allows).
+// Set GEMINI_ALLOW_PRO=true if you have a paid key and want real pro.
+const GOOGLE_ALLOW_PRO =
+  String(process.env.GEMINI_ALLOW_PRO || "").toLowerCase() === "true";
+const GOOGLE_PRO_MODEL = GOOGLE_ALLOW_PRO ? "gemini-2.5-pro" : "gemini-2.5-flash";
 const GOOGLE_MODEL_MAP: Record<string, string> = {
-  "gemini-3.1-pro-preview": "gemini-2.5-pro",
+  "gemini-3.1-pro-preview": GOOGLE_PRO_MODEL,
   "gemini-3.1-flash-preview": "gemini-2.5-flash",
   "gemini-3.1-flash-lite-preview": "gemini-2.5-flash",
-  "gemini-3-pro-preview": "gemini-2.5-pro",
+  "gemini-3-pro-preview": GOOGLE_PRO_MODEL,
   "gemini-3-flash-preview": "gemini-2.5-flash",
   "gemini-2.5-flash": "gemini-2.5-flash",
   "gemini-2.5-flash-image": "gemini-2.5-flash-image-preview",
@@ -200,8 +206,13 @@ async function startServer() {
         messages,
         temperature: typeof temperature === "number" ? temperature : 0.7,
         onError: ({ error }: { error: unknown }) => {
-          streamError =
-            (error as any)?.message || "Generation failed. Check your API key.";
+          const raw = (error as any)?.message || "";
+          if (/quota|rate limit|RESOURCE_EXHAUSTED|limit: 0/i.test(raw)) {
+            streamError =
+              "Your Gemini API key hit its quota. Free-tier keys can't use Pro models — switch to a Flash model, wait a moment, or use a paid key.";
+          } else {
+            streamError = raw || "Generation failed. Check your API key.";
+          }
           console.error("AI stream error:", error);
         },
       });
