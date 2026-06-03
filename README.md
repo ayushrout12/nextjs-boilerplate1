@@ -1,4 +1,4 @@
-# Jasmine
+# Lotus
 
 [![SPONSORED BY E2B FOR STARTUPS](https://img.shields.io/badge/SPONSORED%20BY-E2B%20FOR%20STARTUPS-ff8800?style=for-the-badge)](https://e2b.dev/startups)
 
@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173.
+Open http://localhost:3000.
 
 ## Vercel deployment (what the world uses)
 
@@ -22,10 +22,10 @@ Open http://localhost:5173.
 | `VITE_GROQ_API_KEY` | Yes* | [Groq](https://console.groq.com/) — at least one AI key |
 | `VITE_GEMINI_API_KEY` | Yes* | [Google AI](https://aistudio.google.com/apikey) |
 | `E2B_API_KEY` | Yes | [E2B](https://e2b.dev/dashboard) — sandbox preview |
-| `E2B_TEMPLATE_ID` | **Yes** | `jasmine-vite` — **required** or you get "no service on port 5173" |
+| `E2B_TEMPLATE_ID` | **Yes** | `lotus-vite` — **required** or you get "no service on port 5173" |
 | `VITE_FIREBASE_*` | Optional | 6 vars for auth/projects (see FIREBASE_SETUP.md) |
 
-**Before first deploy:** Run `npm run e2b:build` once locally (creates the jasmine-vite template in your E2B account). Then add `E2B_TEMPLATE_ID=jasmine-vite` to Vercel.
+**Before first deploy:** Run `npm run e2b:build` once locally (creates the lotus-vite template in your E2B account). Then add `E2B_TEMPLATE_ID=lotus-vite` to Vercel.
 
 **Apply to:** Production, Preview, Development (all three).
 
@@ -39,14 +39,14 @@ Open http://localhost:5173.
 - **Hot-reload** — File writes trigger instant preview updates.
 - **Important:** The `base` template may not have Node.js. If you see "no service on port 5173", build the custom template:
   ```bash
-  npm run e2b:build   # Creates jasmine-vite template with Node + Vite
+  npm run e2b:build   # Creates lotus-vite template with Node + Vite
   ```
-  Then set `E2B_TEMPLATE_ID=jasmine-vite` in Vercel → Environment Variables.
+  Then set `E2B_TEMPLATE_ID=lotus-vite` in Vercel → Environment Variables.
 - Config: `api/lib/sandbox-config.js` (timeout, port, poll attempts).
 
 ### Sandbox not starting on Vercel?
 
-- **E2B_TEMPLATE_ID=jasmine-vite** — Must be set. Without it, base template has no Node → "no service on port 5173".
+- **E2B_TEMPLATE_ID=lotus-vite** — Must be set. Without it, base template has no Node → "no service on port 5173".
 - **E2B_API_KEY** — Set for Production, Preview, Development.
 - **Redeploy** — New env vars only apply after redeploy.
 - **Vercel Pro** — Sandbox endpoints use maxDuration: 120s. Hobby plan limits to 10s; upgrade to Pro if timeouts occur.
