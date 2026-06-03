@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 5173,
+      host: true,
+      // Allow Vercel preview / sandbox hosts (e.g. *.vercel.run, *.vusercontent.net)
+      allowedHosts: true,
     },
   }
 })
