@@ -1,0 +1,37 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+  directory = "netlify/functions"
+
+# AI generation (text stream + image)
+[[redirects]]
+  from = "/api/generate"
+  to = "/.netlify/functions/generate"
+  status = 200
+  force = true
+
+# Publish a generated site to Supabase
+[[redirects]]
+  from = "/api/deploy"
+  to = "/.netlify/functions/deploy"
+  status = 200
+  force = true
+
+# Serve a published site by slug
+[[redirects]]
+  from = "/s/*"
+  to = "/.netlify/functions/serve/:splat"
+  status = 200
+  force = true
+
+# SPA fallback (must be last)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

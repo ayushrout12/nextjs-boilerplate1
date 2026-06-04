@@ -649,6 +649,7 @@ function AppBody({
                 </div>
               )}
             </div>
+            </div>
             </Panel>
             <Separator
               className={`w-6 shrink-0 cursor-col-resize flex items-center justify-center transition-colors hover:bg-white/10 active:bg-lotus-400/20 ${borderCl} border-r`}
@@ -1335,7 +1336,15 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ html, name, title: name }),
       });
-      const data = await res.json();
+      const raw = await res.text();
+      let data = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        throw new Error(
+          `Deploy failed (${res.status}). The server returned an unexpected response. Check that the deploy function and its environment variables are configured.`,
+        );
+      }
       if (!res.ok || !data.success) {
         throw new Error(data.error || `Deploy failed (${res.status})`);
       }

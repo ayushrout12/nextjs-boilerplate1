@@ -205,7 +205,16 @@ export async function runAgoodbackendTurn({
       throw new Error(err.error || `Image generation failed (${response.status})`);
     }
 
-    const { imageUrl } = await response.json();
+    const imageRaw = await response.text();
+    let imageData: any = {};
+    try {
+      imageData = imageRaw ? JSON.parse(imageRaw) : {};
+    } catch {
+      throw new Error(
+        `Image generation failed (${response.status}). The server returned an unexpected response.`,
+      );
+    }
+    const { imageUrl } = imageData;
 
     if (imageUrl) {
       const imageHtml = `<!DOCTYPE html>
