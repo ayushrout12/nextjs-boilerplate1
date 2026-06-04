@@ -649,6 +649,7 @@ function AppBody({
                 </div>
               )}
             </div>
+            </div>
             </Panel>
             <Separator
               className={`w-6 shrink-0 cursor-col-resize flex items-center justify-center transition-colors hover:bg-white/10 active:bg-lotus-400/20 ${borderCl} border-r`}
