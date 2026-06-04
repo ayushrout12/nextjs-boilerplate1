@@ -32,7 +32,14 @@ export default function ImageGeneratorModal({ onClose, theme, initialPrompt = ''
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `Image generation failed (${res.status})`);
       }
-      const { imageUrl } = await res.json();
+      const raw = await res.text();
+      let data = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        throw new Error(`Image generation failed (${res.status}). The server returned an unexpected response.`);
+      }
+      const { imageUrl } = data;
       if (!imageUrl) throw new Error('No image was returned.');
       setImage(imageUrl);
     } catch (e) {
