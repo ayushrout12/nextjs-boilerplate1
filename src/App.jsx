@@ -9,7 +9,6 @@ import BlogPage from './pages/BlogPage';
 import DocsPage from './pages/DocsPage';
 import NotificationsPage from './pages/NotificationsPage';
 import WaitlistPage from './pages/WaitlistPage';
-import PasswordGate from './components/PasswordGate';
 import FileExplorer from './FileExplorer';
 import BlurPopUpByWord from './components/BlurPopUpByWord';
 import AuthPage from './components/AuthPage';
@@ -22,10 +21,11 @@ import SettingsModal from './components/SettingsModal';
 import { hasUserApiKey } from './apiKey.js';
 import { useAuth } from './contexts/AuthContext';
 import { listProjects, listSharedWithMe, getProject, deleteProject } from './lib/projects';
+import { pageTransition } from './lib/animations';
 
 const EASE = [0.22, 1, 0.36, 1];
-/** Set to true to show waitlist on / and password gate on /website. Set to false to go straight to the website. */
-const WAITLIST_ENABLED = true;
+/** Password gateway permanently removed — the site is served directly at the root. */
+const WAITLIST_ENABLED = false;
 
 function FilePreviewChip({ f, i, onRemove, isLight, compact }) {
   const chipCl = isLight ? 'bg-[#f6f4ec] text-text-secondary border border-[rgba(220,211,195,0.9)]' : 'bg-white/10 text-text-secondary border border-white/10';
@@ -353,40 +353,51 @@ function AppBody({
 
       <div className="flex-1 flex min-h-0 min-w-0">
         {marketingView ? (
-          activePage === 'blog' ? (
-            <BlogPage
-              onStartDesigning={onStartDesigning}
-              onBackHome={onShowHome}
-              onOpenPost={onOpenPost}
-              onBackToList={onBackToList}
-              activeSlug={blogSlug}
-              theme={theme}
-            />
-          ) : activePage === 'docs' ? (
-            <DocsPage
-              onStartDesigning={onStartDesigning}
-              onBackHome={onShowHome}
-              theme={theme}
-            />
-          ) : activePage === 'notifications' ? (
-            <NotificationsPage
-              theme={theme}
-              user={user}
-              sharedProjects={sharedProjects}
-              loading={loadingSharedProjects}
-              onLoadProject={onLoadProject}
-              onBackHome={onShowHome}
-              onStartDesigning={onStartDesigning}
-              onRefresh={onRefreshSharedProjects}
-            />
-          ) : (
-            <LandingPage
-              onStartDesigning={onStartDesigning}
-              onSelectPrompt={onSelectPrompt}
-              onShowBlog={onShowBlog}
-              theme={theme}
-            />
-          )
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${activePage}-${blogSlug || 'index'}`}
+              variants={pageTransition}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="flex-1 flex min-h-0 min-w-0"
+            >
+              {activePage === 'blog' ? (
+                <BlogPage
+                  onStartDesigning={onStartDesigning}
+                  onBackHome={onShowHome}
+                  onOpenPost={onOpenPost}
+                  onBackToList={onBackToList}
+                  activeSlug={blogSlug}
+                  theme={theme}
+                />
+              ) : activePage === 'docs' ? (
+                <DocsPage
+                  onStartDesigning={onStartDesigning}
+                  onBackHome={onShowHome}
+                  theme={theme}
+                />
+              ) : activePage === 'notifications' ? (
+                <NotificationsPage
+                  theme={theme}
+                  user={user}
+                  sharedProjects={sharedProjects}
+                  loading={loadingSharedProjects}
+                  onLoadProject={onLoadProject}
+                  onBackHome={onShowHome}
+                  onStartDesigning={onStartDesigning}
+                  onRefresh={onRefreshSharedProjects}
+                />
+              ) : (
+                <LandingPage
+                  onStartDesigning={onStartDesigning}
+                  onSelectPrompt={onSelectPrompt}
+                  onShowBlog={onShowBlog}
+                  theme={theme}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         ) : hasOutput ? (
           <Group orientation="horizontal" id="lotus-split" className="flex-1 min-h-0 min-w-0" resizeTargetMinimumSize={{ fine: 32, coarse: 44 }}>
             <Panel defaultSize="50" minSize="35" maxSize="75" className="flex flex-col min-w-0 overflow-hidden">
@@ -954,9 +965,6 @@ function App() {
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const isRoot = pathname === '' || pathname === '/';
   const isWebsite = pathname.startsWith('/website');
-  const [websiteUnlocked, setWebsiteUnlocked] = useState(() =>
-    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('website_unlocked') === '1'
-  );
   const [prompt, setPrompt] = useState('');
   const [generatedHTML, setGeneratedHTML] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -1589,18 +1597,6 @@ function App() {
 
   if (WAITLIST_ENABLED && isRoot) {
     return <WaitlistPage />;
-  }
-  if (WAITLIST_ENABLED && isWebsite && !websiteUnlocked) {
-    return (
-      <PasswordGate
-        onUnlock={() => {
-          if (typeof sessionStorage !== 'undefined') {
-            sessionStorage.setItem('website_unlocked', '1');
-          }
-          setWebsiteUnlocked(true);
-        }}
-      />
-    );
   }
   if (WAITLIST_ENABLED && !isWebsite && !isRoot) {
     return null;

@@ -35,6 +35,22 @@ export const heroItem = {
   },
 };
 
+export const pageTransition = {
+  initial: { opacity: 0, filter: 'blur(8px)', y: 18 },
+  animate: {
+    opacity: 1,
+    filter: 'blur(0px)',
+    y: 0,
+    transition: { duration: 0.5, ease: LINEAR_EASE },
+  },
+  exit: {
+    opacity: 0,
+    filter: 'blur(8px)',
+    y: -12,
+    transition: { duration: 0.3, ease: LINEAR_EASE },
+  },
+};
+
 export const illustrate = {
   initial: {
     opacity: 0,
