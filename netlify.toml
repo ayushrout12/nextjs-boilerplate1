@@ -9,17 +9,23 @@
   node_bundler = "esbuild"
   directory = "netlify/functions"
 
-# AI generation (text stream + image)
+# AI generation
 [[redirects]]
   from = "/api/generate"
   to = "/.netlify/functions/generate"
   status = 200
   force = true
 
-# Publish a generated site to Supabase
+# Publish a generated site
 [[redirects]]
   from = "/api/deploy"
-  to = "/.netlify/functions/deploy"
+  to = "/.netlify/functions/publish"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/publish"
+  to = "/.netlify/functions/publish"
   status = 200
   force = true
 
@@ -30,7 +36,7 @@
   status = 200
   force = true
 
-# SPA fallback (must be last)
+# SPA fallback must be last
 [[redirects]]
   from = "/*"
   to = "/index.html"
