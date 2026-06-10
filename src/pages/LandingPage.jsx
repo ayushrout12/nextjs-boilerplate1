@@ -65,15 +65,19 @@ function DemoVideoSection({ isLight, borderCl }) {
 
   return (
     <section id="demo" ref={ref} className={`pt-24 pb-32 lg:pt-32 px-6 md:px-12 lg:px-20 border-t ${borderCl}`}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <motion.div
-          className={`aspect-video rounded-2xl border overflow-hidden ${isLight ? 'border-neutral-200 bg-neutral-100' : 'border-white/10 bg-white/[0.04]'}`}
+          className={`aspect-video rounded-3xl border overflow-hidden shadow-2xl ${
+            isLight
+              ? 'border-neutral-200 bg-neutral-100'
+              : 'border-white/10 bg-white/[0.04]'
+          }`}
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6 }}
         >
           <video
-            src="/Lotus%20Launch%20Video.mp4"
+            src="/lotus-launch-video.mp4"
             autoPlay
             muted
             loop
