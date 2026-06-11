@@ -9,34 +9,24 @@
   node_bundler = "esbuild"
   directory = "netlify/functions"
 
-# AI generation
 [[redirects]]
   from = "/api/generate"
   to = "/.netlify/functions/generate"
   status = 200
   force = true
 
-# Publish a generated site
 [[redirects]]
   from = "/api/deploy"
-  to = "/.netlify/functions/publish"
+  to = "/.netlify/functions/deploy"
   status = 200
   force = true
 
-[[redirects]]
-  from = "/api/publish"
-  to = "/.netlify/functions/publish"
-  status = 200
-  force = true
-
-# Serve a published site by slug
 [[redirects]]
   from = "/s/*"
   to = "/.netlify/functions/serve/:splat"
   status = 200
   force = true
 
-# SPA fallback must be last
 [[redirects]]
   from = "/*"
   to = "/index.html"

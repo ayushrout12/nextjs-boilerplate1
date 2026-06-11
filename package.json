@@ -19,7 +19,7 @@
     "@ai-sdk/google": "^3.0.80",
     "@ai-sdk/openai": "^3.0.67",
     "@google/genai": "^1.29.0",
-    "@supabase/supabase-js": "^2.106.2",
+    "@supabase/supabase-js": "^2.108.1",
     "ai": "^6.0.194",
     "dotenv": "^17.2.3",
     "e2b": "^2.27.0",
