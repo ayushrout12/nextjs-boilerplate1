@@ -59,10 +59,26 @@ export default function EditableHtmlPreview({ html: htmlProp, project, theme }) 
 
   const openInNewTab = useCallback(() => {
     if (!html) return;
+    // Primary path: a Blob URL opened via a synchronous anchor click. This is
+    // the most reliable way to open generated HTML in a new tab from ANY
+    // context — including when Lotus itself is running inside a sandboxed
+    // iframe (e.g. an embedded preview). In those contexts
+    // `window.open('', '_blank')` returns a window whose document can't be
+    // written to (or returns null), which produced a blank tab.
+    //
+    // We intentionally do NOT set `rel="noopener"` here: that triggers a
+    // long-standing Chrome bug where blob: URLs open as a blank page. The blob
+    // is kept alive long enough for slow CDN scripts inside the doc to load.
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
-    window.open(url, '_blank', 'noopener,noreferrer');
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
   }, [html]);
 
   return (
