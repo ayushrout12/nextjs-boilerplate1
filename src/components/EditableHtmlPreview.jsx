@@ -1,122 +1,172 @@
 import React, { useState, useEffect } from 'react';
 
-export default function LotusPreviewEngine({ files, activeFile = 'index.html' }) {
-  const [viewMode, setViewMode] = useState('preview'); // 'preview' | 'files'
-  const [blobUrl, setBlobUrl] = useState('');
+export default function EditableHtmlPreview({ rawCode }) {
+  const [activeTab, setActiveTab] = useState('preview'); // Default fallback if needed
+  const [iframeUrl, setIframeUrl] = useState('');
+  const [parsedFiles, setParsedFiles] = useState({});
+  const [summaryMessage, setSummaryMessage] = useState('');
 
-  // 1. Compile files into a single standalone HTML document containing tailwind + code
-  const generateHTMLContent = () => {
-    const mainHtml = files?.[activeFile] || files?.['index.html'] || '<h1>No content found</h1>';
-    
-    return `
+  useEffect(() => {
+    if (!rawCode) return;
+
+    // 1. EXTRACT JSON OR FILE BLOCKS FROM THE LLM RESPONSE
+    let filesData = {};
+    const jsonMatch = rawCode.match(/```json\n([\s\S]*?)\n```/);
+
+    if (jsonMatch) {
+      try {
+        filesData = JSON.parse(jsonMatch[1]);
+      } catch (e) {
+        console.error("Failed parsing inline JSON block, attempting line fallback...", e);
+      }
+    }
+
+    // Fallback: If it's not a direct JSON block, parse out ---FILE:filename--- blocks manually
+    if (Object.keys(filesData).length === 0) {
+      const fileParts = rawCode.split(/---FILE:\s*([^\s]+)\s*---/);
+      for (let i = 1; i < fileParts.length; i += 2) {
+        const filename = fileParts[i];
+        const content = fileParts[i + 1];
+        if (filename && content) {
+          filesData[filename] = content.trim().replace(/^```[a-zA-Z]*\n/, '').replace(/\n```$/, '');
+        }
+      }
+    }
+
+    // If it's just raw HTML/JS text with no file markers, treat it as a single index.html
+    if (Object.keys(filesData).length === 0) {
+      filesData['index.html'] = rawCode;
+    }
+
+    setParsedFiles(filesData);
+    const totalFiles = Object.keys(filesData).length;
+    setSummaryMessage(`✅ Updated ${totalFiles} file${totalFiles > 1 ? 's' : ''} successfully.`);
+
+    // 2. BUNDLE COMPLEX VITE/REACT ON THE FLY FOR THE BLOB PREVIEW
+    // Extract key files or fall back to defaults
+    const htmlContent = filesData['index.html'] || `
       <!DOCTYPE html>
       <html lang="en">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <script src="https://cdn.tailwindcss.com"></script>
-          <style>
-            body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
-          </style>
+          <title>Preview</title>
+          <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Inter:wght@300;400;500;600;700&display=swap">
         </head>
-        <body>
-          ${mainHtml}
+        <body class="bg-gray-50 text-gray-900">
+          <div id="root"></div>
         </body>
       </html>
     `;
-  };
 
-  // 2. Generate and rotate the local Blob URL whenever code changes
-  useEffect(() => {
-    const htmlContent = generateHTMLContent();
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    // Extract styles or configurations
+    const tailwindConfig = filesData['tailwind.config.js'] || '';
+    const customCss = filesData['src/index.css'] || filesData['index.css'] || '';
+
+    // Extract core logic files
+    const mainAppCode = filesData['src/App.jsx'] || filesData['App.jsx'] || filesData['src/App.tsx'] || '';
+    const mainJsCode = filesData['src/main.jsx'] || filesData['main.js'] || filesData['src/index.js'] || '';
+
+    // Create a client-side unified preview that resolves modern standard browser modules via ESM
+    const bundledHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <style>
+          ${customCss}
+          body { font-family: 'Inter', sans-serif; }
+        </style>
+        <script type="importmap">
+          {
+            "imports": {
+              "react": "https://esm.sh/react@18.2.0",
+              "react-dom": "https://esm.sh/react-dom@18.2.0",
+              "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+              "framer-motion": "https://esm.sh/framer-motion@10.16.4",
+              "lucide-react": "https://esm.sh/lucide-react@0.263.1"
+            }
+          }
+        </script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+      </head>
+      <body>
+        <div id="root"></div>
+        
+        <script type="text/babel" data-type="module">
+          import React from 'react';
+          import { createRoot } from 'react-dom/client';
+
+          // Inline child component dependencies if written by LLM
+          ${Object.keys(filesData)
+            .filter(f => f.includes('components/') || (f.endsWith('.jsx') && !f.includes('App') && !f.includes('main')))
+            .map(f => `// File: ${f}\n${filesData[f]}`)
+            .join('\n\n')
+            .replace(/import.*?from.*/g, '') // Strip imports to prevent compilation crashes in inline babel
+            .replace(/export default/g, 'const ' + 'ExportedComponent = ')
+          }
+
+          // Core Application Code
+          ${mainAppCode ? mainAppCode.replace(/import.*?from.*/g, '') : `const App = () => <div>No App.jsx file specified.</div>;`}
+
+          // Render Initialization
+          try {
+            const root = createRoot(document.getElementById('root'));
+            // Look for whatever component was fallback or main exported
+            const TargetApp = typeof App !== 'undefined' ? App : (typeof ExportedComponent !== 'undefined' ? ExportedComponent : null);
+            if (TargetApp) {
+              root.render(React.createElement(TargetApp));
+            } else {
+              document.getElementById('root').innerHTML = '<div style="padding:20px;color:red;">Error: Could not locate root App component interface.</div>';
+            }
+          } catch (err) {
+            document.getElementById('root').innerHTML = '<div style="padding:20px;color:red;">Runtime Build Error: ' + err.message + '</div>';
+          }
+        </script>
+      </body>
+      </html>
+    `;
+
+    // Generate fresh execution blob URL
+    const blob = new Blob([bundledHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
-    
-    setBlobUrl(url);
+    setIframeUrl(url);
 
-    // Clean up memory to avoid memory leaks
+    // Cleanup reference on unmount or updates
     return () => URL.revokeObjectURL(url);
-  }, [files, activeFile]);
-
-  const handleOpenNewTab = () => {
-    if (blobUrl) {
-      window.open(blobUrl, '_blank');
-    }
-  };
-
-  const handleRefresh = () => {
-    const currentUrl = blobUrl;
-    setBlobUrl('');
-    setTimeout(() => setBlobUrl(currentUrl), 50);
-  };
+  }, [rawCode]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
-      {/* Top Preview Control Header MenuBar matched to dihsign */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[#F3F4F6] bg-white select-none">
-        <div className="flex items-center gap-1 bg-[#F3F4F6] p-0.5 rounded-lg">
-          <button
-            onClick={() => setViewMode('files')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all ${
-              viewMode === 'files' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            {/* Code SVG Icon */}
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Files
-          </button>
-          <button
-            onClick={() => setViewMode('preview')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-md transition-all ${
-              viewMode === 'preview' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            {/* Eye SVG Icon */}
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            Preview
-          </button>
+    <div className="w-full h-full flex flex-col bg-[#050812] text-white overflow-hidden relative">
+      {/* CRITICAL HACKATHON FIX: Secondary inner navigation headers/tabs are REMOVED here. 
+        It defers to the main layout application controls entirely.
+      */}
+      
+      {/* Dynamic Compilation Status Indicator */}
+      {summaryMessage && (
+        <div className="bg-[#1A2B42]/80 border-b border-[#B89C5D]/30 px-4 py-2 text-xs font-mono text-[#F9F8F6] flex justify-between items-center tracking-wide">
+          <span>{summaryMessage}</span>
+          <span className="text-[10px] bg-[#B89C5D] text-[#0A1128] px-1.5 py-0.5 rounded uppercase font-bold tracking-tight">
+            Live Sandbox
+          </span>
         </div>
+      )}
 
-        {viewMode === 'preview' && (
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={handleOpenNewTab}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 border border-[#E5E7EB] bg-white rounded-md hover:bg-gray-50 font-medium transition-colors shadow-sm"
-            >
-              {/* External Link SVG Icon */}
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              Open in new tab
-            </button>
-            <button 
-              onClick={handleRefresh}
-              className="p-1.5 text-gray-400 hover:text-gray-600 border border-[#E5E7EB] bg-white rounded-md hover:bg-gray-50 shadow-sm transition-colors"
-            >
-              {/* Refresh SVG Icon */}
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Content Rendering Container View */}
-      <div className="flex-1 bg-[#FAFAFA] relative h-full overflow-hidden">
-        {viewMode === 'preview' ? (
-          blobUrl ? (
-            <iframe
-              src={blobUrl}
-              title="Lotus Render Shell"
-              className="w-full h-full bg-white border-0"
-              sandbox="allow-scripts allow-same-origin"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 font-medium tracking-wide">
-              Ready to render...
-            </div>
-          )
+      {/* Main Execution Viewport */}
+      <div className="flex-1 w-full h-full bg-white relative">
+        {iframeUrl ? (
+          <iframe
+            src={iframeUrl}
+            title="Lotus Live Preview"
+            className="w-full h-full border-none"
+            sandbox="allow-scripts allow-modals allow-same-origin"
+          />
         ) : (
-          /* File viewer fallback window layout */
-          <div className="p-4 font-mono text-xs text-gray-700 overflow-auto h-full bg-white leading-relaxed">
-            <pre className="whitespace-pre-wrap">{files?.[activeFile] || ''}</pre>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#050812] text-gray-400 p-6 text-center">
+            <div className="w-8 h-8 border-4 border-[#B89C5D] border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="font-mono text-sm tracking-wide">Compiling workspace and resolving dependencies...</p>
           </div>
         )}
       </div>
