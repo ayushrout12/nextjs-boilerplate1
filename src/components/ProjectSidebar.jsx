@@ -6,7 +6,7 @@ export default function ProjectSidebar({
   isOpen,
   onClose,
   onToggle,
-  projects,
+  projects = [],
   onLoadProject,
   onDeleteProject,
   onNewProject,
@@ -16,6 +16,7 @@ export default function ProjectSidebar({
   loadingProjects,
   theme,
   user,
+  onOpenAuth, // Added callback property to trigger the AuthModal from the sidebar if unauthenticated
 }) {
   const isLight = theme === 'light';
   const borderCl = isLight ? 'border-zinc-200' : 'border-white/[0.06]';
@@ -60,7 +61,7 @@ export default function ProjectSidebar({
             <BlurPopUpByWord text="Projects" wordDelay={0.03} />
           </h3>
           <div className="flex items-center gap-1">
-            {onRefresh && (
+            {onRefresh && user && (
               <button
                 onClick={onRefresh}
                 disabled={loadingProjects}
@@ -71,7 +72,14 @@ export default function ProjectSidebar({
               </button>
             )}
             <button
-              onClick={() => { onNewProject?.(); if (user) onClose(); }}
+              onClick={() => { 
+                if (!user) {
+                  onOpenAuth?.();
+                } else {
+                  onNewProject?.(); 
+                  onClose(); 
+                }
+              }}
               className="p-2 text-text-muted hover:text-text-primary rounded-lg transition-colors"
               title="New project"
             >
@@ -85,8 +93,24 @@ export default function ProjectSidebar({
             </button>
           </div>
         </div>
+        
         <div className="flex-1 overflow-y-auto py-2">
-          {loadingProjects ? (
+          {!user ? (
+            /* Unauthenticated View matching Jasmine's blank structural constraints */
+            <div className="px-4 py-12 text-center flex flex-col items-center justify-center">
+              <img src="/empty-state.png" alt="" className="w-24 h-24 mx-auto mb-4 rounded-xl object-cover opacity-60 mix-blend-luminosity" />
+              <p className={`${textCl} text-sm font-medium mb-3 px-2`}>
+                Sign in to sync and save your design developments.
+              </p>
+              <button
+                type="button"
+                onClick={onOpenAuth}
+                className="px-4 py-2 text-xs font-semibold bg-lotus-400 text-white rounded-xl shadow-sm hover:bg-lotus-500 transition-colors"
+              >
+                Sign In
+              </button>
+            </div>
+          ) : loadingProjects ? (
             <div className="px-4 py-8 text-center text-text-muted text-sm">
               <i className="ph ph-circle-notch animate-spin text-2xl block mb-2"></i>
               Loading projects...
