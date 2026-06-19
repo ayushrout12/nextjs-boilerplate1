@@ -5,6 +5,12 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
+// Load env from the files this environment actually uses. dotenv does not
+// override already-set vars, so order = priority. The plain ".env" rarely
+// exists here; the real keys live in .env.development.local and the shared
+// project env file outside the project dir.
+dotenv.config({ path: ".env.development.local" });
+dotenv.config({ path: "/vercel/share/.env.project" });
 dotenv.config();
 
 // Supabase client for deploy/publish (stores generated sites, served worldwide).
@@ -92,23 +98,34 @@ function resolveModel(
   userApiKey: string | undefined,
   forImage: boolean,
 ) {
-  // Prefer a per-request user key; otherwise use the app's configured Gemini
-  // key from the environment (the "chosen" key shared by all visitors).
+  // 1) A per-request user key always wins: hit Google directly with it.
   const userKey = typeof userApiKey === "string" ? userApiKey.trim() : "";
-  const envKey = (
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    ""
-  ).trim();
-  const key = userKey || envKey;
-  if (key) {
-    const google = createGoogleGenerativeAI({ apiKey: key });
+  if (userKey) {
+    const google = createGoogleGenerativeAI({ apiKey: userKey });
     const googleId = forImage
       ? GOOGLE_IMAGE_MODEL
       : GOOGLE_MODEL_MAP[modelId] || GOOGLE_DEFAULT_MODEL;
     return google(googleId);
   }
-  // Fall back to the AI Gateway (model string, zero-config with AI_GATEWAY_API_KEY).
+  // 2) Prefer the AI Gateway (paid, reliable, no free-tier quota=0 issues).
+  if (process.env.AI_GATEWAY_API_KEY) {
+    if (forImage) return IMAGE_MODEL;
+    return MODEL_MAP[modelId] || DEFAULT_MODEL;
+  }
+  // 3) Last resort: the app's configured Gemini key from the environment.
+  const envKey = (
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    process.env.GEMINI_API_KEY ||
+    ""
+  ).trim();
+  if (envKey) {
+    const google = createGoogleGenerativeAI({ apiKey: envKey });
+    const googleId = forImage
+      ? GOOGLE_IMAGE_MODEL
+      : GOOGLE_MODEL_MAP[modelId] || GOOGLE_DEFAULT_MODEL;
+    return google(googleId);
+  }
+  // 4) Nothing configured — fall back to the Gateway model string anyway.
   if (forImage) return IMAGE_MODEL;
   return MODEL_MAP[modelId] || DEFAULT_MODEL;
 }
