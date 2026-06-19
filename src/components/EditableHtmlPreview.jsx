@@ -85,8 +85,12 @@ const PREVIEW_RUNTIME = `
     }
   }
 
-  // ---- lucide-react: ensure window.LucideReact exists ----
-  if (typeof window.LucideReact === 'undefined' && R) {
+  // ---- lucide icons: ensure every global name the model might use exists ----
+  // The lucide-react CDN has NO browser UMD build (404s), and generated code
+  // variously references lucide, LucideReact, or lucideReact. We back all of
+  // them with a real icon set when window.lucide (the working vanilla UMD
+  // build) is present, and fall back to a generic icon otherwise.
+  if (R) {
     var GenericIcon = R.forwardRef(function (props, ref) {
       var p = Object.assign({}, props);
       var size = p.size || 24; delete p.size;
@@ -95,17 +99,68 @@ const PREVIEW_RUNTIME = `
         viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
         strokeWidth: p.strokeWidth || 2, strokeLinecap: 'round', strokeLinejoin: 'round'
       }, p),
-        R.createElement('path', { d: 'M5 12h14M12 5v14' })
+        R.createElement('circle', { cx: 12, cy: 12, r: 9 })
       );
     });
-    window.LucideReact = new Proxy({}, {
+
+    // If the vanilla lucide UMD is loaded, build real React icons from its
+    // icon node data (name -> array of [tag, attrs] children).
+    var lucideNodes = (window.lucide && window.lucide.icons) ? window.lucide.icons : null;
+    var iconCache = {};
+    function toPascal(name) {
+      return String(name).replace(/(^|[-_ ])(\\w)/g, function (_, __, c) { return c.toUpperCase(); });
+    }
+    function realIcon(pascalName) {
+      if (!lucideNodes) return null;
+      if (iconCache[pascalName]) return iconCache[pascalName];
+      // lucide vanilla keys are kebab-case; find a matching one.
+      var kebab = pascalName.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/([A-Z])([A-Z][a-z])/g, '$1-$2').toLowerCase();
+      var node = lucideNodes[kebab] || lucideNodes[pascalName] || null;
+      if (!node) return null;
+      var Comp = R.forwardRef(function (props, ref) {
+        var p = Object.assign({}, props);
+        var size = p.size || 24; delete p.size;
+        var children = (node || []).map(function (child, i) {
+          return R.createElement(child[0], Object.assign({ key: i }, child[1]));
+        });
+        return R.createElement('svg', Object.assign({
+          ref: ref, xmlns: 'http://www.w3.org/2000/svg', width: size, height: size,
+          viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+          strokeWidth: p.strokeWidth || 2, strokeLinecap: 'round', strokeLinejoin: 'round'
+        }, p), children);
+      });
+      iconCache[pascalName] = Comp;
+      return Comp;
+    }
+
+    var iconProxy = new Proxy({}, {
       get: function (_t, name) {
         if (name === '__esModule') return false;
-        if (name === 'default') return window.LucideReact;
-        if (name === 'createLucideIcon') return function () { return GenericIcon; };
-        return GenericIcon;
+        if (typeof name !== 'string') return GenericIcon;
+        if (name === 'default') return iconProxy;
+        if (name === 'createLucideIcon' || name === 'icons') {
+          return name === 'icons' ? (lucideNodes || {}) : function () { return GenericIcon; };
+        }
+        return realIcon(toPascal(name)) || GenericIcon;
       }
     });
+
+    if (typeof window.LucideReact === 'undefined') window.LucideReact = iconProxy;
+    if (typeof window.lucideReact === 'undefined') window.lucideReact = iconProxy;
+    // Preserve real vanilla lucide (it has createIcons()) but make destructured
+    // PascalCase icon access return React components.
+    if (typeof window.lucide === 'undefined') {
+      window.lucide = iconProxy;
+    } else {
+      var realLucide = window.lucide;
+      window.lucide = new Proxy(realLucide, {
+        get: function (t, name) {
+          if (name in t) return t[name];
+          if (typeof name === 'string') return realIcon(toPascal(name)) || GenericIcon;
+          return undefined;
+        }
+      });
+    }
   }
 })();
 </script>
@@ -116,11 +171,91 @@ const PREVIEW_RUNTIME = `
  * immediately before </head> when possible (after CDN <script> tags), otherwise
  * after <body>, otherwise prepend it.
  */
+// The one icon library that actually ships a working browser UMD build. We
+// load it so the shim can build real icons (it exposes window.lucide.icons).
+const LUCIDE_UMD = '<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>\n';
+
+// Map common bare module specifiers to the global object they resolve to in
+// the preview runtime (all loaded via CDN UMD + our shim).
+function globalForModule(spec) {
+  const s = spec.replace(/['"]/g, '');
+  if (s === 'react') return 'window.React';
+  if (s === 'react-dom' || s === 'react-dom/client') return 'window.ReactDOM';
+  if (s === 'framer-motion' || s === 'motion/react' || s === 'motion') return 'window.FramerMotion';
+  if (s === 'lucide-react' || s === 'lucide') return 'window.LucideReact';
+  return null;
+}
+
+/**
+ * Browser Babel cannot run ES `import`/`export` statements ("Cannot use import
+ * statement outside a module"). Generated code sometimes includes them. We
+ * rewrite imports into `const … = global` destructuring against the CDN globals
+ * and strip `export` keywords, so the babel block runs as a plain script.
+ */
+function rewriteModuleSyntax(code) {
+  let out = code;
+
+  // import Default, { a, b as c } from 'x';  |  import { a } from 'x';  |  import Def from 'x';
+  out = out.replace(
+    /import\s+([^;'"]+?)\s+from\s+(['"][^'"]+['"])\s*;?/g,
+    (full, clause, spec) => {
+      const g = globalForModule(spec);
+      if (!g) return ''; // unknown dep: drop the import (deps are global/unused)
+      const parts = [];
+      const named = clause.match(/\{([^}]*)\}/);
+      const defMatch = clause.replace(/\{[^}]*\}/, '').replace(/,/g, '').trim();
+      if (defMatch && defMatch !== '*') {
+        // default import: prefer `.default` then the namespace itself
+        parts.push(`const ${defMatch} = (${g} && ${g}.default) || ${g};`);
+      }
+      const nsMatch = clause.match(/\*\s+as\s+([A-Za-z0-9_$]+)/);
+      if (nsMatch) parts.push(`const ${nsMatch[1]} = ${g};`);
+      if (named && named[1].trim()) {
+        const names = named[1]
+          .split(',')
+          .map((n) => n.trim())
+          .filter(Boolean)
+          .map((n) => n.replace(/\s+as\s+/, ': '))
+          .join(', ');
+        if (names) parts.push(`const { ${names} } = ${g};`);
+      }
+      return parts.join('\n');
+    }
+  );
+
+  // bare side-effect imports: import 'x';
+  out = out.replace(/import\s+(['"][^'"]+['"])\s*;?/g, '');
+  // export default X;  -> X is just defined; drop the keyword
+  out = out.replace(/export\s+default\s+/g, '');
+  // export const/function/class/let/var  -> strip the `export `
+  out = out.replace(/export\s+(const|function|class|let|var)\b/g, '$1');
+  // export { ... };  -> remove entirely
+  out = out.replace(/export\s*\{[^}]*\}\s*;?/g, '');
+
+  return out;
+}
+
 function withPreviewRuntime(html) {
   if (!html) return html;
-  if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, PREVIEW_RUNTIME + '</head>');
-  if (/<body[^>]*>/i.test(html)) return html.replace(/(<body[^>]*>)/i, '$1' + PREVIEW_RUNTIME);
-  return PREVIEW_RUNTIME + html;
+  // Remove the broken lucide-react CDN tags (they 404 and waste a request).
+  let out = html.replace(
+    /<script[^>]*src=["'][^"']*lucide-react[^"']*["'][^>]*>\s*<\/script>\s*/gi,
+    ''
+  );
+  // Rewrite ES module syntax inside text/babel script blocks into plain script.
+  out = out.replace(
+    /(<script\b[^>]*type=["']text\/babel["'][^>]*>)([\s\S]*?)(<\/script>)/gi,
+    (full, open, body, close) => open + rewriteModuleSyntax(body) + close
+  );
+  // Ensure the working vanilla lucide UMD is present.
+  if (!/src=["'][^"']*\/lucide(@|\.min|\/dist)/i.test(out)) {
+    if (/<\/head>/i.test(out)) out = out.replace(/<\/head>/i, LUCIDE_UMD + '</head>');
+    else out = LUCIDE_UMD + out;
+  }
+  // Inject the runtime shim last so it runs after all CDN scripts are defined.
+  if (/<\/head>/i.test(out)) return out.replace(/<\/head>/i, PREVIEW_RUNTIME + '</head>');
+  if (/<body[^>]*>/i.test(out)) return out.replace(/(<body[^>]*>)/i, '$1' + PREVIEW_RUNTIME);
+  return PREVIEW_RUNTIME + out;
 }
 
 /**
